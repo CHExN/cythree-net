@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.mrbird.febs.chaoyang3team.dao.ApplicationFileMapper">
+
+    <select id="findFileIdsByApplicationIds" resultType="java.lang.String">
+        SELECT FILE_ID FROM p_application_file WHERE FIND_IN_SET(APPLICATION_ID, #{ids})
+    </select>
+
+    <select id="findFilesByApplicationId" resultType="cc.mrbird.febs.chaoyang3team.domain.File">
+        SELECT tf.* FROM p_application_file AS pwf LEFT JOIN t_file AS tf ON(pwf.FILE_ID = tf.FILE_ID) WHERE pwf.APPLICATION_ID = #{id}
+    </select>
+</mapper>

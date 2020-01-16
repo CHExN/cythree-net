@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.mrbird.febs.chaoyang3team.dao.CarRecordMapper">
+
+    <select id="findCarRecordDetail" resultType="cc.mrbird.febs.chaoyang3team.domain.CarRecord">
+        SELECT
+        c.CAR_NUM,
+        c.COLOR,
+        cr.ID,
+        cr.CAR_ID,
+        cr.DATE,
+        cr.CAUSE,
+        cr.DIRVER,
+        cr.REPORTER,
+        cr.TYPE,
+        cr.REMARK
+        FROM cy_car_record AS cr
+        LEFT JOIN cy_car AS c ON(c.CAR_ID=cr.CAR_ID)
+        WHERE 1=1
+        <if test="carRecord.carNum != null and carRecord.carNum != ''">
+            AND c.CAR_NUM LIKE CONCAT('%',#{carRecord.carNum},'%')
+        </if>
+        <if test="carRecord.reporter!= null and carRecord.reporter !=''">
+            AND cr.REPORTER LIKE CONCAT('%',#{carRecord.reporter},'%')
+        </if>
+        <if test="carRecord.createTimeFrom != null and carRecord.createTimeFrom !=''">
+            AND cr.DATE &gt;= #{carRecord.createTimeFrom}
+        </if>
+        <if test="carRecord.createTimeTo!= null and carRecord.createTimeTo !=''">
+            AND cr.DATE &lt;= #{carRecord.createTimeTo}
+        </if>
+    </select>
+
+    <select id="findCarRecordDetailExcel" resultType="cc.mrbird.febs.chaoyang3team.domain.CarRecord">
+        SELECT
+        c.CAR_NUM,
+        c.COLOR,
+        cr.ID,
+        cr.CAR_ID,
+        cr.DATE,
+        cr.CAUSE,
+        cr.DIRVER,
+        cr.REPORTER,
+        cr.TYPE,
+        (SELECT td.VALUEE FROM t_dict td WHERE td.TABLE_NAME='cy_car_record' AND td.FIELD_NAME='TYPE' AND td.KEYY=cr.TYPE LIMIT 1) AS typeName,
+        cr.REMARK
+        FROM cy_car_record AS cr
+        LEFT JOIN cy_car AS c ON(c.CAR_ID=cr.CAR_ID)
+    </select>
+</mapper>

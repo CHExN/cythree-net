@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.mrbird.febs.chaoyang3team.dao.StaffOutsideMapper">
+
+    <select id="findStaffOutsideDetail" resultType="cc.mrbird.febs.chaoyang3team.domain.StaffOutside">
+        SELECT
+        cso.STAFF_ID,
+        cso.SORT_NUM_1,
+        cso.SORT_NUM_2,
+        cso.TEMPORARY,
+        cso.TEAM,
+        cso.`NAME`,
+        cso.GENDER,
+        cso.CLAN,
+        cso.BIRTHPLACE,
+        cso.CULTURE,
+        cso.HOUSEHOLD_REGISTRATION_TYPE,
+        cso.POLITICAL_FACE,
+        cso.ID_NUM,
+        cso.ADDRESS,
+        cso.PHONE_LAND_LINE,
+        cso.PHONE_CELL,
+        cso.BIRTH_DATE,
+        cso.RETIREMENT_YEAR,
+        cso.TRANSFER_DATE,
+        cso.TO_TEAM_DATE,
+        cso.POST,
+        cso.TECHNICAL_TYPE,
+        cso.REMARK,
+        cso.IS_LEAVE,
+        cso.LEAVE_DATE,
+        cco.ID
+        FROM cy_staff_outside AS cso
+        LEFT JOIN cy_contract_outside AS cco ON(cco.ID_NUM=cso.ID_NUM)
+        WHERE FIND_IN_SET(cso.IS_LEAVE, #{staffOutside.isLeave})
+        <if test="staffOutside.team != null and staffOutside.team != ''">
+            AND FIND_IN_SET(cso.TEAM, #{staffOutside.team})
+        </if>
+        <if test="staffOutside.name != null and staffOutside.name != ''">
+            AND cso.NAME LIKE CONCAT('%',#{staffOutside.name},'%')
+        </if>
+        <if test="staffOutside.gender != null and staffOutside.gender != ''">
+            AND cso.GENDER = #{staffOutside.gender}
+        </if>
+        <if test="staffOutside.clan != null and staffOutside.clan != ''">
+            AND cso.CLAN = #{staffOutside.clan}
+        </if>
+        <if test="staffOutside.birthplace != null and staffOutside.birthplace != ''">
+            AND cso.BIRTHPLACE = #{staffOutside.birthplace}
+        </if>
+        <if test="staffOutside.culture != null and staffOutside.culture != ''">
+            AND cso.CULTURE = #{staffOutside.culture}
+        </if>
+        <if test="staffOutside.politicalFace != null and staffOutside.politicalFace != ''">
+            AND cso.POLITICAL_FACE = #{staffOutside.politicalFace}
+        </if>
+        <if test="staffOutside.idNum != null and staffOutside.idNum != ''">
+            AND cso.ID_NUM LIKE CONCAT('%',#{staffOutside.idNum},'%')
+        </if>
+        <if test="staffOutside.address != null and staffOutside.address != ''">
+            AND cso.ADDRESS LIKE CONCAT('%',#{staffOutside.address},'%')
+        </if>
+        <if test="staffOutside.phoneLandLine != null and staffOutside.phoneLandLine != ''">
+            AND cso.PHONE_LAND_LINE LIKE CONCAT('%',#{staffOutside.phoneLandLine},'%')
+        </if>
+        <if test="staffOutside.phoneCell != null and staffOutside.phoneCell != ''">
+            AND cso.PHONE_CELL LIKE CONCAT('%',#{staffOutside.phoneCell},'%')
+        </if>
+        <if test="staffOutside.householdRegistrationType != null and staffOutside.householdRegistrationType != ''">
+            AND FIND_IN_SET(cso.HOUSEHOLD_REGISTRATION_TYPE, #{staffOutside.householdRegistrationType})
+        </if>
+        <if test="staffOutside.post != null and staffOutside.post != ''">
+            AND cso.POST = #{staffOutside.post}
+        </if>
+        <if test="staffOutside.technicalType != null and staffOutside.technicalType != ''">
+            AND FIND_IN_SET(cso.TECHNICAL_TYPE, #{staffOutside.technicalType})
+        </if>
+        <if test="staffOutside.remark != null and staffOutside.remark != ''">
+            AND cso.REMARK LIKE CONCAT('%',#{staffOutside.remark},'%')
+        </if>
+        <if test="staffOutside.mini != null and staffOutside.mini != ''">
+            AND cso.BIRTH_DATE &lt;= DATE_SUB(CURDATE(),INTERVAL #{staffOutside.mini} YEAR)
+        </if>
+        <if test="staffOutside.max != null and staffOutside.max != ''">
+            AND cso.BIRTH_DATE &gt;= DATE_SUB(CURDATE(),INTERVAL #{staffOutside.max} YEAR)
+        </if>
+        ORDER BY SORT_NUM_1 ASC, SORT_NUM_2 ASC
+    </select>
+
+    <select id="findStaffOutsideSimplify" resultType="cc.mrbird.febs.chaoyang3team.domain.StaffOutside">
+        SELECT
+        cso.STAFF_ID,
+        cso.`NAME`,
+        cso.ID_NUM
+        FROM cy_staff_outside AS cso
+        WHERE FIND_IN_SET(cso.IS_LEAVE, #{staffOutside.isLeave})
+        <if test="staffOutside.temporary != null and staffOutside.temporary != ''">
+            AND (SELECT COUNT(1) FROM cy_contract_outside AS cco WHERE cco.ID_NUM=cso.ID_NUM) = 0
+        </if>
+        <if test="staffOutside.team != null and staffOutside.team != ''">
+            AND (SELECT COUNT(1) FROM cy_insurance_outside AS cio WHERE cio.STAFF_ID=cso.STAFF_ID) = 0
+        </if>
+        <if test="staffOutside.idNum != null and staffOutside.idNum != ''">
+            AND cso.ID_NUM LIKE CONCAT('%',#{staffOutside.idNum},'%')
+        </if>
+        <if test="staffOutside.name != null and staffOutside.name != ''">
+            AND cso.NAME LIKE CONCAT('%',#{staffOutside.name},'%')
+        </if>
+        <if test="staffOutside.technicalType != null and staffOutside.technicalType != ''">
+            AND FIND_IN_SET(cso.TECHNICAL_TYPE, #{staffOutside.technicalType})
+        </if>
+        ORDER BY SORT_NUM_1 ASC, SORT_NUM_2 ASC
+    </select>
+
+    <select id="getStaffOutsideByStaffId" resultType="cc.mrbird.febs.chaoyang3team.domain.StaffOutside">
+        SELECT
+        cso.STAFF_ID,
+        cso.SORT_NUM_1,
+        cso.SORT_NUM_2,
+        cso.TEMPORARY,
+        cso.TEAM,
+        cso.`NAME`,
+        cso.GENDER,
+        cso.CLAN,
+        cso.BIRTHPLACE,
+        cso.CULTURE,
+        cso.HOUSEHOLD_REGISTRATION_TYPE,
+        cso.POLITICAL_FACE,
+        cso.ID_NUM,
+        cso.ADDRESS,
+        cso.PHONE_LAND_LINE,
+        cso.PHONE_CELL,
+        cso.BIRTH_DATE,
+        cso.AGE,
+        cso.RETIREMENT_YEAR,
+        cso.TRANSFER_DATE,
+        cso.TO_TEAM_DATE,
+        cso.POST,
+        cso.TECHNICAL_TYPE,
+        cso.REMARK,
+        cso.IS_LEAVE,
+        cso.LEAVE_DATE
+        FROM cy_staff_outside AS cso
+        WHERE cso.STAFF_ID=#{staffId}
+    </select>
+    <select id="getStaffOutsideByIdNum" resultType="cc.mrbird.febs.chaoyang3team.domain.StaffOutside">
+        SELECT
+        cso.STAFF_ID,
+        cso.SORT_NUM_1,
+        cso.SORT_NUM_2,
+        cso.TEMPORARY,
+        cso.TEAM,
+        cso.`NAME`,
+        cso.GENDER,
+        cso.CLAN,
+        cso.BIRTHPLACE,
+        cso.CULTURE,
+        cso.HOUSEHOLD_REGISTRATION_TYPE,
+        cso.POLITICAL_FACE,
+        cso.ID_NUM,
+        cso.ADDRESS,
+        cso.PHONE_LAND_LINE,
+        cso.PHONE_CELL,
+        cso.BIRTH_DATE,
+        cso.AGE,
+        cso.RETIREMENT_YEAR,
+        cso.TRANSFER_DATE,
+        cso.TO_TEAM_DATE,
+        cso.POST,
+        cso.TECHNICAL_TYPE,
+        cso.REMARK,
+        cso.IS_LEAVE,
+        cso.LEAVE_DATE
+        FROM cy_staff_outside AS cso
+        WHERE cso.ID_NUM=#{ID_NUM}
+    </select>
+
+
+    <select id="getContractOutsideIds" resultType="java.lang.String">
+        SELECT ID FROM cy_contract_outside WHERE FIND_IN_SET(STAFF_ID, #{staffOutsideIdsStr})
+    </select>
+
+    <select id="getTechnicalType" resultType="java.lang.String">
+        SELECT TECHNICAL_TYPE FROM cy_staff_outside GROUP BY TECHNICAL_TYPE
+    </select>
+
+    <select id="getPost" resultType="java.lang.String">
+        SELECT POST FROM cy_staff_outside GROUP BY POST
+    </select>
+
+    <select id="getTeam" resultType="java.lang.String">
+        SELECT TEAM FROM cy_staff_outside GROUP BY TEAM
+    </select>
+
+    <select id="getStaffIdByIdNum" resultType="cc.mrbird.febs.chaoyang3team.domain.StaffOutside">
+        SELECT STAFF_ID,`NAME` FROM cy_staff_outside WHERE ID_NUM = #{idNum} LIMIT 1
+    </select>
+</mapper>

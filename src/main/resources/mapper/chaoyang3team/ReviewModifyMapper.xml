@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.mrbird.febs.chaoyang3team.dao.ReviewModifyMapper">
+
+    <select id="findReviewModifyDetail" resultType="cc.mrbird.febs.chaoyang3team.domain.ReviewModify">
+        SELECT
+        crm.ID,
+        crm.INFO,
+        crm.CREATE_TIME,
+        crm.MODIFY_TIME,
+        crm.FIELD_NAME,
+        crm.TABLE_NAME,
+        crm.TABLE_ID,
+        crm.PROCESS,
+        crm.DEPT_NAME,
+        crm.DEPT_ID,
+        crm.USERNAME,
+        crm.TABLE_CNAME
+        FROM cy_review_modify AS crm
+        WHERE 1=1
+        <if test="reviewModify.process != null and reviewModify.process != ''">
+            AND FIND_IN_SET(crm.PROCESS, #{reviewModify.process})
+        </if>
+        <if test="reviewModify.info != null and reviewModify.info != ''">
+            AND crm.INFO LIKE CONCAT('%',#{reviewModify.info},'%')
+        </if>
+        <if test="reviewModify.tableCname != null and reviewModify.tableCname != ''">
+            AND crm.TABLE_CNAME LIKE CONCAT('%',#{reviewModify.tableCname},'%')
+        </if>
+        <if test="reviewModify.username != null and reviewModify.username != ''">
+            AND crm.USERNAME LIKE CONCAT('%',#{reviewModify.username},'%')
+        </if>
+        <if test="reviewModify.deptId != null and reviewModify.deptId != ''">
+            AND crm.DEPT_ID = #{reviewModify.deptId}
+        </if>
+        <if test="reviewModify.createTimeFrom != null and reviewModify.createTimeFrom !=''">
+            AND reviewModify.ACCEPTANCE_DATE &gt;= #{reviewModify.createTimeFrom}
+        </if>
+        <if test="reviewModify.createTimeTo!= null and reviewModify.createTimeTo !=''">
+            AND reviewModify.ACCEPTANCE_DATE &lt;= #{reviewModify.createTimeTo}
+        </if>
+    </select>
+
+    <select id="selectReviewModifyOne" resultType="cc.mrbird.febs.chaoyang3team.domain.ReviewModify">
+        SELECT
+        crm.ID,
+        crm.INFO,
+        crm.CREATE_TIME,
+        crm.MODIFY_TIME,
+        crm.FIELD_NAME,
+        crm.TABLE_NAME,
+        crm.TABLE_ID,
+        crm.PROCESS,
+        crm.DEPT_NAME,
+        crm.DEPT_ID,
+        crm.USERNAME,
+        crm.TABLE_CNAME
+        FROM cy_review_modify AS crm
+        WHERE USERNAME=#{username} AND TABLE_NAME=#{tableName} AND FIELD_NAME=#{fieldName} AND TABLE_ID=#{tableId}
+        ORDER BY crm.ID DESC
+        LIMIT 1
+    </select>
+
+</mapper>

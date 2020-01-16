@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.mrbird.febs.chaoyang3team.dao.WaterMapper">
+
+    <select id="findWaterDetail" resultType="cc.mrbird.febs.chaoyang3team.domain.Water">
+        SELECT
+        wc.WC_ID,
+        wc.WC_NAME,
+        wc.WC_NUM AS wcNum,
+        wc.WATER_NUM,
+        w.WATER_ID AS waterId,
+        w.`YEAR`,
+        w.`MONTH`,
+        w.ACTUAL_AMOUNT,
+        w.UNIT_PRICE,
+        w.TAP_WATER_FEE,
+        w.WATER_RESOURCES_FEE,
+        w.SEWAGE_FEE,
+        w.TOTAL_AMOUNT,
+        w.CREATE_DATE AS createDate
+        FROM cy_water AS w
+        LEFT JOIN p_wc_water AS ww ON(ww.WATER_ID=w.WATER_ID)
+        LEFT JOIN cy_wc AS wc ON(wc.WC_ID=ww.WC_ID)
+        WHERE 1=1
+        <if test="water.wcName != null and water.wcName != ''">
+            AND wc.WC_NAME LIKE CONCAT('%',#{water.wcName},'%')
+        </if>
+        <if test="water.wcNum != null and water.wcNum != ''">
+            AND wc.WC_NUM LIKE CONCAT('%',#{water.wcNum},'%')
+        </if>
+        <if test="water.waterNum != null and water.waterNum != ''">
+            AND wc.WATER_NUM LIKE CONCAT('%',#{water.waterNum},'%')
+        </if>
+        <if test="water.year != null and water.year != ''">
+            AND w.`YEAR`=#{water.year}
+        </if>
+        <if test="water.month != null and water.month != ''">
+            AND w.`MONTH`=#{water.month}
+        </if>
+        <if test="water.createTimeFrom != null and water.createTimeFrom !=''">
+            AND w.CREATE_DATE &gt;= #{water.createTimeFrom}
+        </if>
+        <if test="water.createTimeTo!= null and water.createTimeTo !=''">
+            AND w.CREATE_DATE &lt;= #{water.createTimeTo}
+        </if>
+    </select>
+</mapper>

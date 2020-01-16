@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.mrbird.febs.chaoyang3team.dao.ContractMapper">
+
+    <select id="findContract" resultType="cc.mrbird.febs.chaoyang3team.domain.Contract">
+        SELECT
+        c.ID,
+        c.CREATE_DATE,
+        c.DEPT_ID,
+        c.DEPT_NAME,
+        c.USERNAME,
+        c.CONTRACT_NAME,
+        c.CONTRACT_PARTNER,
+        c.IS_TENDER,
+        c.CONTRACT_NUM,
+        c.CONTRACT_AMOUNT,
+        c.PROCESS,
+        c.STEP,
+        c.REVIEW,
+        c.IS_FINANCE,
+        c.IS_INITIATE,
+        c.FILE_ID,
+        f.ADDRESS AS address,
+        c.OPINION_START,
+        c.OPINION_LEGAL,
+        c.OPINION_FINANCIAL,
+        c.OPINION_ASS,
+        c.OPINION_OFFICE,
+        c.OPINION_HEAD,
+        c.OPINION_VICE_CAPTAIN,
+        c.OPINION_CAPTAIN,
+        c.REMARK,
+        c.DATE_START,
+        c.DATE_LEGAL,
+        c.DATE_FINANCIAL,
+        c.DATE_ASS,
+        c.DATE_OFFICE,
+        c.DATE_HEAD,
+        c.DATE_VICE_CAPTAIN,
+        c.DATE_CAPTAIN
+        FROM
+        cy_contract AS c
+        LEFT JOIN t_file AS f ON(f.FILE_ID=c.FILE_ID)
+        WHERE 1=1
+        <if test="contract.deptId != null and contract.deptId !=''">
+            AND (#{username} = 'finance' OR FIND_IN_SET(#{username},c.REVIEW)) AND c.DEPT_ID = #{contract.deptId}
+        </if>
+        <if test="contract.contractName != null and contract.contractName !=''">
+            AND c.CONTRACT_NAME &gt;= #{contract.contractName}
+        </if>
+        <if test="contract.contractNum!= null and contract.contractNum !=''">
+            AND c.CONTRACT_NUM &lt;= #{contract.contractNum}
+        </if>
+        <if test="contract.process!= null">
+            AND c.PROCESS = #{contract.process}
+        </if>
+        <if test="contract.isTender!= null and contract.isTender !=''">
+            AND c.IS_TENDER = #{contract.isTender}
+        </if>
+    </select>
+</mapper>

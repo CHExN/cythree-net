@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.mrbird.febs.chaoyang3team.dao.ContractInsideMapper">
+
+    <select id="findContractInsideDetail" resultType="cc.mrbird.febs.chaoyang3team.domain.ContractInside">
+        SELECT
+        cci.ID,
+        cci.FILE_NUM,
+        cci.BAD_NUM,
+        cci.REMARK_ON_FIXED_PERIOD,
+        cci.CONTRACT_LABOR_START AS contractLaborStart,
+        cci.CONTRACT_LABOR_END AS contractLaborEnd,
+        cci.JOB_AGREEMENT_START AS jobAgreementStart,
+        cci.JOB_AGREEMENT_END AS jobAgreementEnd,
+        cci.REMARK_RENEW,
+        cci.REMARK,
+        csi.STAFF_ID,
+        csi.`NAME`
+        FROM cy_contract_inside AS cci
+        LEFT JOIN cy_staff_inside AS csi ON(csi.STAFF_ID=cci.STAFF_ID)
+        WHERE 1=1
+        <if test="contractInside.fileNum != null and contractInside.fileNum != ''">
+            AND cci.FILE_NUM LIKE CONCAT('%',#{contractInside.fileNum},'%')
+        </if>
+        <if test="contractInside.badNum != null and contractInside.badNum != ''">
+            AND cci.BAD_NUM LIKE CONCAT('%',#{contractInside.badNum},'%')
+        </if>
+        <if test="contractInside.remarkOnFixedPeriod != null and contractInside.remarkOnFixedPeriod != ''">
+            AND cci.REMARK_ON_FIXED_PERIOD LIKE CONCAT('%',#{contractInside.remarkOnFixedPeriod},'%')
+        </if>
+        <!--<if test="contractInside.contractLaborStart != null and contractInside.contractLaborStart !=''">-->
+            <!--AND cci.CONTRACT_LABOR_START &gt; #{contractInside.contractLaborStart}-->
+        <!--</if>-->
+        <!--<if test="contractInside.contractLaborEnd!= null and contractInside.contractLaborEnd !=''">-->
+            <!--AND cci.CONTRACT_LABOR_END &lt; #{contractInside.contractLaborEnd}-->
+        <!--</if>-->
+        <!--<if test="contractInside.jobAgreementStart != null and contractInside.jobAgreementStart !=''">-->
+            <!--AND cci.JOB_AGREEMENT_START &gt; #{contractInside.jobAgreementStart}-->
+        <!--</if>-->
+        <!--<if test="contractInside.jobAgreementEnd!= null and contractInside.jobAgreementEnd !=''">-->
+            <!--AND cci.JOB_AGREEMENT_END &lt; #{contractInside.jobAgreementEnd}-->
+        <!--</if>-->
+        <if test="contractInside.remarkRenew != null and contractInside.remarkRenew != ''">
+            AND cci.REMARK_RENEW LIKE CONCAT('%',#{contractInside.remarkRenew},'%')
+        </if>
+        <if test="contractInside.remark != null and contractInside.remark != ''">
+            AND cci.REMARK LIKE CONCAT('%',#{contractInside.remark},'%')
+        </if>
+        <if test="contractInside.name != null and contractInside.name != ''">
+            AND csi.NAME LIKE CONCAT('%',#{contractInside.name},'%')
+        </if>
+    </select>
+
+    <select id="getContractInside" resultType="cc.mrbird.febs.chaoyang3team.domain.ContractInside">
+        SELECT
+        cci.ID,
+        cci.FILE_NUM,
+        cci.BAD_NUM,
+        cci.REMARK_ON_FIXED_PERIOD,
+        cci.CONTRACT_LABOR_START AS contractLaborStart,
+        cci.CONTRACT_LABOR_END AS contractLaborEnd,
+        cci.JOB_AGREEMENT_START AS jobAgreementStart,
+        cci.JOB_AGREEMENT_END AS jobAgreementEnd,
+        cci.REMARK_RENEW,
+        cci.REMARK
+        FROM cy_contract_inside AS cci
+        WHERE cci.STAFF_ID=#{staffInsideId}
+    </select>
+
+    <select id="getStaffInsideIds" resultType="java.lang.String">
+        SELECT STAFF_ID FROM cy_contract_inside WHERE FIND_IN_SET(ID, #{contractInsideIdsStr})
+    </select>
+</mapper>

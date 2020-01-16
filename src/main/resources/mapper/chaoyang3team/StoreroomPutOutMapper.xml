@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.mrbird.febs.chaoyang3team.dao.StoreroomPutOutMapper">
+
+    <update id="updateStoreroomPutOutMoney">
+        UPDATE cy_storeroom_put_out AS cspo
+        SET
+        cspo.MONEY=(
+        <if test="isPut == 1">
+            SELECT SUM(ROUND(cs.MONEY*cs.AMOUNT,2)) FROM cy_storeroom AS cs LEFT JOIN p_storeroom_put AS psp ON
+            psp.STOREROOM_ID=cs.ID WHERE psp.PUT_ID=#{id}
+        </if>
+        <if test="isPut == 2">
+            SELECT SUM(ROUND(cs.MONEY*cs.AMOUNT,2)) FROM cy_storeroom AS cs LEFT JOIN p_storeroom_out AS pso ON
+            pso.STOREROOM_ID=cs.ID WHERE pso.OUT_ID=#{id}
+        </if>
+        ) WHERE cspo.ID=#{id}
+    </update>
+
+    <!--查询入库单信息-->
+    <select id="findStoreroomPutDetail" resultType="cc.mrbird.febs.chaoyang3team.domain.StoreroomPutOut">
+        SELECT
+        sp.ID,
+        sp.NUM,
+        sp.DATE,
+        sp.MONEY,
+        sp.STORAGE,
+        sp.HANDLE,
+        sp.IS_PUT,
+        sp.TYPE_APPLICATION,
+        sp.SUPPLIER,
+        sp.CREATE_TIME,
+        sp.MODIFY_TIME
+        FROM
+        cy_storeroom_put_out AS sp
+        WHERE sp.IS_PUT = #{sPut.isPut}
+        <if test="sPut.typeApplication != null and sPut.typeApplication != ''">
+            AND FIND_IN_SET(sp.TYPE_APPLICATION, #{sPut.typeApplication})
+        </if>
+        <if test="sPut.supplier != null and sPut.supplier != ''">
+            AND FIND_IN_SET(sp.SUPPLIER, #{sPut.supplier})
+        </if>
+        <if test="sPut.num != null and sPut.num != ''">
+            AND sp.NUM LIKE CONCAT('%',#{sPut.num},'%')
+        </if>
+        <if test="sPut.storage != null and sPut.storage != ''">
+            AND sp.STORAGE LIKE CONCAT('%',#{sPut.storage},'%')
+        </if>
+        <if test="sPut.handle != null and sPut.handle != ''">
+            AND sp.HANDLE LIKE CONCAT('%',#{sPut.handle},'%')
+        </if>
+        <if test="sPut.createTimeFrom != null and sPut.createTimeFrom !=''">
+            AND sp.DATE &gt;= #{sPut.createTimeFrom}
+        </if>
+        <if test="sPut.createTimeTo!= null and sPut.createTimeTo !=''">
+            AND sp.DATE &lt;= #{sPut.createTimeTo}
+        </if>
+    </select>
+
+    <!--查询出库单信息-->
+    <select id="findStoreroomOutDetail" resultType="cc.mrbird.febs.chaoyang3team.domain.StoreroomPutOut">
+        SELECT
+        sp.ID,
+        sp.NUM,
+        sp.DATE,
+        d1.DEPT_ID AS toDeptId,
+        d1.DEPT_NAME AS toDeptName,
+        sp.MONEY,
+        sp.STORAGE,
+        sp.HANDLE,
+        sp.IS_PUT,
+        sp.TYPE_APPLICATION,
+        sp.SUPPLIER,
+        sp.CREATE_TIME,
+        sp.MODIFY_TIME
+        FROM
+        cy_storeroom_put_out AS sp
+        LEFT JOIN t_dept d1 ON (d1.DEPT_ID = sp.TO_DEPT_ID)
+        WHERE sp.IS_PUT = #{sOut.isPut}
+        <if test="sOut.typeApplication != null and sOut.typeApplication != ''">
+            AND FIND_IN_SET(sp.TYPE_APPLICATION, #{sOut.typeApplication})
+        </if>
+        <if test="sOut.supplier != null and sOut.supplier != ''">
+            AND FIND_IN_SET(sp.SUPPLIER, #{sOut.supplier})
+        </if>
+        <if test="sOut.num != null and sOut.num != ''">
+            AND sp.NUM LIKE CONCAT('%',#{sOut.num},'%')
+        </if>
+        <if test="sOut.toDeptId != null and sOut.toDeptId != ''">
+            AND sp.TO_DEPT_ID = #{sOut.toDeptId}
+        </if>
+        <if test="sOut.storage != null and sOut.storage != ''">
+            AND sp.STORAGE LIKE CONCAT('%',#{sOut.storage},'%')
+        </if>
+        <if test="sOut.handle != null and sOut.handle != ''">
+            AND sp.HANDLE LIKE CONCAT('%',#{sOut.handle},'%')
+        </if>
+        <if test="sOut.createTimeFrom != null and sOut.createTimeFrom !=''">
+            AND sp.DATE &gt;= #{sOut.createTimeFrom}
+        </if>
+        <if test="sOut.createTimeTo!= null and sOut.createTimeTo !=''">
+            AND sp.DATE &lt;= #{sOut.createTimeTo}
+        </if>
+        <if test="sOut.toDeptId!= null and sOut.toDeptId !=''">
+            AND sp.TO_DEPT_ID = #{sOut.toDeptId}
+        </if>
+    </select>
+
+    <select id="getStoreroomOutSimplify" resultType="cc.mrbird.febs.chaoyang3team.domain.StoreroomPutOut">
+        SELECT
+        sp.ID,
+        sp.NUM,
+        sp.MONEY
+        FROM
+        cy_storeroom_put_out AS sp
+        WHERE sp.IS_PUT = '2' AND sp.TYPE_APPLICATION = '5'
+        <if test="sOut.num != null and sOut.num != ''">
+            AND sp.NUM LIKE CONCAT('%',#{sOut.num},'%')
+        </if>
+    </select>
+
+    <select id="selectStoreroomPutByStoreroomId" resultType="java.lang.Long">
+        SELECT DISTINCT PUT_ID FROM p_storeroom_put WHERE FIND_IN_SET(STOREROOM_ID,#{storeroomIds})
+    </select>
+
+    <select id="selectStoreroomOutByStoreroomId" resultType="java.lang.Long">
+        SELECT DISTINCT OUT_ID FROM p_storeroom_out WHERE FIND_IN_SET(STOREROOM_ID,#{storeroomIds})
+    </select>
+</mapper>

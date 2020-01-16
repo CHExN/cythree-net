@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.mrbird.febs.chaoyang3team.dao.MeetingRoomMapper">
+
+    <select id="findMeetingRoom" resultType="cc.mrbird.febs.chaoyang3team.domain.MeetingRoom">
+        SELECT
+        mr.ID,
+        mr.DATE_FROM,
+        mr.TIME_FROM,
+        mr.TIME_TO,
+        mr.DEPT_ID,
+        mr.DEPT_NAME,
+        mr.DATETIME,
+        mr.REMARK
+        FROM cy_meeting_room AS mr
+        WHERE 1=1
+        <if test="meetingRoom.deptId != null and meetingRoom.deptId !=''">
+            AND mr.DEPT_ID = #{meetingRoom.deptId}
+        </if>
+        <if test="meetingRoom.createTimeFrom != null and meetingRoom.createTimeFrom !=''">
+            AND mr.DATE_FROM &gt;= #{meetingRoom.createTimeFrom}
+        </if>
+        <if test="meetingRoom.createTimeTo!= null and meetingRoom.createTimeTo !=''">
+            AND mr.DATE_FROM &lt;= #{meetingRoom.createTimeTo}
+        </if>
+    </select>
+</mapper>

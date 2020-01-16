@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.mrbird.febs.chaoyang3team.dao.ApplicationMapper">
+
+    <!--这里要加上 FIND_IN_SET(s.TYPE_APPLICATION, '1,2,4,6,7,9')-->
+    <!--排除了 3办公室用品 5固定资产 8食堂用品  这三项到时候单拎出来做出入库-->
+    <!--因为项目中途改需求了 改表结构已经不可能了-->
+    <!--不能用 NOT FIND_IN_SET(s.TYPE_APPLICATION, '3,5,8')-->
+    <!--这样会导致queryTotal时运用子查询，从而消耗过多资源-->
+    <!--不过可以自己手动写queryTotal，但我忘了怎么写了-->
+    <select id="findApplicationDetail" resultType="cc.mrbird.febs.chaoyang3team.domain.Application">
+        SELECT
+        a.ID,
+        a.TYPE_APPLICATION,
+        a.NUM,
+        a.USERNAME,
+        d.DEPT_ID,
+        d.DEPT_NAME,
+        a.APP_DEPT,
+        a.HANDLE,
+        a.PUR_DEPT,
+        a.DESCRIPTION,
+        a.MONEY,
+        a.IS_IN,
+        a.PROCESS,
+        a.STEP,
+        a.REVIEW,
+        a.CREATE_DATE AS createDate
+        FROM
+        cy_application AS a
+        LEFT JOIN t_dept d ON (a.DEPT_ID = d.DEPT_ID)
+        WHERE 1=1
+        <!--<choose>-->
+            <!--<when test="application.typeApplication == 3 or application.typeApplication == 5 or application.typeApplication == 8">-->
+            <!--</when>-->
+            <!--<otherwise>-->
+            <!--</otherwise>-->
+        <!--</choose>-->
+        <if test="application.typeApplication != 3 and application.typeApplication != 5 and application.typeApplication != 8">
+            AND FIND_IN_SET(a.TYPE_APPLICATION, '1,2,4,6,7,9')
+        </if>
+        <if test="!isLogistics">
+            AND (a.DEPT_ID = #{application.deptId} OR (a.PROCESS=0 AND FIND_IN_SET(#{application.username}, a.REVIEW)=a.STEP))
+        </if>
+        <if test="application.typeApplication != null and application.typeApplication != ''">
+            AND FIND_IN_SET(a.TYPE_APPLICATION, #{application.typeApplication})
+        </if>
+        <if test="application.num != null and application.num != ''">
+            AND a.NUM LIKE CONCAT('%',#{application.num},'%')
+        </if>
+        <!--<if test="application.deptId != null and application.deptId != ''">
+            AND a.dept_id = #{application.deptId}
+        </if>-->
+        <if test="application.appDept != null and application.appDept != ''">
+            AND a.APP_DEPT LIKE CONCAT('%',#{application.appDept},'%')
+        </if>
+        <if test="application.handle != null and application.handle != ''">
+            AND a.HANDLE LIKE CONCAT('%',#{application.handle},'%')
+        </if>
+        <if test="application.purDept != null and application.purDept != ''">
+            AND a.PUR_DEPT LIKE CONCAT('%',#{application.purDept},'%')
+        </if>
+        <if test="application.process != null">
+            AND a.PROCESS = #{application.process}
+        </if>
+        <if test="application.createTimeFrom != null and application.createTimeFrom !=''">
+            AND a.CREATE_DATE &gt;= #{application.createTimeFrom}
+        </if>
+        <if test="application.createTimeTo!= null and application.createTimeTo !=''">
+            AND a.CREATE_DATE &lt;= #{application.createTimeTo}
+        </if>
+    </select>
+</mapper>

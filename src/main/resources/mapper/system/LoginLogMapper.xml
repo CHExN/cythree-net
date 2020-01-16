@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.mrbird.febs.system.dao.LoginLogMapper">
+    <select id="findTotalVisitCount" resultType="java.lang.Long">
+        select count(1) from t_login_log
+    </select>
+
+    <select id="findTodayVisitCount" resultType="java.lang.Long">
+        select count(1) from t_login_log where datediff(login_time,now())=0
+    </select>
+
+    <select id="findTodayIp" resultType="java.lang.Long">
+        select count(distinct(ip)) from t_login_log where datediff(login_time,now())=0
+    </select>
+
+    <select id="findLastSevenDaysVisitCount" resultType="java.util.Map" parameterType="string">
+        SELECT CURDATE() AS days,COUNT(1) AS count FROM t_login_log WHERE CURDATE()=DATE_FORMAT(login_time,'%Y-%m-%d')
+        UNION ALL
+        SELECT DATE_SUB(CURDATE(),INTERVAL 1 DAY) AS days,COUNT(1) AS count FROM t_login_log WHERE DATE_SUB(CURDATE(),INTERVAL 1 DAY)=DATE_FORMAT(login_time,'%Y-%m-%d')
+        UNION ALL
+        SELECT DATE_SUB(CURDATE(),INTERVAL 2 DAY) AS days,COUNT(1) AS count FROM t_login_log WHERE DATE_SUB(CURDATE(),INTERVAL 2 DAY)=DATE_FORMAT(login_time,'%Y-%m-%d')
+        UNION ALL
+        SELECT DATE_SUB(CURDATE(),INTERVAL 3 DAY) AS days,COUNT(1) AS count FROM t_login_log WHERE DATE_SUB(CURDATE(),INTERVAL 3 DAY)=DATE_FORMAT(login_time,'%Y-%m-%d')
+        UNION ALL
+        SELECT DATE_SUB(CURDATE(),INTERVAL 4 DAY) AS days,COUNT(1) AS count FROM t_login_log WHERE DATE_SUB(CURDATE(),INTERVAL 4 DAY)=DATE_FORMAT(login_time,'%Y-%m-%d')
+        UNION ALL
+        SELECT DATE_SUB(CURDATE(),INTERVAL 5 DAY) AS days,COUNT(1) AS count FROM t_login_log WHERE DATE_SUB(CURDATE(),INTERVAL 5 DAY)=DATE_FORMAT(login_time,'%Y-%m-%d')
+        UNION ALL
+        SELECT DATE_SUB(CURDATE(),INTERVAL 6 DAY) AS days,COUNT(1) AS count FROM t_login_log WHERE DATE_SUB(CURDATE(),INTERVAL 6 DAY)=DATE_FORMAT(login_time,'%Y-%m-%d')
+    </select>
+
+    <select id="findCountList" resultType="java.math.BigDecimal">
+        SELECT COUNT(1) FROM t_login_log
+        UNION ALL
+        SELECT COUNT(1) FROM t_login_log WHERE datediff(login_time,CURDATE())=0
+        UNION ALL
+        SELECT COUNT(1) FROM cy_wc
+        UNION ALL
+        SELECT COUNT(1) FROM cy_staff_inside
+        UNION ALL
+        SELECT COUNT(1) FROM cy_staff_outside
+        UNION ALL
+        SELECT ROUND(nowYear1.count + nowYear2.count,2) FROM (
+        -- 今年工资总支出
+        SELECT IFNULL(SUM(REAL_WAGE),0)AS count FROM cy_wage WHERE `YEAR`=YEAR(CURDATE())) AS nowYear1,(
+        -- 今年入库总额
+        SELECT IFNULL(SUM(MONEY),0)AS count FROM cy_storeroom_put_out WHERE IS_PUT='1' AND YEAR(DATE)=YEAR(CURDATE())) AS nowYear2
+        UNION ALL
+        SELECT IFNULL(ROUND(((nowYear1.count + nowYear2.count) - (lastYear1.count + lastYear2.count)) / (lastYear1.count + lastYear2.count) * 100),100) FROM (
+        -- 今年工资总支出
+        SELECT IFNULL(SUM(REAL_WAGE),0)AS count FROM cy_wage WHERE `YEAR`=YEAR(CURDATE())) AS nowYear1,(
+        -- 去年工资总支出
+        SELECT IFNULL(SUM(REAL_WAGE),0)AS count FROM cy_wage WHERE `YEAR`=YEAR(DATE_SUB(CURDATE(),INTERVAL 1 YEAR))) AS lastYear1,(
+        -- 今年入库总额
+        SELECT IFNULL(SUM(MONEY),0)AS count FROM cy_storeroom_put_out WHERE IS_PUT='1' AND YEAR(DATE)=YEAR(CURDATE())) AS nowYear2,(
+        -- 去年入库总额
+        SELECT IFNULL(SUM(MONEY),0)AS count FROM cy_storeroom_put_out WHERE IS_PUT='1' AND YEAR(DATE)=YEAR(DATE_SUB(CURDATE(),INTERVAL 1 YEAR))) AS lastYear2
+        UNION ALL
+        SELECT IFNULL(ROUND(((nowMonth1.count + nowMonth2.count) - (lastMonth1.count + lastMonth2.count)) / (lastMonth1.count + lastMonth2.count) * 100),100) FROM (
+        -- 本月工资总支出
+        SELECT IFNULL(SUM(REAL_WAGE),0)AS count FROM cy_wage WHERE CONCAT(`YEAR`,`MONTH`)=DATE_FORMAT(CURDATE(),'%Y%m')) AS nowMonth1,(
+        -- 上月工资总支出
+        SELECT IFNULL(SUM(REAL_WAGE),0)AS count FROM cy_wage WHERE CONCAT(`YEAR`,`MONTH`)=DATE_FORMAT(DATE_SUB(CURDATE(),INTERVAL 1 MONTH),'%Y%m')) AS lastMonth1,(
+        -- 本月入库总额
+        SELECT IFNULL(SUM(MONEY),0)AS count FROM cy_storeroom_put_out WHERE IS_PUT='1' AND DATE_FORMAT(DATE,'%Y%m')=DATE_FORMAT(CURDATE(),'%Y%m')) AS nowMonth2,(
+        -- 上月入库总额
+        SELECT IFNULL(SUM(MONEY),0)AS count FROM cy_storeroom_put_out WHERE IS_PUT='1' AND DATE_FORMAT(DATE,'%Y%m')=DATE_FORMAT(DATE_SUB(CURDATE(),INTERVAL 1 MONTH),'%Y%m')) AS lastMonth2
+        UNION ALL
+        -- 总入库单数
+        SELECT COUNT(ID) FROM cy_storeroom_put_out WHERE IS_PUT='1'
+        UNION ALL
+        -- 月同比入库单数
+        SELECT IFNULL(ROUND((nowMonth.count - lastMonth.count) / lastMonth.count * 100),100) FROM (
+        -- 本月入库单数
+        SELECT COUNT(ID) AS count FROM cy_storeroom_put_out WHERE IS_PUT='1' AND DATE_FORMAT(DATE,'%Y%m')=DATE_FORMAT(CURDATE(),'%Y%m')) AS nowMonth,(
+        -- 上月入库单数
+        SELECT COUNT(ID) AS count FROM cy_storeroom_put_out WHERE IS_PUT='1' AND DATE_FORMAT(DATE,'%Y%m')=DATE_FORMAT(DATE_SUB(CURDATE(),INTERVAL 1 MONTH),'%Y%m')) AS lastMonth
+        UNION ALL
+        -- 日同比入库单数
+        SELECT IFNULL(ROUND((newDay.count - lastDay.count) / lastDay.count * 100),100) FROM (
+        -- 今天入库单数
+        SELECT COUNT(ID) AS count FROM cy_storeroom_put_out WHERE IS_PUT='1' AND DATE=CURDATE()) AS newDay,(
+        -- 昨天入库单数
+        SELECT COUNT(ID) AS count FROM cy_storeroom_put_out WHERE IS_PUT='1' AND DATE=DATE_SUB(CURDATE(),INTERVAL 1 DAY)) AS lastDay
+    </select>
+    <select id="findStoreroomPutDaysVisitCount" resultType="java.util.Map">
+        SELECT
+        spo.DATE AS days,
+        COUNT(1) AS count
+        FROM
+        (
+        SELECT
+        DATE
+        FROM
+        cy_storeroom_put_out
+        WHERE IS_PUT='1'
+        AND DATE_SUB(CURDATE(), INTERVAL 11 DAY) &lt;= DATE
+        ) AS spo
+        GROUP BY
+        days
+    </select>
+
+</mapper>

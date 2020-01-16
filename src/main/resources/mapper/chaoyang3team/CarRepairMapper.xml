@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.mrbird.febs.chaoyang3team.dao.CarRepairMapper">
+
+    <select id="findRepairDetail" resultType="cc.mrbird.febs.chaoyang3team.domain.CarRepair">
+        SELECT
+        c.CAR_NUM,
+        c.COLOR,
+        r.ID,
+        r.CAR_ID,
+        r.DATE,
+        r.REMARK,
+        r.DIRVER,
+        r.REPORTER,
+        r.DEPT_ID,
+        r.DEPT_NAME,
+        r.PROCESS
+        FROM cy_car_repair AS r
+        LEFT JOIN cy_car AS c ON(c.CAR_ID=r.CAR_ID)
+        WHERE 1=1
+        <if test="carRepair.carNum != null and carRepair.carNum != ''">
+            AND c.CAR_NUM LIKE CONCAT('%',#{carRepair.carNum},'%')
+        </if>
+        <if test="carRepair.reporter!= null and carRepair.reporter !=''">
+            AND r.REPORTER LIKE CONCAT('%',#{carRepair.reporter},'%')
+        </if>
+        <if test="carRepair.createTimeFrom != null and carRepair.createTimeFrom !=''">
+            AND r.DATE &gt;= #{carRepair.createTimeFrom}
+        </if>
+        <if test="carRepair.createTimeTo!= null and carRepair.createTimeTo !=''">
+            AND r.DATE &lt;= #{carRepair.createTimeTo}
+        </if>
+        <if test="carRepair.process!= null">
+            AND r.PROCESS = #{carRepair.process}
+        </if>
+    </select>
+</mapper>

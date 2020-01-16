@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.mrbird.febs.chaoyang3team.dao.StaffInsideMapper">
+
+    <select id="findStaffInsideDetail" resultType="cc.mrbird.febs.chaoyang3team.domain.StaffInside">
+        SELECT
+        csi.STAFF_ID,
+        csi.TYPE,
+        csi.CAUSE,
+        csi.CAUSE_DATE,
+        csi.`NAME`,
+        csi.GENDER,
+        csi.CLAN,
+        csi.BIRTHPLACE,
+        csi.CULTURE_BEFORE,
+        csi.CULTURE_CURRENT,
+        csi.HOUSEHOLD_REGISTRATION_TYPE,
+        csi.PROFESSION,
+        csi.GRADUATION_DATE,
+        csi.POLITICAL_FACE,
+        csi.IS_DISABILITY_CERTIFICATE,
+        csi.WORK_INJURY_CERTIFICATE_DATE,
+        csi.DISABILITY_IDENTIFICATION_LEVEL,
+        csi.ID_NUM,
+        csi.ADDRESS,
+        csi.PHONE_LAND_LINE,
+        csi.PHONE_CELL,
+        csi.BIRTH_DATE,
+        csi.RETIREMENT_YEAR,
+        csi.WORK_DATE,
+        csi.FARMER_WORK_DATE,
+        csi.TRANSFER_DATE,
+        csi.CURRENT_POSITION,
+        csi.POST,
+        csi.POST_LEVEL,
+        csi.APPOINTMENT_DATE,
+        csi.TECHNICAL_TYPE,
+        csi.TECHNICAL_LEVEL_DATE,
+        csi.CERTIFICATE_NUM,
+        csi.ENTRY_STATUS,
+        csi.SORT_NUM AS sortNum,
+        csi.IS_LEAVE,
+        csi.LEAVE_DATE,
+        csi.DEPT_ID,
+        td.DEPT_NAME,
+        cci.ID,
+        cci.FILE_NUM
+        FROM cy_staff_inside AS csi
+        LEFT JOIN cy_contract_inside AS cci ON(cci.STAFF_ID=csi.STAFF_ID)
+        LEFT JOIN t_dept td ON (csi.DEPT_ID = td.DEPT_ID)
+        WHERE FIND_IN_SET(csi.IS_LEAVE, #{staffInside.isLeave})
+        <if test="staffInside.name != null and staffInside.name != ''">
+            AND csi.NAME LIKE CONCAT('%',#{staffInside.name},'%')
+        </if>
+        <if test="staffInside.deptId != null and staffInside.deptId != ''">
+            AND csi.DEPT_ID = #{staffInside.deptId}
+        </if>
+        <if test="staffInside.type != null and staffInside.type != ''">
+            AND csi.TYPE = #{staffInside.type}
+        </if>
+        <if test="staffInside.cause != null and staffInside.cause != ''">
+            AND csi.CAUSE LIKE CONCAT('%',#{staffInside.cause},'%')
+        </if>
+        <if test="staffInside.gender != null and staffInside.gender != ''">
+            AND csi.GENDER = #{staffInside.gender}
+        </if>
+        <if test="staffInside.clan != null and staffInside.clan != ''">
+            AND csi.CLAN = #{staffInside.clan}
+        </if>
+        <if test="staffInside.birthplace != null and staffInside.birthplace != ''">
+            AND csi.BIRTHPLACE = #{staffInside.birthplace}
+        </if>
+        <if test="staffInside.cultureBefore != null and staffInside.cultureBefore != ''">
+            AND csi.CULTURE_BEFORE = #{staffInside.cultureBefore}
+        </if>
+        <if test="staffInside.cultureCurrent != null and staffInside.cultureCurrent != ''">
+            AND csi.CULTURE_CURRENT = #{staffInside.cultureCurrent}
+        </if>
+        <if test="staffInside.householdRegistrationType != null and staffInside.householdRegistrationType != ''">
+            AND FIND_IN_SET(csi.HOUSEHOLD_REGISTRATION_TYPE, #{staffInside.householdRegistrationType})
+        </if>
+        <if test="staffInside.politicalFace != null and staffInside.politicalFace != ''">
+            AND csi.POLITICAL_FACE = #{staffInside.politicalFace}
+        </if>
+        <if test="staffInside.isDisabilityCertificate != null and staffInside.isDisabilityCertificate != ''">
+            AND csi.IS_DISABILITY_CERTIFICATE = #{staffInside.isDisabilityCertificate}
+        </if>
+        <if test="staffInside.idNum != null and staffInside.idNum != ''">
+            AND csi.ID_NUM LIKE CONCAT('%',#{staffInside.idNum},'%')
+        </if>
+        <if test="staffInside.address != null and staffInside.address != ''">
+            AND csi.ADDRESS LIKE CONCAT('%',#{staffInside.address},'%')
+        </if>
+        <if test="staffInside.phoneLandLine != null and staffInside.phoneLandLine != ''">
+            AND csi.PHONE_LAND_LINE LIKE CONCAT('%',#{staffInside.phoneLandLine},'%')
+        </if>
+        <if test="staffInside.phoneCell != null and staffInside.phoneCell != ''">
+            AND csi.PHONE_CELL LIKE CONCAT('%',#{staffInside.phoneCell},'%')
+        </if>
+        <!--<if test="staffInside.age != null">-->
+            <!--AND csi.AGE = #{staffInside.age}-->
+        <!--</if>-->
+        <!--<if test="staffInside.currentPosition != null and staffInside.currentPosition != ''">-->
+            <!--AND csi.CURRENT_POSITION LIKE CONCAT('%',#{staffInside.currentPosition},'%')-->
+        <!--</if>-->
+        <if test="staffInside.post != null and staffInside.post != ''">
+            AND FIND_IN_SET(csi.POST, #{staffInside.post})
+        </if>
+        <if test="staffInside.postLevel != null and staffInside.postLevel != ''">
+            AND FIND_IN_SET(csi.POST_LEVEL, #{staffInside.postLevel})
+        </if>
+        <if test="staffInside.technicalType != null and staffInside.technicalType != ''">
+            AND FIND_IN_SET(csi.TECHNICAL_TYPE, #{staffInside.technicalType})
+        </if>
+        <if test="staffInside.entryStatus != null and staffInside.entryStatus != ''">
+            AND csi.ENTRY_STATUS = #{staffInside.entryStatus}
+        </if>
+        <!--<if test="staffInside.fileNum != null and staffInside.fileNum != ''">-->
+            <!--AND cci.FILE_NUM LIKE CONCAT('%',#{staffInside.fileNum},'%')-->
+        <!--</if>-->
+        <if test="staffInside.mini != null and staffInside.mini != ''">
+            AND csi.BIRTH_DATE &lt;= DATE_SUB(CURDATE(),INTERVAL #{staffInside.mini} YEAR)
+        </if>
+        <if test="staffInside.max != null and staffInside.max != ''">
+            AND csi.BIRTH_DATE &gt;= DATE_SUB(CURDATE(),INTERVAL #{staffInside.max} YEAR)
+        </if>
+    </select>
+
+    <select id="findStaffInsideSimplify" resultType="cc.mrbird.febs.chaoyang3team.domain.StaffInside">
+        SELECT
+        csi.STAFF_ID,
+        csi.`NAME`,
+        csi.ID_NUM,
+        csi.SORT_NUM AS sortNum
+        FROM cy_staff_inside AS csi
+        WHERE FIND_IN_SET(csi.IS_LEAVE, #{staffInside.isLeave})
+        <if test="staffInside.lowCause != null and staffInside.lowCause != ''">
+            AND (SELECT COUNT(1) FROM cy_contract_inside AS cci WHERE cci.STAFF_ID=csi.STAFF_ID) = 0
+        </if>
+        <if test="staffInside.causeDate != null and staffInside.causeDate != ''">
+            AND (SELECT COUNT(1) FROM cy_insurance_inside AS cii WHERE cii.STAFF_ID=csi.STAFF_ID) = 0
+        </if>
+        <if test="staffInside.name != null and staffInside.name != ''">
+            AND csi.NAME LIKE CONCAT('%',#{staffInside.name},'%')
+        </if>
+        <if test="staffInside.technicalType != null and staffInside.technicalType != ''">
+            AND FIND_IN_SET(csi.TECHNICAL_TYPE, #{staffInside.technicalType})
+        </if>
+    </select>
+
+    <select id="getStaffInside" resultType="cc.mrbird.febs.chaoyang3team.domain.StaffInside">
+        SELECT
+        csi.STAFF_ID,
+        csi.TYPE,
+        csi.CAUSE,
+        csi.CAUSE_DATE,
+        csi.`NAME`,
+        csi.GENDER,
+        csi.CLAN,
+        csi.BIRTHPLACE,
+        csi.CULTURE_BEFORE,
+        csi.CULTURE_CURRENT,
+        csi.HOUSEHOLD_REGISTRATION_TYPE,
+        csi.PROFESSION,
+        csi.GRADUATION_DATE,
+        csi.POLITICAL_FACE,
+        csi.IS_DISABILITY_CERTIFICATE,
+        csi.WORK_INJURY_CERTIFICATE_DATE,
+        csi.DISABILITY_IDENTIFICATION_LEVEL,
+        csi.ID_NUM,
+        csi.ADDRESS,
+        csi.PHONE_LAND_LINE,
+        csi.PHONE_CELL,
+        csi.BIRTH_DATE,
+        csi.AGE,
+        csi.RETIREMENT_YEAR,
+        csi.WORK_DATE,
+        csi.FARMER_WORK_DATE,
+        csi.TRANSFER_DATE,
+        csi.CURRENT_POSITION,
+        csi.POST,
+        csi.POST_LEVEL,
+        csi.APPOINTMENT_DATE,
+        csi.TECHNICAL_TYPE,
+        csi.TECHNICAL_LEVEL_DATE,
+        csi.CERTIFICATE_NUM,
+        csi.ENTRY_STATUS,
+        csi.SORT_NUM AS sortNum,
+        csi.DEPT_ID,
+        td.DEPT_NAME
+        FROM cy_staff_inside AS csi
+        LEFT JOIN t_dept td ON (csi.DEPT_ID = td.DEPT_ID)
+        WHERE csi.STAFF_ID=#{staffId}
+    </select>
+
+    <select id="getContractInsideIds" resultType="java.lang.String">
+        SELECT ID FROM cy_contract_inside WHERE FIND_IN_SET(STAFF_ID, #{staffInsideIdsStr})
+    </select>
+
+    <select id="getTechnicalType" resultType="java.lang.String">
+        SELECT TECHNICAL_TYPE FROM cy_staff_inside GROUP BY TECHNICAL_TYPE
+    </select>
+
+    <select id="getEntryStatus" resultType="java.lang.String">
+        SELECT ENTRY_STATUS FROM cy_staff_inside GROUP BY ENTRY_STATUS
+    </select>
+
+    <select id="getPostLevel" resultType="java.lang.String">
+        SELECT POST_LEVEL FROM cy_staff_inside GROUP BY POST_LEVEL
+    </select>
+
+    <select id="getStaffIdByIdNum" resultType="cc.mrbird.febs.chaoyang3team.domain.StaffInside">
+        SELECT STAFF_ID,`NAME` FROM cy_staff_inside WHERE ID_NUM = #{idNum} LIMIT 1
+    </select>
+
+    <select id="getIncreaseOrDecreaseStaffInside" resultType="cc.mrbird.febs.chaoyang3team.domain.StaffInside">
+        SELECT
+        csi.STAFF_ID,
+        csi.`NAME`,
+        csi.GENDER,
+        csi.ID_NUM,
+        csi.TECHNICAL_TYPE,
+        '编内' AS type
+        FROM cy_staff_inside AS csi
+        WHERE csi.IS_LEAVE=#{staffInside.isLeave}
+        <if test="staffInside.isLeave == 0">
+            AND csi.CREATE_TIME LIKE CONCAT(#{staffInside.birthDate},'%')
+        </if>
+        <if test="staffInside.isLeave == 1">
+            AND csi.LEAVE_DATE LIKE CONCAT(#{staffInside.birthDate},'%')
+        </if>
+        UNION ALL
+        SELECT
+        cso.STAFF_ID,
+        cso.`NAME`,
+        cso.GENDER,
+        cso.ID_NUM,
+        cso.TECHNICAL_TYPE,
+        '编外' AS type
+        FROM cy_staff_outside AS cso
+        WHERE cso.IS_LEAVE=#{staffInside.isLeave}
+        <if test="staffInside.isLeave == 0">
+            AND cso.CREATE_TIME LIKE CONCAT(#{staffInside.birthDate},'%')
+        </if>
+        <if test="staffInside.isLeave == 1">
+            AND cso.LEAVE_DATE LIKE CONCAT(#{staffInside.birthDate},'%')
+        </if>
+    </select>
+
+</mapper>

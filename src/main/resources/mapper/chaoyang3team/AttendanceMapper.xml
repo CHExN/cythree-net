@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.mrbird.febs.chaoyang3team.dao.AttendanceMapper">
+
+    <select id="findAttendanceDetail" resultType="cc.mrbird.febs.chaoyang3team.domain.Attendance">
+        SELECT
+        a.ID,
+        a.DEPT_ID,
+        d.DEPT_NAME,
+        a.STAFF_ID,
+        cso.`NAME` AS staffName,
+        a.DAY_WORK,
+        a.NIGHT_WORK,
+        a.DOUBLE_PLUS,
+        a.HOLIDAY_PLUS,
+        a.HOUR15,
+        a.HOUR20,
+        a.PUBLIC_HOLIDAY,
+        a.WORKING_LEAVE,
+        a.SICK_LEAVE,
+        a.THING_LEAVE,
+        a.MARRIAGE_LEAVE,
+        a.FUNERAL_LEAVE,
+        a.WORK_INJURY,
+        a.LATE_AND_LEAVE_EARLY,
+        a.USUALLY_DUTY,
+        a.WEEKEND_DUTY,
+        a.HOLIDAY_WATCH,
+        a.DEDUCTION,
+        a.TOTAL_ATTENDANCE_DAYS,
+        a.REMARK,
+        a.START_DATE AS startDate,
+        a.END_DATE AS endDate
+        FROM cy_attendance AS a
+        LEFT JOIN cy_staff_outside AS cso ON(cso.STAFF_ID=a.STAFF_ID)
+        LEFT JOIN t_dept AS d ON(d.DEPT_ID=a.DEPT_ID)
+        WHERE 1=1
+        <if test="attendance.staffName != null and attendance.staffName != ''">
+            AND cso.`NAME` LIKE CONCAT('%',#{attendance.staffName},'%')
+        </if>
+        <if test="attendance.staffIdCard != null and attendance.staffIdCard != ''">
+            AND cso.ID_NUM LIKE CONCAT('%',#{attendance.staffIdCard},'%')
+        </if>
+        <if test="attendance.remark != null and attendance.remark != ''">
+            AND a.REMARK LIKE CONCAT('%',#{attendance.remark},'%')
+        </if>
+        <if test="attendance.year != null and attendance.year != ''">
+            AND a.START_DATE LIKE CONCAT(#{attendance.year},'-',#{attendance.month},'%')
+        </if>
+        <if test="attendance.deptId != null and attendance.deptId != ''">
+            AND d.DEPT_ID = #{attendance.deptId}
+        </if>
+    </select>
+
+    <select id="getAttendanceReport" resultType="cc.mrbird.febs.chaoyang3team.domain.Attendance">
+        SELECT
+        a.ID,
+        a.DEPT_ID,
+        d.DEPT_NAME,
+        a.STAFF_ID,
+        cso.`NAME` AS staffName,
+        a.DAY_WORK,
+        a.NIGHT_WORK,
+        a.DOUBLE_PLUS,
+        a.HOLIDAY_PLUS,
+        a.HOUR15,
+        a.HOUR20,
+        a.PUBLIC_HOLIDAY,
+        a.WORKING_LEAVE,
+        a.SICK_LEAVE,
+        a.THING_LEAVE,
+        a.MARRIAGE_LEAVE,
+        a.FUNERAL_LEAVE,
+        a.WORK_INJURY,
+        a.LATE_AND_LEAVE_EARLY,
+        a.USUALLY_DUTY,
+        a.WEEKEND_DUTY,
+        a.HOLIDAY_WATCH,
+        a.DEDUCTION,
+        a.TOTAL_ATTENDANCE_DAYS,
+        a.REMARK,
+        a.START_DATE,
+        a.END_DATE
+        FROM cy_attendance AS a
+        LEFT JOIN cy_staff_outside AS cso ON(cso.STAFF_ID=a.STAFF_ID)
+        LEFT JOIN t_dept AS d ON(d.DEPT_ID=a.DEPT_ID)
+        WHERE a.START_DATE LIKE CONCAT(#{date},'%')
+    </select>
+</mapper>

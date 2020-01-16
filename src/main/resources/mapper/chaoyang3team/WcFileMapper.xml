@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.mrbird.febs.chaoyang3team.dao.WcFileMapper">
+
+    <!-- 通用查询映射结果 -->
+    <!--<resultMap id="BaseResultMap" type="cc.mrbird.febs.chaoyang3team.domain.WcFile">-->
+        <!--<id column="wc_id" property="wcId"/>-->
+        <!--<result column="file_id" property="fileId"/>-->
+    <!--</resultMap>-->
+
+    <!--根据公厕Id删除该公厕与文件的关系-->
+    <!--<delete id="deleteByWcId">-->
+        <!--DELETE FROM p_wc_file WHERE WC_ID = #{wcId}-->
+    <!--</delete>-->
+
+    <!--根据文件Id删除该文件与公厕的关系-->
+    <!--<delete id="deleteByFileId">-->
+        <!--DELETE FROM p_wc_file WHERE FILE_ID = #{fileId}-->
+    <!--</delete>-->
+
+    <!--根据公厕id查找对应文件id-->
+    <select id="findFileIdsByWcIds" resultType="java.lang.String">
+        SELECT FILE_ID FROM p_wc_file WHERE FIND_IN_SET(WC_ID, #{wcIds})
+    </select>
+
+    <!--根据公厕ID查找对应文件详情-->
+    <select id="findFilesByWcId" resultType="cc.mrbird.febs.chaoyang3team.domain.File">
+        SELECT tf.* FROM p_wc_file AS pwf LEFT JOIN t_file AS tf ON(pwf.FILE_ID = tf.FILE_ID) WHERE pwf.WC_ID = #{wcId}
+    </select>
+
+</mapper>

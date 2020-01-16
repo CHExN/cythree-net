@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.mrbird.febs.chaoyang3team.dao.CarRefuelMapper">
+
+    <select id="findCarRefuel" resultType="cc.mrbird.febs.chaoyang3team.domain.CarRefuel">
+        SELECT
+        cr.CAR_REFUEL_ID,
+        SUM(cr.AMOUNT) AS AMOUNT,
+        COUNT(1) AS COUNT,
+        cr.DATE AS DATE
+        FROM cy_car_refuel AS cr
+        WHERE 1=1
+        <if test="carRefuel.createTimeFrom != null and carRefuel.createTimeFrom !=''">
+            AND cr.DATE &gt;= #{carRefuel.createTimeFrom}
+        </if>
+        <if test="carRefuel.createTimeTo!= null and carRefuel.createTimeTo !=''">
+            AND cr.DATE &lt;= #{carRefuel.createTimeTo}
+        </if>
+        GROUP BY cr.DATE
+    </select>
+
+    <select id="findCarRefuelDetail" resultType="cc.mrbird.febs.chaoyang3team.domain.CarRefuel">
+        SELECT
+        cr.CAR_REFUEL_ID,
+        cr.CAR_ID,
+        c.CAR_NUM,
+        c.CARD_NUM,
+        cr.AMOUNT
+        FROM cy_car_refuel AS cr
+        LEFT JOIN cy_car AS c ON(cr.CAR_ID=c.CAR_ID)
+        WHERE cr.DATE=#{carRefuel.date}
+    </select>
+
+</mapper>

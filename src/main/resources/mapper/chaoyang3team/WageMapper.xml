@@ -1,0 +1,668 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.mrbird.febs.chaoyang3team.dao.WageMapper">
+
+    <select id="findWageDetailCount" resultType="java.lang.Integer">
+        <if test="wage.insideOrOutside == 0">
+            SELECT COUNT(1)
+            FROM cy_wage AS w
+            LEFT JOIN cy_staff_inside AS s ON(s.STAFF_ID=w.STAFF_ID)
+            WHERE w.INSIDE_OR_OUTSIDE='0'
+            <if test="wage.staffName != null and wage.staffName != ''">
+                AND s.`NAME` LIKE CONCAT('%',#{wage.staffName},'%')
+            </if>
+            <if test="wage.staffIdCard != null and wage.staffIdCard != ''">
+                AND s.ID_NUM LIKE CONCAT('%',#{wage.staffIdCard},'%')
+            </if>
+            <if test="wage.year != null and wage.year != ''">
+                AND w.`YEAR` = #{wage.year}
+            </if>
+            <if test="wage.month != null and wage.month != ''">
+                AND w.`MONTH` = #{wage.month}
+            </if>
+            <if test="wage.postLevel != null and wage.postLevel != ''">
+                AND FIND_IN_SET(s.POST_LEVEL, #{wage.postLevel})
+            </if>
+        </if>
+        <if test="wage.insideOrOutside == 1">
+            SELECT COUNT(1)
+            FROM cy_wage AS w
+            LEFT JOIN cy_staff_outside AS s ON(s.STAFF_ID=w.STAFF_ID)
+            WHERE w.INSIDE_OR_OUTSIDE='1'
+            <if test="wage.staffName != null and wage.staffName != ''">
+                AND s.`NAME` LIKE CONCAT('%',#{wage.staffName},'%')
+            </if>
+            <if test="wage.staffIdCard != null and wage.staffIdCard != ''">
+                AND s.ID_NUM LIKE CONCAT('%',#{wage.staffIdCard},'%')
+            </if>
+            <if test="wage.year != null and wage.year != ''">
+                AND w.`YEAR` = #{wage.year}
+            </if>
+            <if test="wage.month != null and wage.month != ''">
+                AND w.`MONTH` = #{wage.month}
+            </if>
+            <if test="wage.postLevel != null and wage.postLevel != ''">
+                AND 1=0
+            </if>
+        </if>
+        <if test="wage.insideOrOutside == 2">
+            SELECT SUM(t.count) FROM (
+            SELECT COUNT(1) AS count
+            FROM cy_wage AS w
+            LEFT JOIN cy_staff_outside AS s ON(s.STAFF_ID=w.STAFF_ID)
+            WHERE w.INSIDE_OR_OUTSIDE='0'
+            <if test="wage.staffName != null and wage.staffName != ''">
+                AND s.`NAME` LIKE CONCAT('%',#{wage.staffName},'%')
+            </if>
+            <if test="wage.staffIdCard != null and wage.staffIdCard != ''">
+                AND s.ID_NUM LIKE CONCAT('%',#{wage.staffIdCard},'%')
+            </if>
+            <if test="wage.year != null and wage.year != ''">
+                AND w.`YEAR` = #{wage.year}
+            </if>
+            <if test="wage.month != null and wage.month != ''">
+                AND w.`MONTH` = #{wage.month}
+            </if>
+            <if test="wage.postLevel != null and wage.postLevel != ''">
+                AND FIND_IN_SET(s.POST_LEVEL, #{wage.postLevel})
+            </if>
+            UNION ALL
+            SELECT COUNT(1) AS count
+            FROM cy_wage AS w
+            LEFT JOIN cy_staff_outside AS s ON(s.STAFF_ID=w.STAFF_ID)
+            WHERE w.INSIDE_OR_OUTSIDE='1'
+            <if test="wage.staffName != null and wage.staffName != ''">
+                AND s.`NAME` LIKE CONCAT('%',#{wage.staffName},'%')
+            </if>
+            <if test="wage.staffIdCard != null and wage.staffIdCard != ''">
+                AND s.ID_NUM LIKE CONCAT('%',#{wage.staffIdCard},'%')
+            </if>
+            <if test="wage.year != null and wage.year != ''">
+                AND w.`YEAR` = #{wage.year}
+            </if>
+            <if test="wage.month != null and wage.month != ''">
+                AND w.`MONTH` = #{wage.month}
+            </if>
+            <if test="wage.postLevel != null and wage.postLevel != ''">
+                AND 1=0
+            </if>
+            ) AS t
+        </if>
+    </select>
+
+    <select id="findWageDetail" resultType="cc.mrbird.febs.chaoyang3team.domain.Wage">
+        <if test="wage.insideOrOutside == 0">
+            SELECT
+            w.ID,
+            w.INSIDE_OR_OUTSIDE,
+            s.STAFF_ID,
+            s.`NAME` AS staffName,
+            s.ID_NUM AS staffIdCard,
+            -1 AS sortNum1,
+            s.SORT_NUM AS sortNum,
+            s.POST_LEVEL AS postLevel,
+            w.CURRENT_INCOME,
+            w.REISSUE_SALARY_SCALE,
+            w.SALARY_SALARY,
+            w.POST_ALLOWANCE,
+            w.FINANCIAL_BURDEN_PERFORMANCE_PAY,
+            w.OVERTIME_PAY,
+            w.ENVIRONMENTAL_SANITATION_DUTY_ALLOWANCE,
+            w.HOUSING_SUBSIDY,
+            w.ONLY_CHILD_FEE,
+            w.TEMPORARY_SUBSIDY,
+            w.JOB_PERFORMANCE,
+            w.HOLIDAY_COSTS,
+            w.ANNUAL_LEAVE_PAY,
+            w.COMPREHENSIVE_SUBSIDY,
+            w.PAYABLE,
+            w.HOUSING_FUND,
+            w.BASIC_PENSION_IP,
+            w.UNEMPLOYMENT_IP,
+            w.BASIC_MEDICAL_IP,
+            w.MEDICAL_MUTUAL_AID,
+            w.CORPORATE_ANNUITY,
+            w.TAX_DEDUCTION,
+            w.REAL_WAGE,
+            (SELECT SUM(cw.CURRENT_INCOME) FROM cy_wage AS cw WHERE cw.INSIDE_OR_OUTSIDE='0' AND cw.STAFF_ID=w.STAFF_ID AND `YEAR`=#{wage.year} AND FIND_IN_SET(`MONTH`,#{wage.monthArr}) GROUP BY cw.STAFF_ID) AS currentIncomeSum,
+            (SELECT SUM(cw.REISSUE_SALARY_SCALE) FROM cy_wage AS cw WHERE cw.INSIDE_OR_OUTSIDE='0' AND cw.STAFF_ID=w.STAFF_ID AND `YEAR`=#{wage.year} AND FIND_IN_SET(`MONTH`,#{wage.monthArr}) GROUP BY cw.STAFF_ID) AS reissueSalaryScaleSum,
+            (SELECT SUM(cw.SALARY_SALARY) FROM cy_wage AS cw WHERE cw.INSIDE_OR_OUTSIDE='0' AND cw.STAFF_ID=w.STAFF_ID AND `YEAR`=#{wage.year} AND FIND_IN_SET(`MONTH`,#{wage.monthArr}) GROUP BY cw.STAFF_ID) AS salarySalarySum,
+            (SELECT SUM(cw.POST_ALLOWANCE) FROM cy_wage AS cw WHERE cw.INSIDE_OR_OUTSIDE='0' AND cw.STAFF_ID=w.STAFF_ID AND `YEAR`=#{wage.year} AND FIND_IN_SET(`MONTH`,#{wage.monthArr}) GROUP BY cw.STAFF_ID) AS postAllowanceSum,
+            (SELECT SUM(cw.FINANCIAL_BURDEN_PERFORMANCE_PAY) FROM cy_wage AS cw WHERE cw.INSIDE_OR_OUTSIDE='0' AND cw.STAFF_ID=w.STAFF_ID AND `YEAR`=#{wage.year} AND FIND_IN_SET(`MONTH`,#{wage.monthArr}) GROUP BY cw.STAFF_ID) AS financialBurdenPerformancePaySum,
+            (SELECT SUM(cw.OVERTIME_PAY) FROM cy_wage AS cw WHERE cw.INSIDE_OR_OUTSIDE='0' AND cw.STAFF_ID=w.STAFF_ID AND `YEAR`=#{wage.year} AND FIND_IN_SET(`MONTH`,#{wage.monthArr}) GROUP BY cw.STAFF_ID) AS overtimePaySum,
+            (SELECT SUM(cw.ENVIRONMENTAL_SANITATION_DUTY_ALLOWANCE) FROM cy_wage AS cw WHERE cw.INSIDE_OR_OUTSIDE='0' AND cw.STAFF_ID=w.STAFF_ID AND `YEAR`=#{wage.year} AND FIND_IN_SET(`MONTH`,#{wage.monthArr}) GROUP BY cw.STAFF_ID) AS environmentalSanitationDutyAllowanceSum,
+            (SELECT SUM(cw.HOUSING_SUBSIDY) FROM cy_wage AS cw WHERE cw.INSIDE_OR_OUTSIDE='0' AND cw.STAFF_ID=w.STAFF_ID AND `YEAR`=#{wage.year} AND FIND_IN_SET(`MONTH`,#{wage.monthArr}) GROUP BY cw.STAFF_ID) AS housingSubsidySum,
+            (SELECT SUM(cw.ONLY_CHILD_FEE) FROM cy_wage AS cw WHERE cw.INSIDE_OR_OUTSIDE='0' AND cw.STAFF_ID=w.STAFF_ID AND `YEAR`=#{wage.year} AND FIND_IN_SET(`MONTH`,#{wage.monthArr}) GROUP BY cw.STAFF_ID) AS onlyChildFeeSum,
+            (SELECT SUM(cw.TEMPORARY_SUBSIDY) FROM cy_wage AS cw WHERE cw.INSIDE_OR_OUTSIDE='0' AND cw.STAFF_ID=w.STAFF_ID AND `YEAR`=#{wage.year} AND FIND_IN_SET(`MONTH`,#{wage.monthArr}) GROUP BY cw.STAFF_ID) AS temporarySubsidySum,
+            (SELECT SUM(cw.JOB_PERFORMANCE) FROM cy_wage AS cw WHERE cw.INSIDE_OR_OUTSIDE='0' AND cw.STAFF_ID=w.STAFF_ID AND `YEAR`=#{wage.year} AND FIND_IN_SET(`MONTH`,#{wage.monthArr}) GROUP BY cw.STAFF_ID) AS jobPerformanceSum,
+            (SELECT SUM(cw.HOLIDAY_COSTS) FROM cy_wage AS cw WHERE cw.INSIDE_OR_OUTSIDE='0' AND cw.STAFF_ID=w.STAFF_ID AND `YEAR`=#{wage.year} AND FIND_IN_SET(`MONTH`,#{wage.monthArr}) GROUP BY cw.STAFF_ID) AS holidayCostsSum,
+            (SELECT SUM(cw.ANNUAL_LEAVE_PAY) FROM cy_wage AS cw WHERE cw.INSIDE_OR_OUTSIDE='0' AND cw.STAFF_ID=w.STAFF_ID AND `YEAR`=#{wage.year} AND FIND_IN_SET(`MONTH`,#{wage.monthArr}) GROUP BY cw.STAFF_ID) AS annualLeavePaySum,
+            (SELECT SUM(cw.COMPREHENSIVE_SUBSIDY) FROM cy_wage AS cw WHERE cw.INSIDE_OR_OUTSIDE='0' AND cw.STAFF_ID=w.STAFF_ID AND `YEAR`=#{wage.year} AND FIND_IN_SET(`MONTH`,#{wage.monthArr}) GROUP BY cw.STAFF_ID) AS comprehensiveSubsidySum,
+            (SELECT SUM(cw.PAYABLE) FROM cy_wage AS cw WHERE cw.INSIDE_OR_OUTSIDE='0' AND cw.STAFF_ID=w.STAFF_ID AND `YEAR`=#{wage.year} AND FIND_IN_SET(`MONTH`,#{wage.monthArr}) GROUP BY cw.STAFF_ID) AS payableSum,
+            (SELECT SUM(cw.HOUSING_FUND) FROM cy_wage AS cw WHERE cw.INSIDE_OR_OUTSIDE='0' AND cw.STAFF_ID=w.STAFF_ID AND `YEAR`=#{wage.year} AND FIND_IN_SET(`MONTH`,#{wage.monthArr}) GROUP BY cw.STAFF_ID) AS housingFundSum,
+            (SELECT SUM(cw.BASIC_PENSION_IP) FROM cy_wage AS cw WHERE cw.INSIDE_OR_OUTSIDE='0' AND cw.STAFF_ID=w.STAFF_ID AND `YEAR`=#{wage.year} AND FIND_IN_SET(`MONTH`,#{wage.monthArr}) GROUP BY cw.STAFF_ID) AS basicPensionIpSum,
+            (SELECT SUM(cw.UNEMPLOYMENT_IP) FROM cy_wage AS cw WHERE cw.INSIDE_OR_OUTSIDE='0' AND cw.STAFF_ID=w.STAFF_ID AND `YEAR`=#{wage.year} AND FIND_IN_SET(`MONTH`,#{wage.monthArr}) GROUP BY cw.STAFF_ID) AS unemploymentIpSum,
+            (SELECT SUM(cw.BASIC_MEDICAL_IP) FROM cy_wage AS cw WHERE cw.INSIDE_OR_OUTSIDE='0' AND cw.STAFF_ID=w.STAFF_ID AND `YEAR`=#{wage.year} AND FIND_IN_SET(`MONTH`,#{wage.monthArr}) GROUP BY cw.STAFF_ID) AS basicMedicalIpSum,
+            (SELECT SUM(cw.MEDICAL_MUTUAL_AID) FROM cy_wage AS cw WHERE cw.INSIDE_OR_OUTSIDE='0' AND cw.STAFF_ID=w.STAFF_ID AND `YEAR`=#{wage.year} AND FIND_IN_SET(`MONTH`,#{wage.monthArr}) GROUP BY cw.STAFF_ID) AS medicalMutualAidSum,
+            (SELECT SUM(cw.CORPORATE_ANNUITY) FROM cy_wage AS cw WHERE cw.INSIDE_OR_OUTSIDE='0' AND cw.STAFF_ID=w.STAFF_ID AND `YEAR`=#{wage.year} AND FIND_IN_SET(`MONTH`,#{wage.monthArr}) GROUP BY cw.STAFF_ID) AS corporateAnnuitySum,
+            (SELECT SUM(cw.TAX_DEDUCTION) FROM cy_wage AS cw WHERE cw.INSIDE_OR_OUTSIDE='0' AND cw.STAFF_ID=w.STAFF_ID AND `YEAR`=#{wage.year} AND FIND_IN_SET(`MONTH`,#{wage.monthArr}) GROUP BY cw.STAFF_ID) AS taxDeductionSum,
+            (SELECT SUM(cw.REAL_WAGE) FROM cy_wage AS cw WHERE cw.INSIDE_OR_OUTSIDE='0' AND cw.STAFF_ID=w.STAFF_ID AND `YEAR`=#{wage.year} AND FIND_IN_SET(`MONTH`,#{wage.monthArr}) GROUP BY cw.STAFF_ID) AS realWageSum,
+            w.CREATE_TIME,
+            w.MODIFY_TIME,
+            w.`YEAR`,
+            w.`MONTH`
+            FROM cy_wage AS w
+            LEFT JOIN cy_staff_inside AS s ON(s.STAFF_ID=w.STAFF_ID)
+            WHERE w.INSIDE_OR_OUTSIDE='0'
+            <if test="wage.staffName != null and wage.staffName != ''">
+                AND s.`NAME` LIKE CONCAT('%',#{wage.staffName},'%')
+            </if>
+            <if test="wage.staffIdCard != null and wage.staffIdCard != ''">
+                AND s.ID_NUM LIKE CONCAT('%',#{wage.staffIdCard},'%')
+            </if>
+            <if test="wage.year != null and wage.year != ''">
+                AND w.`YEAR` = #{wage.year}
+            </if>
+            <if test="wage.month != null and wage.month != ''">
+                AND w.`MONTH` = #{wage.month}
+            </if>
+            <if test="wage.postLevel != null and wage.postLevel != ''">
+                AND FIND_IN_SET(s.POST_LEVEL, #{wage.postLevel})
+            </if>
+            ORDER BY sortNum1 ASC, sortNum ASC
+        </if>
+        <if test="wage.insideOrOutside == 1">
+            SELECT
+            w.ID,
+            w.INSIDE_OR_OUTSIDE,
+            s.STAFF_ID,
+            s.`NAME` AS staffName,
+            s.ID_NUM AS staffIdCard,
+            s.SORT_NUM_1 AS sortNum1,
+            s.SORT_NUM_2 AS sortNum,
+            NULL AS postLevel,
+            w.CURRENT_INCOME,
+            w.REISSUE_SALARY_SCALE,
+            w.SALARY_SALARY,
+            w.POST_ALLOWANCE,
+            w.FINANCIAL_BURDEN_PERFORMANCE_PAY,
+            w.OVERTIME_PAY,
+            w.ENVIRONMENTAL_SANITATION_DUTY_ALLOWANCE,
+            w.HOUSING_SUBSIDY,
+            w.ONLY_CHILD_FEE,
+            w.TEMPORARY_SUBSIDY,
+            w.JOB_PERFORMANCE,
+            w.HOLIDAY_COSTS,
+            w.ANNUAL_LEAVE_PAY,
+            w.COMPREHENSIVE_SUBSIDY,
+            w.PAYABLE,
+            w.HOUSING_FUND,
+            w.BASIC_PENSION_IP,
+            w.UNEMPLOYMENT_IP,
+            w.BASIC_MEDICAL_IP,
+            w.MEDICAL_MUTUAL_AID,
+            w.CORPORATE_ANNUITY,
+            w.TAX_DEDUCTION,
+            w.REAL_WAGE,
+            (SELECT SUM(cw.CURRENT_INCOME) FROM cy_wage AS cw WHERE cw.INSIDE_OR_OUTSIDE='1' AND cw.STAFF_ID=w.STAFF_ID AND `YEAR`=#{wage.year} AND FIND_IN_SET(`MONTH`,#{wage.monthArr}) GROUP BY cw.STAFF_ID) AS currentIncomeSum,
+            (SELECT SUM(cw.REISSUE_SALARY_SCALE) FROM cy_wage AS cw WHERE cw.INSIDE_OR_OUTSIDE='1' AND cw.STAFF_ID=w.STAFF_ID AND `YEAR`=#{wage.year} AND FIND_IN_SET(`MONTH`,#{wage.monthArr}) GROUP BY cw.STAFF_ID) AS reissueSalaryScaleSum,
+            (SELECT SUM(cw.SALARY_SALARY) FROM cy_wage AS cw WHERE cw.INSIDE_OR_OUTSIDE='1' AND cw.STAFF_ID=w.STAFF_ID AND `YEAR`=#{wage.year} AND FIND_IN_SET(`MONTH`,#{wage.monthArr}) GROUP BY cw.STAFF_ID) AS salarySalarySum,
+            (SELECT SUM(cw.POST_ALLOWANCE) FROM cy_wage AS cw WHERE cw.INSIDE_OR_OUTSIDE='1' AND cw.STAFF_ID=w.STAFF_ID AND `YEAR`=#{wage.year} AND FIND_IN_SET(`MONTH`,#{wage.monthArr}) GROUP BY cw.STAFF_ID) AS postAllowanceSum,
+            (SELECT SUM(cw.FINANCIAL_BURDEN_PERFORMANCE_PAY) FROM cy_wage AS cw WHERE cw.INSIDE_OR_OUTSIDE='1' AND cw.STAFF_ID=w.STAFF_ID AND `YEAR`=#{wage.year} AND FIND_IN_SET(`MONTH`,#{wage.monthArr}) GROUP BY cw.STAFF_ID) AS financialBurdenPerformancePaySum,
+            (SELECT SUM(cw.OVERTIME_PAY) FROM cy_wage AS cw WHERE cw.INSIDE_OR_OUTSIDE='1' AND cw.STAFF_ID=w.STAFF_ID AND `YEAR`=#{wage.year} AND FIND_IN_SET(`MONTH`,#{wage.monthArr}) GROUP BY cw.STAFF_ID) AS overtimePaySum,
+            (SELECT SUM(cw.ENVIRONMENTAL_SANITATION_DUTY_ALLOWANCE) FROM cy_wage AS cw WHERE cw.INSIDE_OR_OUTSIDE='1' AND cw.STAFF_ID=w.STAFF_ID AND `YEAR`=#{wage.year} AND FIND_IN_SET(`MONTH`,#{wage.monthArr}) GROUP BY cw.STAFF_ID) AS environmentalSanitationDutyAllowanceSum,
+            (SELECT SUM(cw.HOUSING_SUBSIDY) FROM cy_wage AS cw WHERE cw.INSIDE_OR_OUTSIDE='1' AND cw.STAFF_ID=w.STAFF_ID AND `YEAR`=#{wage.year} AND FIND_IN_SET(`MONTH`,#{wage.monthArr}) GROUP BY cw.STAFF_ID) AS housingSubsidySum,
+            (SELECT SUM(cw.ONLY_CHILD_FEE) FROM cy_wage AS cw WHERE cw.INSIDE_OR_OUTSIDE='1' AND cw.STAFF_ID=w.STAFF_ID AND `YEAR`=#{wage.year} AND FIND_IN_SET(`MONTH`,#{wage.monthArr}) GROUP BY cw.STAFF_ID) AS onlyChildFeeSum,
+            (SELECT SUM(cw.TEMPORARY_SUBSIDY) FROM cy_wage AS cw WHERE cw.INSIDE_OR_OUTSIDE='1' AND cw.STAFF_ID=w.STAFF_ID AND `YEAR`=#{wage.year} AND FIND_IN_SET(`MONTH`,#{wage.monthArr}) GROUP BY cw.STAFF_ID) AS temporarySubsidySum,
+            (SELECT SUM(cw.JOB_PERFORMANCE) FROM cy_wage AS cw WHERE cw.INSIDE_OR_OUTSIDE='1' AND cw.STAFF_ID=w.STAFF_ID AND `YEAR`=#{wage.year} AND FIND_IN_SET(`MONTH`,#{wage.monthArr}) GROUP BY cw.STAFF_ID) AS jobPerformanceSum,
+            (SELECT SUM(cw.HOLIDAY_COSTS) FROM cy_wage AS cw WHERE cw.INSIDE_OR_OUTSIDE='1' AND cw.STAFF_ID=w.STAFF_ID AND `YEAR`=#{wage.year} AND FIND_IN_SET(`MONTH`,#{wage.monthArr}) GROUP BY cw.STAFF_ID) AS holidayCostsSum,
+            (SELECT SUM(cw.ANNUAL_LEAVE_PAY) FROM cy_wage AS cw WHERE cw.INSIDE_OR_OUTSIDE='1' AND cw.STAFF_ID=w.STAFF_ID AND `YEAR`=#{wage.year} AND FIND_IN_SET(`MONTH`,#{wage.monthArr}) GROUP BY cw.STAFF_ID) AS annualLeavePaySum,
+            (SELECT SUM(cw.COMPREHENSIVE_SUBSIDY) FROM cy_wage AS cw WHERE cw.INSIDE_OR_OUTSIDE='1' AND cw.STAFF_ID=w.STAFF_ID AND `YEAR`=#{wage.year} AND FIND_IN_SET(`MONTH`,#{wage.monthArr}) GROUP BY cw.STAFF_ID) AS comprehensiveSubsidySum,
+            (SELECT SUM(cw.PAYABLE) FROM cy_wage AS cw WHERE cw.INSIDE_OR_OUTSIDE='1' AND cw.STAFF_ID=w.STAFF_ID AND `YEAR`=#{wage.year} AND FIND_IN_SET(`MONTH`,#{wage.monthArr}) GROUP BY cw.STAFF_ID) AS payableSum,
+            (SELECT SUM(cw.HOUSING_FUND) FROM cy_wage AS cw WHERE cw.INSIDE_OR_OUTSIDE='1' AND cw.STAFF_ID=w.STAFF_ID AND `YEAR`=#{wage.year} AND FIND_IN_SET(`MONTH`,#{wage.monthArr}) GROUP BY cw.STAFF_ID) AS housingFundSum,
+            (SELECT SUM(cw.BASIC_PENSION_IP) FROM cy_wage AS cw WHERE cw.INSIDE_OR_OUTSIDE='1' AND cw.STAFF_ID=w.STAFF_ID AND `YEAR`=#{wage.year} AND FIND_IN_SET(`MONTH`,#{wage.monthArr}) GROUP BY cw.STAFF_ID) AS basicPensionIpSum,
+            (SELECT SUM(cw.UNEMPLOYMENT_IP) FROM cy_wage AS cw WHERE cw.INSIDE_OR_OUTSIDE='1' AND cw.STAFF_ID=w.STAFF_ID AND `YEAR`=#{wage.year} AND FIND_IN_SET(`MONTH`,#{wage.monthArr}) GROUP BY cw.STAFF_ID) AS unemploymentIpSum,
+            (SELECT SUM(cw.BASIC_MEDICAL_IP) FROM cy_wage AS cw WHERE cw.INSIDE_OR_OUTSIDE='1' AND cw.STAFF_ID=w.STAFF_ID AND `YEAR`=#{wage.year} AND FIND_IN_SET(`MONTH`,#{wage.monthArr}) GROUP BY cw.STAFF_ID) AS basicMedicalIpSum,
+            (SELECT SUM(cw.MEDICAL_MUTUAL_AID) FROM cy_wage AS cw WHERE cw.INSIDE_OR_OUTSIDE='1' AND cw.STAFF_ID=w.STAFF_ID AND `YEAR`=#{wage.year} AND FIND_IN_SET(`MONTH`,#{wage.monthArr}) GROUP BY cw.STAFF_ID) AS medicalMutualAidSum,
+            (SELECT SUM(cw.CORPORATE_ANNUITY) FROM cy_wage AS cw WHERE cw.INSIDE_OR_OUTSIDE='1' AND cw.STAFF_ID=w.STAFF_ID AND `YEAR`=#{wage.year} AND FIND_IN_SET(`MONTH`,#{wage.monthArr}) GROUP BY cw.STAFF_ID) AS corporateAnnuitySum,
+            (SELECT SUM(cw.TAX_DEDUCTION) FROM cy_wage AS cw WHERE cw.INSIDE_OR_OUTSIDE='1' AND cw.STAFF_ID=w.STAFF_ID AND `YEAR`=#{wage.year} AND FIND_IN_SET(`MONTH`,#{wage.monthArr}) GROUP BY cw.STAFF_ID) AS taxDeductionSum,
+            (SELECT SUM(cw.REAL_WAGE) FROM cy_wage AS cw WHERE cw.INSIDE_OR_OUTSIDE='1' AND cw.STAFF_ID=w.STAFF_ID AND `YEAR`=#{wage.year} AND FIND_IN_SET(`MONTH`,#{wage.monthArr}) GROUP BY cw.STAFF_ID) AS realWageSum,
+            w.CREATE_TIME,
+            w.MODIFY_TIME,
+            w.`YEAR`,
+            w.`MONTH`
+            FROM cy_wage AS w
+            LEFT JOIN cy_staff_outside AS s ON(s.STAFF_ID=w.STAFF_ID)
+            WHERE w.INSIDE_OR_OUTSIDE='1'
+            <if test="wage.staffName != null and wage.staffName != ''">
+                AND s.`NAME` LIKE CONCAT('%',#{wage.staffName},'%')
+            </if>
+            <if test="wage.staffIdCard != null and wage.staffIdCard != ''">
+                AND s.ID_NUM LIKE CONCAT('%',#{wage.staffIdCard},'%')
+            </if>
+            <if test="wage.year != null and wage.year != ''">
+                AND w.`YEAR` = #{wage.year}
+            </if>
+            <if test="wage.month != null and wage.month != ''">
+                AND w.`MONTH` = #{wage.month}
+            </if>
+            <if test="wage.postLevel != null and wage.postLevel != ''">
+                AND 1=0
+            </if>
+            ORDER BY sortNum1 ASC, sortNum ASC
+        </if>
+        <if test="wage.insideOrOutside == 2">
+            SELECT
+            w.ID,
+            w.INSIDE_OR_OUTSIDE,
+            s.STAFF_ID,
+            s.`NAME` AS staffName,
+            s.ID_NUM AS staffIdCard,
+            -1 AS sortNum1,
+            s.SORT_NUM AS sortNum,
+            s.POST_LEVEL AS postLevel,
+            w.CURRENT_INCOME,
+            w.REISSUE_SALARY_SCALE,
+            w.SALARY_SALARY,
+            w.POST_ALLOWANCE,
+            w.FINANCIAL_BURDEN_PERFORMANCE_PAY,
+            w.OVERTIME_PAY,
+            w.ENVIRONMENTAL_SANITATION_DUTY_ALLOWANCE,
+            w.HOUSING_SUBSIDY,
+            w.ONLY_CHILD_FEE,
+            w.TEMPORARY_SUBSIDY,
+            w.JOB_PERFORMANCE,
+            w.HOLIDAY_COSTS,
+            w.ANNUAL_LEAVE_PAY,
+            w.COMPREHENSIVE_SUBSIDY,
+            w.PAYABLE,
+            w.HOUSING_FUND,
+            w.BASIC_PENSION_IP,
+            w.UNEMPLOYMENT_IP,
+            w.BASIC_MEDICAL_IP,
+            w.MEDICAL_MUTUAL_AID,
+            w.CORPORATE_ANNUITY,
+            w.TAX_DEDUCTION,
+            w.REAL_WAGE,
+            (SELECT SUM(cw.CURRENT_INCOME) FROM cy_wage AS cw WHERE cw.INSIDE_OR_OUTSIDE='0' AND cw.STAFF_ID=w.STAFF_ID AND `YEAR`=#{wage.year} AND FIND_IN_SET(`MONTH`,#{wage.monthArr}) GROUP BY cw.STAFF_ID) AS currentIncomeSum,
+            (SELECT SUM(cw.REISSUE_SALARY_SCALE) FROM cy_wage AS cw WHERE cw.INSIDE_OR_OUTSIDE='0' AND cw.STAFF_ID=w.STAFF_ID AND `YEAR`=#{wage.year} AND FIND_IN_SET(`MONTH`,#{wage.monthArr}) GROUP BY cw.STAFF_ID) AS reissueSalaryScaleSum,
+            (SELECT SUM(cw.SALARY_SALARY) FROM cy_wage AS cw WHERE cw.INSIDE_OR_OUTSIDE='0' AND cw.STAFF_ID=w.STAFF_ID AND `YEAR`=#{wage.year} AND FIND_IN_SET(`MONTH`,#{wage.monthArr}) GROUP BY cw.STAFF_ID) AS salarySalarySum,
+            (SELECT SUM(cw.POST_ALLOWANCE) FROM cy_wage AS cw WHERE cw.INSIDE_OR_OUTSIDE='0' AND cw.STAFF_ID=w.STAFF_ID AND `YEAR`=#{wage.year} AND FIND_IN_SET(`MONTH`,#{wage.monthArr}) GROUP BY cw.STAFF_ID) AS postAllowanceSum,
+            (SELECT SUM(cw.FINANCIAL_BURDEN_PERFORMANCE_PAY) FROM cy_wage AS cw WHERE cw.INSIDE_OR_OUTSIDE='0' AND cw.STAFF_ID=w.STAFF_ID AND `YEAR`=#{wage.year} AND FIND_IN_SET(`MONTH`,#{wage.monthArr}) GROUP BY cw.STAFF_ID) AS financialBurdenPerformancePaySum,
+            (SELECT SUM(cw.OVERTIME_PAY) FROM cy_wage AS cw WHERE cw.INSIDE_OR_OUTSIDE='0' AND cw.STAFF_ID=w.STAFF_ID AND `YEAR`=#{wage.year} AND FIND_IN_SET(`MONTH`,#{wage.monthArr}) GROUP BY cw.STAFF_ID) AS overtimePaySum,
+            (SELECT SUM(cw.ENVIRONMENTAL_SANITATION_DUTY_ALLOWANCE) FROM cy_wage AS cw WHERE cw.INSIDE_OR_OUTSIDE='0' AND cw.STAFF_ID=w.STAFF_ID AND `YEAR`=#{wage.year} AND FIND_IN_SET(`MONTH`,#{wage.monthArr}) GROUP BY cw.STAFF_ID) AS environmentalSanitationDutyAllowanceSum,
+            (SELECT SUM(cw.HOUSING_SUBSIDY) FROM cy_wage AS cw WHERE cw.INSIDE_OR_OUTSIDE='0' AND cw.STAFF_ID=w.STAFF_ID AND `YEAR`=#{wage.year} AND FIND_IN_SET(`MONTH`,#{wage.monthArr}) GROUP BY cw.STAFF_ID) AS housingSubsidySum,
+            (SELECT SUM(cw.ONLY_CHILD_FEE) FROM cy_wage AS cw WHERE cw.INSIDE_OR_OUTSIDE='0' AND cw.STAFF_ID=w.STAFF_ID AND `YEAR`=#{wage.year} AND FIND_IN_SET(`MONTH`,#{wage.monthArr}) GROUP BY cw.STAFF_ID) AS onlyChildFeeSum,
+            (SELECT SUM(cw.TEMPORARY_SUBSIDY) FROM cy_wage AS cw WHERE cw.INSIDE_OR_OUTSIDE='0' AND cw.STAFF_ID=w.STAFF_ID AND `YEAR`=#{wage.year} AND FIND_IN_SET(`MONTH`,#{wage.monthArr}) GROUP BY cw.STAFF_ID) AS temporarySubsidySum,
+            (SELECT SUM(cw.JOB_PERFORMANCE) FROM cy_wage AS cw WHERE cw.INSIDE_OR_OUTSIDE='0' AND cw.STAFF_ID=w.STAFF_ID AND `YEAR`=#{wage.year} AND FIND_IN_SET(`MONTH`,#{wage.monthArr}) GROUP BY cw.STAFF_ID) AS jobPerformanceSum,
+            (SELECT SUM(cw.HOLIDAY_COSTS) FROM cy_wage AS cw WHERE cw.INSIDE_OR_OUTSIDE='0' AND cw.STAFF_ID=w.STAFF_ID AND `YEAR`=#{wage.year} AND FIND_IN_SET(`MONTH`,#{wage.monthArr}) GROUP BY cw.STAFF_ID) AS holidayCostsSum,
+            (SELECT SUM(cw.ANNUAL_LEAVE_PAY) FROM cy_wage AS cw WHERE cw.INSIDE_OR_OUTSIDE='0' AND cw.STAFF_ID=w.STAFF_ID AND `YEAR`=#{wage.year} AND FIND_IN_SET(`MONTH`,#{wage.monthArr}) GROUP BY cw.STAFF_ID) AS annualLeavePaySum,
+            (SELECT SUM(cw.COMPREHENSIVE_SUBSIDY) FROM cy_wage AS cw WHERE cw.INSIDE_OR_OUTSIDE='0' AND cw.STAFF_ID=w.STAFF_ID AND `YEAR`=#{wage.year} AND FIND_IN_SET(`MONTH`,#{wage.monthArr}) GROUP BY cw.STAFF_ID) AS comprehensiveSubsidySum,
+            (SELECT SUM(cw.PAYABLE) FROM cy_wage AS cw WHERE cw.INSIDE_OR_OUTSIDE='0' AND cw.STAFF_ID=w.STAFF_ID AND `YEAR`=#{wage.year} AND FIND_IN_SET(`MONTH`,#{wage.monthArr}) GROUP BY cw.STAFF_ID) AS payableSum,
+            (SELECT SUM(cw.HOUSING_FUND) FROM cy_wage AS cw WHERE cw.INSIDE_OR_OUTSIDE='0' AND cw.STAFF_ID=w.STAFF_ID AND `YEAR`=#{wage.year} AND FIND_IN_SET(`MONTH`,#{wage.monthArr}) GROUP BY cw.STAFF_ID) AS housingFundSum,
+            (SELECT SUM(cw.BASIC_PENSION_IP) FROM cy_wage AS cw WHERE cw.INSIDE_OR_OUTSIDE='0' AND cw.STAFF_ID=w.STAFF_ID AND `YEAR`=#{wage.year} AND FIND_IN_SET(`MONTH`,#{wage.monthArr}) GROUP BY cw.STAFF_ID) AS basicPensionIpSum,
+            (SELECT SUM(cw.UNEMPLOYMENT_IP) FROM cy_wage AS cw WHERE cw.INSIDE_OR_OUTSIDE='0' AND cw.STAFF_ID=w.STAFF_ID AND `YEAR`=#{wage.year} AND FIND_IN_SET(`MONTH`,#{wage.monthArr}) GROUP BY cw.STAFF_ID) AS unemploymentIpSum,
+            (SELECT SUM(cw.BASIC_MEDICAL_IP) FROM cy_wage AS cw WHERE cw.INSIDE_OR_OUTSIDE='0' AND cw.STAFF_ID=w.STAFF_ID AND `YEAR`=#{wage.year} AND FIND_IN_SET(`MONTH`,#{wage.monthArr}) GROUP BY cw.STAFF_ID) AS basicMedicalIpSum,
+            (SELECT SUM(cw.MEDICAL_MUTUAL_AID) FROM cy_wage AS cw WHERE cw.INSIDE_OR_OUTSIDE='0' AND cw.STAFF_ID=w.STAFF_ID AND `YEAR`=#{wage.year} AND FIND_IN_SET(`MONTH`,#{wage.monthArr}) GROUP BY cw.STAFF_ID) AS medicalMutualAidSum,
+            (SELECT SUM(cw.CORPORATE_ANNUITY) FROM cy_wage AS cw WHERE cw.INSIDE_OR_OUTSIDE='0' AND cw.STAFF_ID=w.STAFF_ID AND `YEAR`=#{wage.year} AND FIND_IN_SET(`MONTH`,#{wage.monthArr}) GROUP BY cw.STAFF_ID) AS corporateAnnuitySum,
+            (SELECT SUM(cw.TAX_DEDUCTION) FROM cy_wage AS cw WHERE cw.INSIDE_OR_OUTSIDE='0' AND cw.STAFF_ID=w.STAFF_ID AND `YEAR`=#{wage.year} AND FIND_IN_SET(`MONTH`,#{wage.monthArr}) GROUP BY cw.STAFF_ID) AS taxDeductionSum,
+            (SELECT SUM(cw.REAL_WAGE) FROM cy_wage AS cw WHERE cw.INSIDE_OR_OUTSIDE='0' AND cw.STAFF_ID=w.STAFF_ID AND `YEAR`=#{wage.year} AND FIND_IN_SET(`MONTH`,#{wage.monthArr}) GROUP BY cw.STAFF_ID) AS realWageSum,
+            w.CREATE_TIME,
+            w.MODIFY_TIME,
+            w.`YEAR`,
+            w.`MONTH`
+            FROM cy_wage AS w
+            LEFT JOIN cy_staff_inside AS s ON(s.STAFF_ID=w.STAFF_ID)
+            WHERE w.INSIDE_OR_OUTSIDE='0'
+            <if test="wage.staffName != null and wage.staffName != ''">
+                AND s.`NAME` LIKE CONCAT('%',#{wage.staffName},'%')
+            </if>
+            <if test="wage.staffIdCard != null and wage.staffIdCard != ''">
+                AND s.ID_NUM LIKE CONCAT('%',#{wage.staffIdCard},'%')
+            </if>
+            <if test="wage.year != null and wage.year != ''">
+                AND w.`YEAR` = #{wage.year}
+            </if>
+            <if test="wage.month != null and wage.month != ''">
+                AND w.`MONTH` = #{wage.month}
+            </if>
+            <if test="wage.postLevel != null and wage.postLevel != ''">
+                AND FIND_IN_SET(s.POST_LEVEL, #{wage.postLevel})
+            </if>
+            UNION ALL
+            SELECT
+            w.ID,
+            w.INSIDE_OR_OUTSIDE,
+            s.STAFF_ID,
+            s.`NAME` AS staffName,
+            s.ID_NUM AS staffIdCard,
+            s.SORT_NUM_1 AS sortNum1,
+            s.SORT_NUM_2 AS sortNum,
+            NULL AS postLevel,
+            w.CURRENT_INCOME,
+            w.REISSUE_SALARY_SCALE,
+            w.SALARY_SALARY,
+            w.POST_ALLOWANCE,
+            w.FINANCIAL_BURDEN_PERFORMANCE_PAY,
+            w.OVERTIME_PAY,
+            w.ENVIRONMENTAL_SANITATION_DUTY_ALLOWANCE,
+            w.HOUSING_SUBSIDY,
+            w.ONLY_CHILD_FEE,
+            w.TEMPORARY_SUBSIDY,
+            w.JOB_PERFORMANCE,
+            w.HOLIDAY_COSTS,
+            w.ANNUAL_LEAVE_PAY,
+            w.COMPREHENSIVE_SUBSIDY,
+            w.PAYABLE,
+            w.HOUSING_FUND,
+            w.BASIC_PENSION_IP,
+            w.UNEMPLOYMENT_IP,
+            w.BASIC_MEDICAL_IP,
+            w.MEDICAL_MUTUAL_AID,
+            w.CORPORATE_ANNUITY,
+            w.TAX_DEDUCTION,
+            w.REAL_WAGE,
+            (SELECT SUM(cw.CURRENT_INCOME) FROM cy_wage AS cw WHERE cw.INSIDE_OR_OUTSIDE='1' AND cw.STAFF_ID=w.STAFF_ID AND `YEAR`=#{wage.year} AND FIND_IN_SET(`MONTH`,#{wage.monthArr}) GROUP BY cw.STAFF_ID) AS currentIncomeSum,
+            (SELECT SUM(cw.REISSUE_SALARY_SCALE) FROM cy_wage AS cw WHERE cw.INSIDE_OR_OUTSIDE='1' AND cw.STAFF_ID=w.STAFF_ID AND `YEAR`=#{wage.year} AND FIND_IN_SET(`MONTH`,#{wage.monthArr}) GROUP BY cw.STAFF_ID) AS reissueSalaryScaleSum,
+            (SELECT SUM(cw.SALARY_SALARY) FROM cy_wage AS cw WHERE cw.INSIDE_OR_OUTSIDE='1' AND cw.STAFF_ID=w.STAFF_ID AND `YEAR`=#{wage.year} AND FIND_IN_SET(`MONTH`,#{wage.monthArr}) GROUP BY cw.STAFF_ID) AS salarySalarySum,
+            (SELECT SUM(cw.POST_ALLOWANCE) FROM cy_wage AS cw WHERE cw.INSIDE_OR_OUTSIDE='1' AND cw.STAFF_ID=w.STAFF_ID AND `YEAR`=#{wage.year} AND FIND_IN_SET(`MONTH`,#{wage.monthArr}) GROUP BY cw.STAFF_ID) AS postAllowanceSum,
+            (SELECT SUM(cw.FINANCIAL_BURDEN_PERFORMANCE_PAY) FROM cy_wage AS cw WHERE cw.INSIDE_OR_OUTSIDE='1' AND cw.STAFF_ID=w.STAFF_ID AND `YEAR`=#{wage.year} AND FIND_IN_SET(`MONTH`,#{wage.monthArr}) GROUP BY cw.STAFF_ID) AS financialBurdenPerformancePaySum,
+            (SELECT SUM(cw.OVERTIME_PAY) FROM cy_wage AS cw WHERE cw.INSIDE_OR_OUTSIDE='1' AND cw.STAFF_ID=w.STAFF_ID AND `YEAR`=#{wage.year} AND FIND_IN_SET(`MONTH`,#{wage.monthArr}) GROUP BY cw.STAFF_ID) AS overtimePaySum,
+            (SELECT SUM(cw.ENVIRONMENTAL_SANITATION_DUTY_ALLOWANCE) FROM cy_wage AS cw WHERE cw.INSIDE_OR_OUTSIDE='1' AND cw.STAFF_ID=w.STAFF_ID AND `YEAR`=#{wage.year} AND FIND_IN_SET(`MONTH`,#{wage.monthArr}) GROUP BY cw.STAFF_ID) AS environmentalSanitationDutyAllowanceSum,
+            (SELECT SUM(cw.HOUSING_SUBSIDY) FROM cy_wage AS cw WHERE cw.INSIDE_OR_OUTSIDE='1' AND cw.STAFF_ID=w.STAFF_ID AND `YEAR`=#{wage.year} AND FIND_IN_SET(`MONTH`,#{wage.monthArr}) GROUP BY cw.STAFF_ID) AS housingSubsidySum,
+            (SELECT SUM(cw.ONLY_CHILD_FEE) FROM cy_wage AS cw WHERE cw.INSIDE_OR_OUTSIDE='1' AND cw.STAFF_ID=w.STAFF_ID AND `YEAR`=#{wage.year} AND FIND_IN_SET(`MONTH`,#{wage.monthArr}) GROUP BY cw.STAFF_ID) AS onlyChildFeeSum,
+            (SELECT SUM(cw.TEMPORARY_SUBSIDY) FROM cy_wage AS cw WHERE cw.INSIDE_OR_OUTSIDE='1' AND cw.STAFF_ID=w.STAFF_ID AND `YEAR`=#{wage.year} AND FIND_IN_SET(`MONTH`,#{wage.monthArr}) GROUP BY cw.STAFF_ID) AS temporarySubsidySum,
+            (SELECT SUM(cw.JOB_PERFORMANCE) FROM cy_wage AS cw WHERE cw.INSIDE_OR_OUTSIDE='1' AND cw.STAFF_ID=w.STAFF_ID AND `YEAR`=#{wage.year} AND FIND_IN_SET(`MONTH`,#{wage.monthArr}) GROUP BY cw.STAFF_ID) AS jobPerformanceSum,
+            (SELECT SUM(cw.HOLIDAY_COSTS) FROM cy_wage AS cw WHERE cw.INSIDE_OR_OUTSIDE='1' AND cw.STAFF_ID=w.STAFF_ID AND `YEAR`=#{wage.year} AND FIND_IN_SET(`MONTH`,#{wage.monthArr}) GROUP BY cw.STAFF_ID) AS holidayCostsSum,
+            (SELECT SUM(cw.ANNUAL_LEAVE_PAY) FROM cy_wage AS cw WHERE cw.INSIDE_OR_OUTSIDE='1' AND cw.STAFF_ID=w.STAFF_ID AND `YEAR`=#{wage.year} AND FIND_IN_SET(`MONTH`,#{wage.monthArr}) GROUP BY cw.STAFF_ID) AS annualLeavePaySum,
+            (SELECT SUM(cw.COMPREHENSIVE_SUBSIDY) FROM cy_wage AS cw WHERE cw.INSIDE_OR_OUTSIDE='1' AND cw.STAFF_ID=w.STAFF_ID AND `YEAR`=#{wage.year} AND FIND_IN_SET(`MONTH`,#{wage.monthArr}) GROUP BY cw.STAFF_ID) AS comprehensiveSubsidySum,
+            (SELECT SUM(cw.PAYABLE) FROM cy_wage AS cw WHERE cw.INSIDE_OR_OUTSIDE='1' AND cw.STAFF_ID=w.STAFF_ID AND `YEAR`=#{wage.year} AND FIND_IN_SET(`MONTH`,#{wage.monthArr}) GROUP BY cw.STAFF_ID) AS payableSum,
+            (SELECT SUM(cw.HOUSING_FUND) FROM cy_wage AS cw WHERE cw.INSIDE_OR_OUTSIDE='1' AND cw.STAFF_ID=w.STAFF_ID AND `YEAR`=#{wage.year} AND FIND_IN_SET(`MONTH`,#{wage.monthArr}) GROUP BY cw.STAFF_ID) AS housingFundSum,
+            (SELECT SUM(cw.BASIC_PENSION_IP) FROM cy_wage AS cw WHERE cw.INSIDE_OR_OUTSIDE='1' AND cw.STAFF_ID=w.STAFF_ID AND `YEAR`=#{wage.year} AND FIND_IN_SET(`MONTH`,#{wage.monthArr}) GROUP BY cw.STAFF_ID) AS basicPensionIpSum,
+            (SELECT SUM(cw.UNEMPLOYMENT_IP) FROM cy_wage AS cw WHERE cw.INSIDE_OR_OUTSIDE='1' AND cw.STAFF_ID=w.STAFF_ID AND `YEAR`=#{wage.year} AND FIND_IN_SET(`MONTH`,#{wage.monthArr}) GROUP BY cw.STAFF_ID) AS unemploymentIpSum,
+            (SELECT SUM(cw.BASIC_MEDICAL_IP) FROM cy_wage AS cw WHERE cw.INSIDE_OR_OUTSIDE='1' AND cw.STAFF_ID=w.STAFF_ID AND `YEAR`=#{wage.year} AND FIND_IN_SET(`MONTH`,#{wage.monthArr}) GROUP BY cw.STAFF_ID) AS basicMedicalIpSum,
+            (SELECT SUM(cw.MEDICAL_MUTUAL_AID) FROM cy_wage AS cw WHERE cw.INSIDE_OR_OUTSIDE='1' AND cw.STAFF_ID=w.STAFF_ID AND `YEAR`=#{wage.year} AND FIND_IN_SET(`MONTH`,#{wage.monthArr}) GROUP BY cw.STAFF_ID) AS medicalMutualAidSum,
+            (SELECT SUM(cw.CORPORATE_ANNUITY) FROM cy_wage AS cw WHERE cw.INSIDE_OR_OUTSIDE='1' AND cw.STAFF_ID=w.STAFF_ID AND `YEAR`=#{wage.year} AND FIND_IN_SET(`MONTH`,#{wage.monthArr}) GROUP BY cw.STAFF_ID) AS corporateAnnuitySum,
+            (SELECT SUM(cw.TAX_DEDUCTION) FROM cy_wage AS cw WHERE cw.INSIDE_OR_OUTSIDE='1' AND cw.STAFF_ID=w.STAFF_ID AND `YEAR`=#{wage.year} AND FIND_IN_SET(`MONTH`,#{wage.monthArr}) GROUP BY cw.STAFF_ID) AS taxDeductionSum,
+            (SELECT SUM(cw.REAL_WAGE) FROM cy_wage AS cw WHERE cw.INSIDE_OR_OUTSIDE='1' AND cw.STAFF_ID=w.STAFF_ID AND `YEAR`=#{wage.year} AND FIND_IN_SET(`MONTH`,#{wage.monthArr}) GROUP BY cw.STAFF_ID) AS realWageSum,
+            w.CREATE_TIME,
+            w.MODIFY_TIME,
+            w.`YEAR`,
+            w.`MONTH`
+            FROM cy_wage AS w
+            LEFT JOIN cy_staff_outside AS s ON(s.STAFF_ID=w.STAFF_ID)
+            WHERE w.INSIDE_OR_OUTSIDE='1'
+            <if test="wage.staffName != null and wage.staffName != ''">
+                AND s.`NAME` LIKE CONCAT('%',#{wage.staffName},'%')
+            </if>
+            <if test="wage.staffIdCard != null and wage.staffIdCard != ''">
+                AND s.ID_NUM LIKE CONCAT('%',#{wage.staffIdCard},'%')
+            </if>
+            <if test="wage.year != null and wage.year != ''">
+                AND w.`YEAR` = #{wage.year}
+            </if>
+            <if test="wage.month != null and wage.month != ''">
+                AND w.`MONTH` = #{wage.month}
+            </if>
+            <if test="wage.postLevel != null and wage.postLevel != ''">
+                AND 1=0
+            </if>
+            ORDER BY sortNum1 ASC, sortNum ASC
+        </if>
+    </select>
+
+    <select id="getWageReport" resultType="cc.mrbird.febs.chaoyang3team.domain.Wage">
+        <if test="wage.insideOrOutside == 0">
+            SELECT
+            w.ID,
+            w.INSIDE_OR_OUTSIDE,
+            s.STAFF_ID,
+            s.`NAME` AS staffName,
+            s.ID_NUM AS staffIdCard,
+            -1 AS sortNum1,
+            s.SORT_NUM AS sortNum,
+            s.POST_LEVEL AS postLevel,
+            w.CURRENT_INCOME,
+            w.REISSUE_SALARY_SCALE,
+            w.SALARY_SALARY,
+            w.POST_ALLOWANCE,
+            w.FINANCIAL_BURDEN_PERFORMANCE_PAY,
+            w.OVERTIME_PAY,
+            w.ENVIRONMENTAL_SANITATION_DUTY_ALLOWANCE,
+            w.HOUSING_SUBSIDY,
+            w.ONLY_CHILD_FEE,
+            w.TEMPORARY_SUBSIDY,
+            w.JOB_PERFORMANCE,
+            w.HOLIDAY_COSTS,
+            w.ANNUAL_LEAVE_PAY,
+            w.COMPREHENSIVE_SUBSIDY,
+            w.PAYABLE,
+            w.HOUSING_FUND,
+            w.BASIC_PENSION_IP,
+            w.UNEMPLOYMENT_IP,
+            w.BASIC_MEDICAL_IP,
+            w.MEDICAL_MUTUAL_AID,
+            w.CORPORATE_ANNUITY,
+            w.TAX_DEDUCTION,
+            w.REAL_WAGE,
+            w.CREATE_TIME,
+            w.MODIFY_TIME,
+            w.`YEAR`,
+            w.`MONTH`
+            FROM cy_wage AS w
+            LEFT JOIN cy_staff_inside AS s ON(s.STAFF_ID=w.STAFF_ID)
+            WHERE w.INSIDE_OR_OUTSIDE='0'
+            AND (w.`YEAR`=#{wage.yearForm} AND FIND_IN_SET(w.`MONTH`,#{wage.monthForm}))
+            <if test="wage.yearTo != null and wage.yearTo != ''">
+                OR (w.`YEAR`=#{wage.yearTo} AND FIND_IN_SET(w.`MONTH`,#{wage.monthTo}))
+            </if>
+            ORDER BY sortNum1 ASC, sortNum ASC
+        </if>
+        <if test="wage.insideOrOutside == 1">
+            SELECT
+            w.ID,
+            w.INSIDE_OR_OUTSIDE,
+            s.STAFF_ID,
+            s.`NAME` AS staffName,
+            s.ID_NUM AS staffIdCard,
+            s.SORT_NUM_1 AS sortNum1,
+            s.SORT_NUM_2 AS sortNum,
+            NULL AS postLevel,
+            w.CURRENT_INCOME,
+            w.REISSUE_SALARY_SCALE,
+            w.SALARY_SALARY,
+            w.POST_ALLOWANCE,
+            w.FINANCIAL_BURDEN_PERFORMANCE_PAY,
+            w.OVERTIME_PAY,
+            w.ENVIRONMENTAL_SANITATION_DUTY_ALLOWANCE,
+            w.HOUSING_SUBSIDY,
+            w.ONLY_CHILD_FEE,
+            w.TEMPORARY_SUBSIDY,
+            w.JOB_PERFORMANCE,
+            w.HOLIDAY_COSTS,
+            w.ANNUAL_LEAVE_PAY,
+            w.COMPREHENSIVE_SUBSIDY,
+            w.PAYABLE,
+            w.HOUSING_FUND,
+            w.BASIC_PENSION_IP,
+            w.UNEMPLOYMENT_IP,
+            w.BASIC_MEDICAL_IP,
+            w.MEDICAL_MUTUAL_AID,
+            w.CORPORATE_ANNUITY,
+            w.TAX_DEDUCTION,
+            w.REAL_WAGE,
+            w.CREATE_TIME,
+            w.MODIFY_TIME,
+            w.`YEAR`,
+            w.`MONTH`
+            FROM cy_wage AS w
+            LEFT JOIN cy_staff_outside AS s ON(s.STAFF_ID=w.STAFF_ID)
+            WHERE w.INSIDE_OR_OUTSIDE='1'
+            AND (w.`YEAR`=#{wage.yearForm} AND FIND_IN_SET(w.`MONTH`,#{wage.monthForm}))
+            <if test="wage.yearTo != null and wage.yearTo != ''">
+                OR (w.`YEAR`=#{wage.yearTo} AND FIND_IN_SET(w.`MONTH`,#{wage.monthTo}))
+            </if>
+            ORDER BY sortNum1 ASC, sortNum ASC
+        </if>
+        <if test="wage.insideOrOutside == 2">
+            SELECT
+            w.ID,
+            w.INSIDE_OR_OUTSIDE,
+            s.STAFF_ID,
+            s.`NAME` AS staffName,
+            s.ID_NUM AS staffIdCard,
+            -1 AS sortNum1,
+            s.SORT_NUM AS sortNum,
+            s.POST_LEVEL AS postLevel,
+            w.CURRENT_INCOME,
+            w.REISSUE_SALARY_SCALE,
+            w.SALARY_SALARY,
+            w.POST_ALLOWANCE,
+            w.FINANCIAL_BURDEN_PERFORMANCE_PAY,
+            w.OVERTIME_PAY,
+            w.ENVIRONMENTAL_SANITATION_DUTY_ALLOWANCE,
+            w.HOUSING_SUBSIDY,
+            w.ONLY_CHILD_FEE,
+            w.TEMPORARY_SUBSIDY,
+            w.JOB_PERFORMANCE,
+            w.HOLIDAY_COSTS,
+            w.ANNUAL_LEAVE_PAY,
+            w.COMPREHENSIVE_SUBSIDY,
+            w.PAYABLE,
+            w.HOUSING_FUND,
+            w.BASIC_PENSION_IP,
+            w.UNEMPLOYMENT_IP,
+            w.BASIC_MEDICAL_IP,
+            w.MEDICAL_MUTUAL_AID,
+            w.CORPORATE_ANNUITY,
+            w.TAX_DEDUCTION,
+            w.REAL_WAGE,
+            w.CREATE_TIME,
+            w.MODIFY_TIME,
+            w.`YEAR`,
+            w.`MONTH`
+            FROM cy_wage AS w
+            LEFT JOIN cy_staff_inside AS s ON(s.STAFF_ID=w.STAFF_ID)
+            WHERE w.INSIDE_OR_OUTSIDE='0'
+            AND (w.`YEAR`=#{wage.yearForm} AND FIND_IN_SET(w.`MONTH`,#{wage.monthForm}))
+            <if test="wage.yearTo != null and wage.yearTo != ''">
+                OR (w.`YEAR`=#{wage.yearTo} AND FIND_IN_SET(w.`MONTH`,#{wage.monthTo}))
+            </if>
+            UNION ALL
+            SELECT
+            w.ID,
+            w.INSIDE_OR_OUTSIDE,
+            s.STAFF_ID,
+            s.`NAME` AS staffName,
+            s.ID_NUM AS staffIdCard,
+            s.SORT_NUM_1 AS sortNum1,
+            s.SORT_NUM_2 AS sortNum,
+            NULL AS postLevel,
+            w.CURRENT_INCOME,
+            w.REISSUE_SALARY_SCALE,
+            w.SALARY_SALARY,
+            w.POST_ALLOWANCE,
+            w.FINANCIAL_BURDEN_PERFORMANCE_PAY,
+            w.OVERTIME_PAY,
+            w.ENVIRONMENTAL_SANITATION_DUTY_ALLOWANCE,
+            w.HOUSING_SUBSIDY,
+            w.ONLY_CHILD_FEE,
+            w.TEMPORARY_SUBSIDY,
+            w.JOB_PERFORMANCE,
+            w.HOLIDAY_COSTS,
+            w.ANNUAL_LEAVE_PAY,
+            w.COMPREHENSIVE_SUBSIDY,
+            w.PAYABLE,
+            w.HOUSING_FUND,
+            w.BASIC_PENSION_IP,
+            w.UNEMPLOYMENT_IP,
+            w.BASIC_MEDICAL_IP,
+            w.MEDICAL_MUTUAL_AID,
+            w.CORPORATE_ANNUITY,
+            w.TAX_DEDUCTION,
+            w.REAL_WAGE,
+            w.CREATE_TIME,
+            w.MODIFY_TIME,
+            w.`YEAR`,
+            w.`MONTH`
+            FROM cy_wage AS w
+            LEFT JOIN cy_staff_outside AS s ON(s.STAFF_ID=w.STAFF_ID)
+            WHERE w.INSIDE_OR_OUTSIDE='1'
+            AND (w.`YEAR`=#{wage.yearForm} AND FIND_IN_SET(w.`MONTH`,#{wage.monthForm}))
+            <if test="wage.yearTo != null and wage.yearTo != ''">
+                OR (w.`YEAR`=#{wage.yearTo} AND FIND_IN_SET(w.`MONTH`,#{wage.monthTo}))
+            </if>
+            ORDER BY sortNum1 ASC, sortNum ASC
+        </if>
+    </select>
+
+    <select id="getWageAmount" resultType="cc.mrbird.febs.chaoyang3team.domain.Wage">
+        SELECT
+        SUM(w.CURRENT_INCOME) AS CURRENT_INCOME,
+        SUM(w.REISSUE_SALARY_SCALE) AS REISSUE_SALARY_SCALE,
+        SUM(w.SALARY_SALARY) AS SALARY_SALARY,
+        SUM(w.POST_ALLOWANCE) AS POST_ALLOWANCE,
+        SUM(w.FINANCIAL_BURDEN_PERFORMANCE_PAY) AS FINANCIAL_BURDEN_PERFORMANCE_PAY,
+        SUM(w.OVERTIME_PAY) AS OVERTIME_PAY,
+        SUM(w.ENVIRONMENTAL_SANITATION_DUTY_ALLOWANCE) AS ENVIRONMENTAL_SANITATION_DUTY_ALLOWANCE,
+        SUM(w.HOUSING_SUBSIDY) AS HOUSING_SUBSIDY,
+        SUM(w.ONLY_CHILD_FEE) AS ONLY_CHILD_FEE,
+        SUM(w.TEMPORARY_SUBSIDY) AS TEMPORARY_SUBSIDY,
+        SUM(w.JOB_PERFORMANCE) AS JOB_PERFORMANCE,
+        SUM(w.HOLIDAY_COSTS) AS HOLIDAY_COSTS,
+        SUM(w.ANNUAL_LEAVE_PAY) AS ANNUAL_LEAVE_PAY,
+        SUM(w.COMPREHENSIVE_SUBSIDY) AS COMPREHENSIVE_SUBSIDY,
+        SUM(w.PAYABLE) AS PAYABLE,
+        SUM(w.HOUSING_FUND) AS HOUSING_FUND,
+        SUM(w.BASIC_PENSION_IP) AS BASIC_PENSION_IP,
+        SUM(w.UNEMPLOYMENT_IP) AS UNEMPLOYMENT_IP,
+        SUM(w.BASIC_MEDICAL_IP) AS BASIC_MEDICAL_IP,
+        SUM(w.MEDICAL_MUTUAL_AID) AS MEDICAL_MUTUAL_AID,
+        SUM(w.CORPORATE_ANNUITY) AS CORPORATE_ANNUITY,
+        SUM(w.TAX_DEDUCTION) AS TAX_DEDUCTION,
+        SUM(w.REAL_WAGE) AS REAL_WAGE,
+        SUM(w.CREATE_TIME) AS CREATE_TIME,
+        SUM(w.MODIFY_TIME) AS MODIFY_TIME
+        FROM cy_wage AS w
+        WHERE (w.`YEAR`=#{wage.yearForm} AND FIND_IN_SET(w.`MONTH`,#{wage.monthForm}))
+        <if test="wage.yearTo != null and wage.yearTo != ''">
+            OR (w.`YEAR`=#{wage.yearTo} AND FIND_IN_SET(w.`MONTH`,#{wage.monthTo}))
+        </if>
+        <if test="wage.insideOrOutside == 0 or wage.insideOrOutside == 1">
+            AND w.INSIDE_OR_OUTSIDE = #{wage.insideOrOutside}
+        </if>
+    </select>
+
+    <select id="getWageInfoList" resultType="cc.mrbird.febs.chaoyang3team.domain.Wage">
+        SELECT
+            w.INSIDE_OR_OUTSIDE,
+            w.STAFF_ID,
+            w.`MONTH`,
+            w.CURRENT_INCOME,
+            w.REISSUE_SALARY_SCALE,
+            w.SALARY_SALARY,
+            w.POST_ALLOWANCE,
+            w.FINANCIAL_BURDEN_PERFORMANCE_PAY,
+            w.OVERTIME_PAY,
+            w.ENVIRONMENTAL_SANITATION_DUTY_ALLOWANCE,
+            w.HOUSING_SUBSIDY,
+            w.ONLY_CHILD_FEE,
+            w.TEMPORARY_SUBSIDY,
+            w.JOB_PERFORMANCE,
+            w.HOLIDAY_COSTS,
+            w.ANNUAL_LEAVE_PAY,
+            w.COMPREHENSIVE_SUBSIDY,
+            w.PAYABLE,
+            w.HOUSING_FUND,
+            w.BASIC_PENSION_IP,
+            w.UNEMPLOYMENT_IP,
+            w.BASIC_MEDICAL_IP,
+            w.MEDICAL_MUTUAL_AID,
+            w.CORPORATE_ANNUITY,
+            w.TAX_DEDUCTION,
+            w.REAL_WAGE
+            FROM cy_wage AS w
+            WHERE w.INSIDE_OR_OUTSIDE=#{wage.insideOrOutside} AND w.STAFF_ID=#{wage.staffId} AND w.`YEAR`=#{wage.year} AND FIND_IN_SET(w.`MONTH`,#{wage.monthArr})
+    </select>
+
+</mapper>

@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.mrbird.febs.chaoyang3team.dao.InsuranceOutsideMapper">
+
+    <select id="findInsuranceOutsideDetail" resultType="cc.mrbird.febs.chaoyang3team.domain.InsuranceOutside">
+        SELECT
+        cii.ID,
+        cii.STAFF_ID,
+        cii.ACCOUNT_ADDRESS,
+        cii.ACCOUNT_POSTAL_CODE,
+        cii.CURRENT_ADDRESS,
+        cii.CURRENT_POSTAL_CODE,
+        cii.BANK_CARD_NUMBER,
+        cii.SOCIAL_SECURITY_HOSPITAL,
+        cii.NEW_TRANSFER,
+        cii.PENSION_INSURANCE_BASE,
+        cii.WORK_INJURY_INSURANCE_BASE,
+        cii.MEDICAL_INSURANCE_BASE,
+        cii.CREATE_TIME,
+        cii.MODIFY_TIME,
+        cso.SORT_NUM_2 AS sortNum,
+        cso.`NAME`,
+        cso.ID_NUM,
+        cso.GENDER,
+        cso.CLAN,
+        cso.HOUSEHOLD_REGISTRATION_TYPE,
+        cso.TRANSFER_DATE,
+        cso.PHONE_CELL,
+        cso.IS_LEAVE
+        FROM cy_insurance_outside AS cii
+        LEFT JOIN cy_staff_outside AS cso ON(cso.STAFF_ID=cii.STAFF_ID)
+        WHERE FIND_IN_SET(cso.IS_LEAVE, #{insuranceOutside.isLeave})
+        <if test="insuranceOutside.name != null and insuranceOutside.name != ''">
+            AND cso.NAME LIKE CONCAT('%',#{insuranceOutside.name},'%')
+        </if>
+        <if test="insuranceOutside.gender != null and insuranceOutside.gender != ''">
+            AND cso.GENDER = #{insuranceOutside.gender}
+        </if>
+        <if test="insuranceOutside.householdRegistrationType != null and insuranceOutside.householdRegistrationType != ''">
+            AND FIND_IN_SET(cso.HOUSEHOLD_REGISTRATION_TYPE, #{insuranceOutside.householdRegistrationType})
+        </if>
+        <if test="insuranceOutside.idNum != null and insuranceOutside.idNum != ''">
+            AND cso.ID_NUM LIKE CONCAT('%',#{insuranceOutside.idNum},'%')
+        </if>
+        <if test="insuranceOutside.bankCardNumber != null and insuranceOutside.bankCardNumber != ''">
+            AND cii.BANK_CARD_NUMBER LIKE CONCAT('%',#{insuranceOutside.bankCardNumber},'%')
+        </if>
+        <if test="insuranceOutside.socialSecurityHospital != null and insuranceOutside.socialSecurityHospital != ''">
+            AND cii.SOCIAL_SECURITY_HOSPITAL LIKE CONCAT('%',#{insuranceOutside.socialSecurityHospital},'%')
+        </if>
+        <if test="insuranceOutside.newTransfer != null and insuranceOutside.newTransfer != ''">
+            AND cii.NEW_TRANSFER = #{insuranceOutside.newTransfer}
+        </if>
+        ORDER BY SORT_NUM_1 ASC, SORT_NUM_2 ASC
+    </select>
+
+    <select id="findInsuranceOutsideSimplify" resultType="cc.mrbird.febs.chaoyang3team.domain.InsuranceOutside">
+        SELECT
+        cii.ID,
+        cii.STAFF_ID,
+        cso.SORT_NUM_2 AS sortNum,
+        cso.`NAME`,
+        cso.ID_NUM,
+        cso.HOUSEHOLD_REGISTRATION_TYPE,
+        cii.PENSION_INSURANCE_BASE,
+        cii.WORK_INJURY_INSURANCE_BASE,
+        cii.MEDICAL_INSURANCE_BASE
+        FROM cy_insurance_outside AS cii
+        LEFT JOIN cy_staff_outside AS cso ON(cso.STAFF_ID=cii.STAFF_ID)
+        WHERE FIND_IN_SET(cso.IS_LEAVE, #{insuranceOutside.isLeave})
+        <if test="insuranceOutside.name != null and insuranceOutside.name != ''">
+            AND cso.NAME LIKE CONCAT('%',#{insuranceOutside.name},'%')
+        </if>
+        <if test="insuranceOutside.idNum != null and insuranceOutside.idNum != ''">
+            AND cso.ID_NUM LIKE CONCAT('%',#{insuranceOutside.idNum},'%')
+        </if>
+        ORDER BY SORT_NUM_1 ASC, SORT_NUM_2 ASC
+    </select>
+
+    <select id="getInsuranceOutsideByIdNum" resultType="cc.mrbird.febs.chaoyang3team.domain.InsuranceInside">
+        SELECT
+        cii.ID,
+        cii.STAFF_ID,
+        cii.ACCOUNT_ADDRESS,
+        cii.ACCOUNT_POSTAL_CODE,
+        cii.CURRENT_ADDRESS,
+        cii.CURRENT_POSTAL_CODE,
+        cii.BANK_CARD_NUMBER,
+        cii.SOCIAL_SECURITY_HOSPITAL,
+        cii.NEW_TRANSFER,
+        cii.PENSION_INSURANCE_BASE,
+        cii.WORK_INJURY_INSURANCE_BASE,
+        cii.MEDICAL_INSURANCE_BASE,
+        cii.CREATE_TIME,
+        cii.MODIFY_TIME,
+        cso.SORT_NUM_2 AS sortNum,
+        cso.`NAME`,
+        cso.GENDER,
+        cso.CLAN,
+        cso.HOUSEHOLD_REGISTRATION_TYPE,
+        cso.TRANSFER_DATE,
+        cso.PHONE_CELL
+        FROM cy_insurance_outside AS cii
+        LEFT JOIN cy_staff_outside AS cso ON(cso.STAFF_ID=cii.STAFF_ID)
+        WHERE cso.ID_NUM=#{idNum}
+        LIMIT 1
+    </select>
+</mapper>

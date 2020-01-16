@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.mrbird.febs.chaoyang3team.dao.StoreroomOutMapper">
+
+    <!--根据出库记录ID查找对应库房ID-->
+    <select id="getStoreroomIdsByStoreroomOutIds" resultType="java.lang.String">
+        SELECT STOREROOM_ID FROM p_storeroom_out WHERE FIND_IN_SET(OUT_ID, #{StoreroomOutIds})
+    </select>
+
+    <!--根据出库记录ID查找对应库房详情-->
+    <select id="getStoreroomsByStoreroomOutId" resultType="cc.mrbird.febs.chaoyang3team.domain.Storeroom">
+        SELECT cs.* FROM p_storeroom_out AS psp LEFT JOIN cy_storeroom AS cs ON(psp.STOREROOM_ID = cs.ID) WHERE psp.OUT_ID = #{StoreroomOutId}
+    </select>
+</mapper>

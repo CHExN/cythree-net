@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.mrbird.febs.chaoyang3team.dao.WcMapper">
+
+    <select id="findWcOwns" resultType="java.lang.String">
+        SELECT WC_OWN FROM cy_wc GROUP BY WC_OWN
+    </select>
+
+    <select id="findWcDetailExcel" resultType="cc.mrbird.febs.chaoyang3team.domain.Wc"
+            parameterType="cc.mrbird.febs.chaoyang3team.domain.Wc">
+        SELECT
+        wc.WC_ID AS wcId,
+        wc.WC_NAME AS wcName,
+        wc.DISTRICT,
+        wc.MANAGE_UNIT,
+        wc.WC_NUM AS wcNum,
+        wc.LONGITUDE,
+        wc.LATITUDE,
+        wc.WC_KIND,
+        wc.BUILDING_METHOD,
+        wc.BUILDING_TYPE,
+        wc.IS_MANAGE_ROOM,
+        wc.WC_SORT,
+        wc.FLUSHING_METHOD,
+        wc.INDICATOR_STATUS,
+        wc.STREET_TOWN AS streetTown,
+        wc.IS5TH_RING,
+        wc.USE_DATE,
+        wc.REPLACE_DATE AS replaceDate,
+        wc.INITIAL_MONEY,
+        wc.WC_AREA,
+        wc.IS_PROPERTY_RIGHT,
+        wc.SINK,
+        wc.PIT_MALE,
+        wc.PIT_FEMALE,
+        wc.PIT_SEXLESS,
+        wc.URINALS_TYPE,
+        wc.URINALS_NUM,
+        wc.IS_ACCESSIBILITY,
+        wc.INDICATOR_NUM,
+        wc.IS_DISABLED_ROOM,
+        wc.FECAL_METHOD,
+        wc.URINALS_LEN,
+        wc.OPEN_HOUR,
+        wc.ASSIGNMENT_STYLE,
+        wc.IS_INDICATOR,
+        wc.WC_OWN AS wcOwn,
+        wc.MANAGE_TYPE,
+        wc.CLEAN_NUM,
+        wc.WC_ADDRESS,
+        wc.WC_NOW_STATUS AS wcNowStatus,
+        wc.WATER_NUM,
+        wc.ELECTRICITY_NUM,
+        wc.PAYMENT_NUM,
+        (SELECT td.VALUEE FROM t_dict td WHERE td.TABLE_NAME='cy_wc' AND td.FIELD_NAME='district' 			AND td.KEYY=wc.DISTRICT 		LIMIT 1) AS DISTRICT_TO_DICT,
+        (SELECT td.VALUEE FROM t_dict td WHERE td.TABLE_NAME='cy_wc' AND td.FIELD_NAME='manage_unit' 		AND td.KEYY=wc.MANAGE_UNIT 		LIMIT 1) AS MANAGE_UNIT_TO_DICT,
+        (SELECT td.VALUEE FROM t_dict td WHERE td.TABLE_NAME='cy_wc' AND td.FIELD_NAME='wc_kind' 			AND td.KEYY=wc.WC_KIND 			LIMIT 1) AS WC_KIND_TO_DICT,
+        (SELECT td.VALUEE FROM t_dict td WHERE td.TABLE_NAME='cy_wc' AND td.FIELD_NAME='building_method' 	AND td.KEYY=wc.BUILDING_METHOD 	LIMIT 1) AS BUILDING_METHOD_TO_DICT,
+        (SELECT td.VALUEE FROM t_dict td WHERE td.TABLE_NAME='cy_wc' AND td.FIELD_NAME='building_type' 		AND td.KEYY=wc.BUILDING_TYPE 	LIMIT 1) AS BUILDING_TYPE_TO_DICT,
+        (SELECT td.VALUEE FROM t_dict td WHERE td.TABLE_NAME='cy_wc' AND td.FIELD_NAME='wc_sort' 			AND td.KEYY=wc.WC_SORT 			LIMIT 1) AS WC_SORT_TO_DICT,
+        (SELECT td.VALUEE FROM t_dict td WHERE td.TABLE_NAME='cy_wc' AND td.FIELD_NAME='manage_type' 		AND td.KEYY=wc.MANAGE_TYPE 		LIMIT 1) AS MANAGE_TYPE_TO_DICT
+        FROM cy_wc AS wc
+        WHERE 1=1
+        <if test="wc.wcName != null and wc.wcName != ''">
+            AND wc.WC_NAME LIKE CONCAT('%',#{wc.wcName},'%')
+        </if>
+        <if test="wc.wcNum != null and wc.wcNum != ''">
+            AND wc.WC_NUM LIKE CONCAT('%',#{wc.wcNum},'%')
+        </if>
+        <if test="wc.wcOwn != null and wc.wcOwn != ''">
+            AND FIND_IN_SET(wc.WC_OWN, #{wc.wcOwn})
+        </if>
+        <if test="wc.wcSort != null and wc.wcSort != ''">
+            AND FIND_IN_SET(wc.WC_SORT, #{wc.wcSort})
+        </if>
+    </select>
+    <select id="findWcDetail" resultType="cc.mrbird.febs.chaoyang3team.domain.Wc"
+            parameterType="cc.mrbird.febs.chaoyang3team.domain.Wc">
+        SELECT
+        wc.WC_ID AS wcId,
+        wc.WC_NAME AS wcName,
+        wc.DISTRICT,
+        wc.MANAGE_UNIT,
+        wc.WC_NUM AS wcNum,
+        wc.LONGITUDE,
+        wc.LATITUDE,
+        wc.WC_KIND,
+        wc.BUILDING_METHOD,
+        wc.BUILDING_TYPE,
+        wc.IS_MANAGE_ROOM,
+        wc.WC_SORT,
+        wc.FLUSHING_METHOD,
+        wc.INDICATOR_STATUS,
+        wc.STREET_TOWN AS streetTown,
+        wc.IS5TH_RING,
+        wc.USE_DATE,
+        wc.REPLACE_DATE AS replaceDate,
+        wc.INITIAL_MONEY,
+        wc.WC_AREA,
+        wc.IS_PROPERTY_RIGHT,
+        wc.SINK,
+        wc.PIT_MALE,
+        wc.PIT_FEMALE,
+        wc.PIT_SEXLESS,
+        wc.URINALS_TYPE,
+        wc.URINALS_NUM,
+        wc.IS_ACCESSIBILITY,
+        wc.INDICATOR_NUM,
+        wc.IS_DISABLED_ROOM,
+        wc.FECAL_METHOD,
+        wc.URINALS_LEN,
+        wc.OPEN_HOUR,
+        wc.ASSIGNMENT_STYLE,
+        wc.IS_INDICATOR,
+        wc.WC_OWN AS wcOwn,
+        wc.MANAGE_TYPE,
+        wc.CLEAN_NUM,
+        wc.WC_ADDRESS,
+        wc.WC_NOW_STATUS AS wcNowStatus,
+        wc.WATER_NUM,
+        wc.ELECTRICITY_NUM,
+        wc.PAYMENT_NUM
+        FROM cy_wc AS wc
+        WHERE 1=1
+        <if test="wc.wcName != null and wc.wcName != ''">
+            AND wc.WC_NAME LIKE CONCAT('%',#{wc.wcName},'%')
+        </if>
+        <if test="wc.wcNum != null and wc.wcNum != ''">
+            AND wc.WC_NUM LIKE CONCAT('%',#{wc.wcNum},'%')
+        </if>
+        <if test="wc.wcOwn != null and wc.wcOwn != ''">
+            AND FIND_IN_SET(wc.WC_OWN, #{wc.wcOwn})
+        </if>
+        <if test="wc.wcSort != null and wc.wcSort != ''">
+            AND FIND_IN_SET(wc.WC_SORT, #{wc.wcSort})
+        </if>
+    </select>
+
+    <select id="getWcName" resultType="cc.mrbird.febs.chaoyang3team.domain.Wc">
+        SELECT
+        wc.WC_ID AS wcId,
+        wc.WC_NAME,
+        wc.WC_NUM AS wcNum,
+        wc.WATER_NUM,
+        wc.ELECTRICITY_NUM,
+        wc.PAYMENT_NUM
+        FROM cy_wc AS wc
+        WHERE 1=1
+        <if test="wc.wcOwn != null and wc.wcOwn != ''">
+            AND wc.WC_OWN = #{wc.wcOwn}
+        </if>
+        <if test="wc.wcName != null and wc.wcName != ''">
+            AND wc.WC_NAME LIKE CONCAT('%',#{wc.wcName},'%')
+        </if>
+        <if test="wc.wcNum != null and wc.wcNum != ''">
+            AND wc.WC_NUM LIKE CONCAT('%',#{wc.wcNum},'%')
+        </if>
+        <if test="wc.waterNum != null and wc.waterNum != ''">
+            AND wc.WATER_NUM LIKE CONCAT('%',#{wc.waterNum},'%')
+        </if>
+        <if test="wc.electricityNum != null and wc.electricityNum != ''">
+            AND wc.ELECTRICITY_NUM LIKE CONCAT('%',#{wc.electricityNum},'%')
+        </if>
+    </select>
+
+    <select id="findWcCostAccount" resultType="cc.mrbird.febs.chaoyang3team.domain.Wc">
+        SELECT
+        w.WC_ID,
+        w.WC_SORT,
+        w.WC_OWN,
+        w.WC_NUM,
+        w.WC_NAME,
+        (SELECT GROUP_CONCAT(DISTINCT s.NAME) FROM p_wc_storeroom AS ws RIGHT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID AND s.TYPE_APPLICATION=1) WHERE ws.WC_ID=w.WC_ID AND ws.`YEAR`=#{year} AND ws.`MONTH`=#{month} AND FIND_IN_SET(s.`NAME`, '大盘纸,发泡液')) AS a,
+        (SELECT SUM(ws.AMOUNT*s.MONEY) FROM p_wc_storeroom AS ws RIGHT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID AND s.TYPE_APPLICATION=1) WHERE ws.WC_ID=w.WC_ID AND ws.`YEAR`=#{year} AND ws.`MONTH`=#{month} AND NOT FIND_IN_SET(s.`NAME`, '大盘纸,发泡液')) AS b,
+        (SELECT SUM(ws.AMOUNT*s.MONEY) FROM p_wc_storeroom AS ws RIGHT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID AND s.TYPE_APPLICATION=1) WHERE ws.WC_ID=w.WC_ID AND ws.`YEAR`=#{year} AND ws.`MONTH`=#{month} AND s.`NAME`='大盘纸') AS c,
+        (SELECT SUM(ws.AMOUNT*s.MONEY) FROM p_wc_storeroom AS ws RIGHT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID AND s.TYPE_APPLICATION=1) WHERE ws.WC_ID=w.WC_ID AND ws.`YEAR`=#{year} AND ws.`MONTH`=#{month} AND s.`NAME`='发泡液') AS d,
+        (SELECT SUM(ws.AMOUNT*s.MONEY) FROM p_wc_storeroom AS ws RIGHT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID AND s.TYPE_APPLICATION=4) WHERE ws.WC_ID=w.WC_ID AND ws.`YEAR`=#{year} AND ws.`MONTH`=#{month}) AS e,
+        (SELECT SUM(wa.TOTAL_AMOUNT) FROM cy_water AS wa RIGHT JOIN p_wc_water AS ww ON(ww.WATER_ID=wa.WATER_ID) WHERE ww.WC_ID=w.WC_ID AND wa.`YEAR`=#{year} AND wa.`MONTH`=#{month}) AS f,
+        (SELECT SUM(e.TOTAL_AMOUNT) FROM cy_electricity AS e RIGHT JOIN p_wc_electricity AS we ON(we.ELECTRICITY_ID=e.ELECTRICITY_ID) WHERE we.WC_ID=w.WC_ID AND e.`YEAR`=#{year} AND e.`MONTH`=#{month}) AS g
+        FROM cy_wc AS w
+    </select>
+
+    <select id="findWcCostAccountByFirstHalf" resultType="cc.mrbird.febs.chaoyang3team.domain.Wc">
+        SELECT
+        w.WC_ID,
+        w.WC_SORT,
+        w.WC_OWN,
+        w.WC_NUM,
+        w.WC_NAME,
+        (SELECT GROUP_CONCAT(DISTINCT s.NAME) FROM p_wc_storeroom AS ws RIGHT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID AND s.TYPE_APPLICATION=1) WHERE ws.WC_ID=w.WC_ID AND FIND_IN_SET(s.`NAME`, '大盘纸,发泡液')) AS a,
+        (SELECT SUM(ws.AMOUNT*s.MONEY) FROM p_wc_storeroom AS ws RIGHT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID AND s.TYPE_APPLICATION=1) WHERE ws.WC_ID=w.WC_ID AND s.`NAME`='大盘纸') AS b,
+        (SELECT SUM(ws.AMOUNT*s.MONEY) FROM p_wc_storeroom AS ws RIGHT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID AND s.TYPE_APPLICATION=1) WHERE ws.WC_ID=w.WC_ID AND s.`NAME`='发泡液') AS c,
+        (SELECT SUM(ws.AMOUNT*s.MONEY) FROM p_wc_storeroom AS ws RIGHT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID AND s.TYPE_APPLICATION=1) WHERE ws.WC_ID=w.WC_ID AND NOT FIND_IN_SET(s.`NAME`, '大盘纸,发泡液')) AS d,
+        (SELECT SUM(ws.AMOUNT*s.MONEY) FROM p_wc_storeroom AS ws RIGHT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID AND s.TYPE_APPLICATION=4) WHERE ws.WC_ID=w.WC_ID AND ws.`YEAR`=#{year} AND ws.`MONTH`='01') AS e,
+        (SELECT SUM(ws.AMOUNT*s.MONEY) FROM p_wc_storeroom AS ws RIGHT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID AND s.TYPE_APPLICATION=4) WHERE ws.WC_ID=w.WC_ID AND ws.`YEAR`=#{year} AND ws.`MONTH`='02') AS f,
+        (SELECT SUM(ws.AMOUNT*s.MONEY) FROM p_wc_storeroom AS ws RIGHT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID AND s.TYPE_APPLICATION=4) WHERE ws.WC_ID=w.WC_ID AND ws.`YEAR`=#{year} AND ws.`MONTH`='03') AS g,
+        (SELECT SUM(ws.AMOUNT*s.MONEY) FROM p_wc_storeroom AS ws RIGHT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID AND s.TYPE_APPLICATION=4) WHERE ws.WC_ID=w.WC_ID AND ws.`YEAR`=#{year} AND ws.`MONTH`='04') AS h,
+        (SELECT SUM(ws.AMOUNT*s.MONEY) FROM p_wc_storeroom AS ws RIGHT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID AND s.TYPE_APPLICATION=4) WHERE ws.WC_ID=w.WC_ID AND ws.`YEAR`=#{year} AND ws.`MONTH`='05') AS i,
+        (SELECT SUM(ws.AMOUNT*s.MONEY) FROM p_wc_storeroom AS ws RIGHT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID AND s.TYPE_APPLICATION=4) WHERE ws.WC_ID=w.WC_ID AND ws.`YEAR`=#{year} AND ws.`MONTH`='06') AS j,
+        (SELECT IF(e>=300,(SELECT GROUP_CONCAT(DISTINCT CONCAT(s.`NAME`,ws.AMOUNT,s.UNIT)) FROM p_wc_storeroom AS ws RIGHT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID AND s.TYPE_APPLICATION=4) WHERE ws.WC_ID=w.WC_ID AND ws.`YEAR`=#{year} AND ws.`MONTH`='01'),NULL)) AS k,
+        (SELECT IF(f>=300,(SELECT GROUP_CONCAT(DISTINCT CONCAT(s.`NAME`,ws.AMOUNT,s.UNIT)) FROM p_wc_storeroom AS ws RIGHT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID AND s.TYPE_APPLICATION=4) WHERE ws.WC_ID=w.WC_ID AND ws.`YEAR`=#{year} AND ws.`MONTH`='02'),NULL)) AS l,
+        (SELECT IF(g>=300,(SELECT GROUP_CONCAT(DISTINCT CONCAT(s.`NAME`,ws.AMOUNT,s.UNIT)) FROM p_wc_storeroom AS ws RIGHT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID AND s.TYPE_APPLICATION=4) WHERE ws.WC_ID=w.WC_ID AND ws.`YEAR`=#{year} AND ws.`MONTH`='03'),NULL)) AS m,
+        (SELECT IF(h>=300,(SELECT GROUP_CONCAT(DISTINCT CONCAT(s.`NAME`,ws.AMOUNT,s.UNIT)) FROM p_wc_storeroom AS ws RIGHT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID AND s.TYPE_APPLICATION=4) WHERE ws.WC_ID=w.WC_ID AND ws.`YEAR`=#{year} AND ws.`MONTH`='04'),NULL)) AS n,
+        (SELECT IF(i>=300,(SELECT GROUP_CONCAT(DISTINCT CONCAT(s.`NAME`,ws.AMOUNT,s.UNIT)) FROM p_wc_storeroom AS ws RIGHT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID AND s.TYPE_APPLICATION=4) WHERE ws.WC_ID=w.WC_ID AND ws.`YEAR`=#{year} AND ws.`MONTH`='05'),NULL)) AS o,
+        (SELECT IF(j>=300,(SELECT GROUP_CONCAT(DISTINCT CONCAT(s.`NAME`,ws.AMOUNT,s.UNIT)) FROM p_wc_storeroom AS ws RIGHT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID AND s.TYPE_APPLICATION=4) WHERE ws.WC_ID=w.WC_ID AND ws.`YEAR`=#{year} AND ws.`MONTH`='06'),NULL)) AS p
+        FROM cy_wc AS w
+    </select>
+
+    <select id="findWcCostAccountBySecondHalf" resultType="cc.mrbird.febs.chaoyang3team.domain.Wc">
+        SELECT
+        w.WC_ID,
+        w.WC_SORT,
+        w.WC_OWN,
+        w.WC_NUM,
+        w.WC_NAME,
+        (SELECT GROUP_CONCAT(DISTINCT s.NAME) FROM p_wc_storeroom AS ws RIGHT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID AND s.TYPE_APPLICATION=1) WHERE ws.WC_ID=w.WC_ID AND FIND_IN_SET(s.`NAME`, '大盘纸,发泡液')) AS a,
+        (SELECT SUM(ws.AMOUNT*s.MONEY) FROM p_wc_storeroom AS ws RIGHT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID AND s.TYPE_APPLICATION=1) WHERE ws.WC_ID=w.WC_ID AND s.`NAME`='大盘纸') AS b,
+        (SELECT SUM(ws.AMOUNT*s.MONEY) FROM p_wc_storeroom AS ws RIGHT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID AND s.TYPE_APPLICATION=1) WHERE ws.WC_ID=w.WC_ID AND s.`NAME`='发泡液') AS c,
+        (SELECT SUM(ws.AMOUNT*s.MONEY) FROM p_wc_storeroom AS ws RIGHT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID AND s.TYPE_APPLICATION=1) WHERE ws.WC_ID=w.WC_ID AND NOT FIND_IN_SET(s.`NAME`, '大盘纸,发泡液')) AS d,
+        (SELECT SUM(ws.AMOUNT*s.MONEY) FROM p_wc_storeroom AS ws RIGHT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID AND s.TYPE_APPLICATION=4) WHERE ws.WC_ID=w.WC_ID AND ws.`YEAR`=#{year} AND ws.`MONTH`='07') AS e,
+        (SELECT SUM(ws.AMOUNT*s.MONEY) FROM p_wc_storeroom AS ws RIGHT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID AND s.TYPE_APPLICATION=4) WHERE ws.WC_ID=w.WC_ID AND ws.`YEAR`=#{year} AND ws.`MONTH`='08') AS f,
+        (SELECT SUM(ws.AMOUNT*s.MONEY) FROM p_wc_storeroom AS ws RIGHT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID AND s.TYPE_APPLICATION=4) WHERE ws.WC_ID=w.WC_ID AND ws.`YEAR`=#{year} AND ws.`MONTH`='09') AS g,
+        (SELECT SUM(ws.AMOUNT*s.MONEY) FROM p_wc_storeroom AS ws RIGHT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID AND s.TYPE_APPLICATION=4) WHERE ws.WC_ID=w.WC_ID AND ws.`YEAR`=#{year} AND ws.`MONTH`='10') AS h,
+        (SELECT SUM(ws.AMOUNT*s.MONEY) FROM p_wc_storeroom AS ws RIGHT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID AND s.TYPE_APPLICATION=4) WHERE ws.WC_ID=w.WC_ID AND ws.`YEAR`=#{year} AND ws.`MONTH`='11') AS i,
+        (SELECT SUM(ws.AMOUNT*s.MONEY) FROM p_wc_storeroom AS ws RIGHT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID AND s.TYPE_APPLICATION=4) WHERE ws.WC_ID=w.WC_ID AND ws.`YEAR`=#{year} AND ws.`MONTH`='12') AS j,
+        (SELECT IF(e>=300,(SELECT GROUP_CONCAT(DISTINCT CONCAT(s.`NAME`,ws.AMOUNT,s.UNIT)) FROM p_wc_storeroom AS ws RIGHT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID AND s.TYPE_APPLICATION=4) WHERE ws.WC_ID=w.WC_ID AND ws.`YEAR`=#{year} AND ws.`MONTH`='07'),NULL)) AS k,
+        (SELECT IF(f>=300,(SELECT GROUP_CONCAT(DISTINCT CONCAT(s.`NAME`,ws.AMOUNT,s.UNIT)) FROM p_wc_storeroom AS ws RIGHT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID AND s.TYPE_APPLICATION=4) WHERE ws.WC_ID=w.WC_ID AND ws.`YEAR`=#{year} AND ws.`MONTH`='08'),NULL)) AS l,
+        (SELECT IF(g>=300,(SELECT GROUP_CONCAT(DISTINCT CONCAT(s.`NAME`,ws.AMOUNT,s.UNIT)) FROM p_wc_storeroom AS ws RIGHT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID AND s.TYPE_APPLICATION=4) WHERE ws.WC_ID=w.WC_ID AND ws.`YEAR`=#{year} AND ws.`MONTH`='09'),NULL)) AS m,
+        (SELECT IF(h>=300,(SELECT GROUP_CONCAT(DISTINCT CONCAT(s.`NAME`,ws.AMOUNT,s.UNIT)) FROM p_wc_storeroom AS ws RIGHT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID AND s.TYPE_APPLICATION=4) WHERE ws.WC_ID=w.WC_ID AND ws.`YEAR`=#{year} AND ws.`MONTH`='10'),NULL)) AS n,
+        (SELECT IF(i>=300,(SELECT GROUP_CONCAT(DISTINCT CONCAT(s.`NAME`,ws.AMOUNT,s.UNIT)) FROM p_wc_storeroom AS ws RIGHT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID AND s.TYPE_APPLICATION=4) WHERE ws.WC_ID=w.WC_ID AND ws.`YEAR`=#{year} AND ws.`MONTH`='11'),NULL)) AS o,
+        (SELECT IF(j>=300,(SELECT GROUP_CONCAT(DISTINCT CONCAT(s.`NAME`,ws.AMOUNT,s.UNIT)) FROM p_wc_storeroom AS ws RIGHT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID AND s.TYPE_APPLICATION=4) WHERE ws.WC_ID=w.WC_ID AND ws.`YEAR`=#{year} AND ws.`MONTH`='12'),NULL)) AS p
+        FROM cy_wc AS w
+    </select>
+
+    <select id="getWcIdByWcNum" resultType="java.lang.Long">
+         SELECT WC_ID FROM cy_wc WHERE WC_NUM = #{wcNum} LIMIT 1
+    </select>
+    <select id="getWcIdByWaterNum" resultType="java.lang.Long">
+         SELECT WC_ID FROM cy_wc WHERE WATER_NUM = #{waterNum} LIMIT 1
+    </select>
+    <select id="getWcIdByElectricityNum" resultType="java.lang.Long">
+         SELECT WC_ID FROM cy_wc WHERE ELECTRICITY_NUM = #{electricityNum} LIMIT 1
+    </select>
+
+    <select id="findAllMonthWcConsumptionByYear" resultType="java.util.Map">
+        SELECT
+        cw.WC_OWN,
+        SUM(cs.MONEY) AS money,
+        CONCAT(right(pws.`YEAR`,2),'-',pws.`MONTH`) AS date
+        FROM cy_wc AS cw
+        LEFT JOIN p_wc_storeroom AS pws ON(pws.WC_ID=cw.WC_ID)
+        LEFT JOIN cy_storeroom AS cs ON(cs.ID=pws.STOREROOM_ID)
+        WHERE pws.`YEAR`=#{year}
+        GROUP BY
+        cw.WC_OWN,pws.`MONTH`
+    </select>
+
+    <select id="findAllOwnWcConsumptionByYear" resultType="java.util.Map">
+        CALL findAllOwnWcConsumptionByYear(#{year})
+    </select>
+
+</mapper>

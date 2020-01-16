@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.mrbird.febs.chaoyang3team.dao.ElectricityMapper">
+
+    <select id="findElectricityDetail" resultType="cc.mrbird.febs.chaoyang3team.domain.Electricity">
+        SELECT
+        wc.WC_ID,
+        wc.WC_NAME,
+        wc.WC_NUM AS wcNum,
+        wc.ELECTRICITY_NUM,
+        wc.PAYMENT_NUM,
+        e.ELECTRICITY_ID AS electricityId,
+        e.`YEAR`,
+        e.`MONTH`,
+        e.ACTUAL_AMOUNT,
+        e.UNIT_PRICE,
+        e.TOTAL_AMOUNT,
+        e.CREATE_DATE AS createDate,
+        e.REC_DATE,
+        e.TYPE
+        FROM cy_electricity AS e
+        LEFT JOIN p_wc_electricity AS we ON(we.ELECTRICITY_ID=e.ELECTRICITY_ID)
+        LEFT JOIN cy_wc AS wc ON(wc.WC_ID=we.WC_ID)
+        WHERE 1=1
+        <if test="electricity.wcName != null and electricity.wcName != ''">
+            AND wc.WC_NAME LIKE CONCAT('%',#{electricity.wcName},'%')
+        </if>
+        <if test="electricity.wcNum != null and electricity.wcNum != ''">
+            AND wc.WC_NUM LIKE CONCAT('%',#{electricity.wcNum},'%')
+        </if>
+        <if test="electricity.electricityNum != null and electricity.electricityNum != ''">
+            AND wc.ELECTRICITY_NUM LIKE CONCAT('%',#{electricity.electricityNum},'%')
+        </if>
+        <if test="electricity.year != null and electricity.year != ''">
+            AND e.`YEAR`=#{electricity.year}
+        </if>
+        <if test="electricity.month != null and electricity.month != ''">
+            AND e.`MONTH`=#{electricity.month}
+        </if>
+        <if test="electricity.createTimeFrom != null and electricity.createTimeFrom !=''">
+            AND e.CREATE_DATE &gt;= #{electricity.createTimeFrom}
+        </if>
+        <if test="electricity.createTimeTo!= null and electricity.createTimeTo !=''">
+            AND e.CREATE_DATE &lt;= #{electricity.createTimeTo}
+        </if>
+    </select>
+</mapper>

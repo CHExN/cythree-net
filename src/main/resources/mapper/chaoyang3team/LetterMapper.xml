@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.mrbird.febs.chaoyang3team.dao.LetterMapper">
+
+    <select id="findLetter" resultType="cc.mrbird.febs.chaoyang3team.domain.Letter">
+        SELECT
+        s.LETTER_ID AS letterId,
+        s.DEPT_ID,
+        s.DEPT_NAME,
+        s.REMARK,
+        s.LETTER_USER,
+        s.DATETIME,
+        s.PROCESS,
+        s.STEP,
+        s.REVIEW,
+        s.USERNAME
+        FROM cy_letter AS s
+        WHERE 1=1
+        <if test="letter.deptId != null and letter.deptId !=''">
+            AND s.DEPT_ID = #{letter.deptId}
+        </if>
+        <if test="letter.createTimeFrom != null and letter.createTimeFrom !=''">
+            AND s.DATETIME &gt;= #{letter.createTimeFrom}
+        </if>
+        <if test="letter.createTimeTo!= null and letter.createTimeTo !=''">
+            AND s.DATETIME &lt;= #{letter.createTimeTo}
+        </if>
+        <if test="letter.process!= null and seal.process !=''">
+            AND FIND_IN_SET(s.PROCESS, #{letter.process})
+        </if>
+    </select>
+</mapper>

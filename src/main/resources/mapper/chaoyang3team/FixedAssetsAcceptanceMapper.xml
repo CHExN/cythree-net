@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.mrbird.febs.chaoyang3team.dao.FixedAssetsAcceptanceMapper">
+
+    <select id="findFixedAssetsAcceptanceDetail"
+            resultType="cc.mrbird.febs.chaoyang3team.domain.FixedAssetsAcceptance">
+        SELECT
+        faa.ID,
+        faa.`NAME`,
+        faa.NUM,
+        faa.MANAGER,
+        faa.MONEY,
+        faa.MONEY_TRUE,
+        faa.IS_MATCH,
+        faa.IS_APPLICABILITY,
+        faa.IS_INDICATORS,
+        faa.IS_ACCESSORIES,
+        faa.IS_NEW,
+        faa.IS_COMPLETE,
+        faa.REMARK_O,
+        faa.REMARK,
+        faa.LOCATION,
+        faa.INSTALL_COMPLETE_DATE,
+        faa.ACCEPTANCE_DATE,
+        faa.ACCEPTANCE_RESULT,
+        faa.STOREROOM_OUT_ID,
+        spo.NUM AS storeroomOutNum,
+        spo.MONEY AS storeroomOutMoney
+        FROM cy_fixed_assets_acceptance AS faa
+        LEFT JOIN cy_storeroom_put_out AS spo ON(spo.IS_PUT='2' AND spo.ID=faa.STOREROOM_OUT_ID)
+        WHERE 1=1
+        <if test="faa.name != null and faa.name != ''">
+            AND faa.`NAME` LIKE CONCAT('%',#{faa.name},'%')
+        </if>
+        <if test="faa.num != null and faa.num != ''">
+            AND faa.NUM LIKE CONCAT('%',#{faa.num},'%')
+        </if>
+        <if test="faa.createTimeFrom != null and faa.createTimeFrom !=''">
+            AND faa.ACCEPTANCE_DATE &gt;= #{faa.createTimeFrom}
+        </if>
+        <if test="faa.createTimeTo!= null and faa.createTimeTo !=''">
+            AND faa.ACCEPTANCE_DATE &lt;= #{faa.createTimeTo}
+        </if>
+    </select>
+</mapper>

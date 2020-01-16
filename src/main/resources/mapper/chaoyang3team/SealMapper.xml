@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.mrbird.febs.chaoyang3team.dao.SealMapper">
+
+    <select id="findSeal" resultType="cc.mrbird.febs.chaoyang3team.domain.Seal">
+        SELECT
+        s.SEAL_ID AS sealId,
+        s.DEPT_ID,
+        s.DEPT_NAME,
+        s.REMARK,
+        s.SEAL_USER,
+        s.DATETIME,
+        s.AMOUNT,
+        s.PROCESS,
+        s.STEP,
+        s.REVIEW,
+        s.USERNAME
+        FROM cy_seal AS s
+        WHERE 1=1
+        <if test="seal.deptId != null and seal.deptId !=''">
+            AND s.DEPT_ID = #{seal.deptId}
+        </if>
+        <if test="seal.createTimeFrom != null and seal.createTimeFrom !=''">
+            AND s.DATETIME &gt;= #{seal.createTimeFrom}
+        </if>
+        <if test="seal.createTimeTo!= null and seal.createTimeTo !=''">
+            AND s.DATETIME &lt;= #{seal.createTimeTo}
+        </if>
+        <if test="seal.process!= null and seal.process !=''">
+            AND FIND_IN_SET(s.PROCESS, #{seal.process})
+        </if>
+    </select>
+</mapper>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.mrbird.febs.chaoyang3team.dao.StoreroomPutMapper">
+
+    <!--根据入库记录ID查找对应库房ID-->
+    <select id="getStoreroomIdsByStoreroomPutIds" resultType="java.lang.String">
+        SELECT STOREROOM_ID FROM p_storeroom_put WHERE FIND_IN_SET(PUT_ID, #{StoreroomPutIds})
+    </select>
+
+    <!--根据入库记录ID查找对应库房详情-->
+    <select id="getStoreroomsByStoreroomPutId" resultType="cc.mrbird.febs.chaoyang3team.domain.Storeroom">
+        SELECT
+        s.*,
+        s2.AMOUNT AS storeroomCount
+        FROM
+        cy_storeroom AS s
+        LEFT JOIN p_storeroom_put AS sp ON (s.ID = sp.STOREROOM_ID)
+        LEFT JOIN cy_storeroom AS s2 ON (s.PARENT_ID = s2.ID)
+        WHERE sp.PUT_ID = #{StoreroomPutId}
+    </select>
+
+    <select id="findStoreroomPutTypeApplicationProportion" resultType="java.util.Map">
+        SELECT LEFT(td.VALUEE,2) AS item,SUM(cspo.MONEY) AS money
+        FROM cy_storeroom_put_out AS cspo
+        LEFT JOIN t_dict AS td ON td.TABLE_NAME='cy_storeroom' AND td.FIELD_NAME='TYPE_APPLICATION' AND td.KEYY=cspo.TYPE_APPLICATION
+        WHERE cspo.IS_PUT='1' AND DATE_FORMAT(cspo.DATE,'%Y-%m')=#{date}
+        GROUP BY cspo.TYPE_APPLICATION
+    </select>
+</mapper>

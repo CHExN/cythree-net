@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.mrbird.febs.chaoyang3team.dao.CondolencesMapper">
+
+    <select id="findCondolencesDetail" resultType="cc.mrbird.febs.chaoyang3team.domain.Condolences">
+        SELECT
+        c.ID,
+        c.`NAME`,
+        c.SEXX,
+        c.AGE,
+        c.DEPT_ID,
+        d.DEPT_NAME,
+        c.ADDRESS,
+        c.PHONE,
+        c.TEXT,
+        c.`STATUS`,
+        c.USERNAME
+        FROM cy_condolences AS c
+        LEFT JOIN t_dept AS d ON(d.DEPT_ID=c.DEPT_ID)
+        WHERE 1=1
+        <choose>
+            <when test="roleId">
+                <if test="condolences.deptId != null and condolences.deptId != ''">
+                    AND c.DEPT_ID = #{condolences.deptId}
+                </if>
+            </when>
+            <otherwise>
+                AND c.DEPT_ID = #{condolences.deptId}
+            </otherwise>
+        </choose>
+        <if test="condolences.status != null and condolences.status != ''">
+            AND FIND_IN_SET(c.STATUS, #{condolences.status})
+        </if>
+        <if test="condolences.sexx != null and condolences.sexx != ''">
+            AND c.SEXX = #{condolences.sexx}
+        </if>
+        <if test="condolences.name != null and condolences.name != ''">
+            AND c.NAME LIKE CONCAT('%',#{condolences.name},'%')
+        </if>
+        <if test="condolences.phone != null and condolences.phone != ''">
+            AND c.PHONE LIKE CONCAT('%',#{condolences.phone},'%')
+        </if>
+        <if test="condolences.address != null and condolences.address != ''">
+            AND c.ADDRESS LIKE CONCAT('%',#{condolences.address},'%')
+        </if>
+    </select>
+</mapper>

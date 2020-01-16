@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.mrbird.febs.chaoyang3team.dao.ApplicationPlanMapper">
+
+    <!--根据申请单ID删除该申请单与计划单的关系-->
+    <!--<delete id="deleteByApplicationId">-->
+        <!--DELETE FROM p_application_plan WHERE APPLICATION_ID = #{applicationId}-->
+    <!--</delete>-->
+
+    <!--根据计划单ID删除该计划单与申请单的关系-->
+    <!--<delete id="deleteByPlanId">-->
+        <!--DELETE FROM p_application_plan WHERE PLAN_ID = #{planId}-->
+    <!--</delete>-->
+
+    <!--根据申请单ID查找对应计划单ID-->
+    <select id="findPlanIdsByApplicationIds" resultType="java.lang.String">
+        SELECT PLAN_ID FROM p_application_plan WHERE FIND_IN_SET(APPLICATION_ID, #{applicationIds})
+    </select>
+
+    <!--根据申请单ID查找对应计划单详情-->
+    <select id="findPlansByApplicationId" resultType="cc.mrbird.febs.chaoyang3team.domain.Plan">
+        SELECT cp.* FROM p_application_plan AS pap LEFT JOIN cy_plan AS cp ON(pap.PLAN_ID = cp.ID) WHERE pap.APPLICATION_ID = #{applicationId}
+    </select>
+</mapper>

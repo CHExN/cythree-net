@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.mrbird.febs.chaoyang3team.dao.CarMapper">
+
+    <select id="findCarDetail" resultType="cc.mrbird.febs.chaoyang3team.domain.Car">
+        SELECT
+        c.CAR_ID AS carId,
+        c.CAR_NUM AS carNum,
+        c.CAR_TYPE,
+        c.COLOR,
+        c.CAR_DISPLACEMENT,
+        c.CAR_KIND AS carKind,
+        c.DATE,
+        c.CAR_USE AS carUse,
+        c.CAR_USE_UNIT,
+        c.CAR_UNIT,
+        c.CAR_NUM_OLD,
+        c.REMARK,
+        c.`STATUS`,
+        c.CARD_NUM
+        FROM cy_car AS c
+        WHERE 1=1
+        <if test="car.carNum != null and car.carNum != ''">
+            AND c.CAR_NUM LIKE CONCAT('%',#{car.carNum},'%')
+        </if>
+        <if test="car.carType != null and car.carType != ''">
+            AND c.CAR_TYPE LIKE CONCAT('%',#{car.carType},'%')
+        </if>
+        <if test="car.color != null and car.color != ''">
+            AND FIND_IN_SET(c.COLOR, #{car.color})
+        </if>
+        <if test="car.carKind != null and car.carKind != ''">
+            AND FIND_IN_SET(c.CAR_KIND, #{car.carKind})
+        </if>
+        <if test="car.carUse != null and car.carUse != ''">
+            AND FIND_IN_SET(c.CAR_USE, #{car.carUse})
+        </if>
+        <if test="car.status != null and car.status != ''">
+            AND FIND_IN_SET(c.STATUS, #{car.status})
+        </if>
+    </select>
+
+    <select id="getCarSimplify" resultType="cc.mrbird.febs.chaoyang3team.domain.Car">
+        SELECT
+        c.CAR_ID,
+        c.CAR_NUM,
+        c.CARD_NUM,
+        c.COLOR
+        FROM cy_car AS c
+    </select>
+
+    <select id="getCarKind" resultType="java.lang.String">
+        SELECT CAR_KIND FROM cy_car GROUP BY CAR_KIND
+    </select>
+
+    <select id="getCarUse" resultType="java.lang.String">
+        SELECT CAR_USE FROM cy_car GROUP BY CAR_USE
+    </select>
+</mapper>

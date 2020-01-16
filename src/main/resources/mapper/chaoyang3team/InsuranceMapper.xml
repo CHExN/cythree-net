@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.mrbird.febs.chaoyang3team.dao.InsuranceMapper">
+
+    <select id="findInsuranceDetail" resultType="cc.mrbird.febs.chaoyang3team.domain.Insurance">
+        <if test="insurance.insideOrOutside == 0">
+            SELECT
+            i.ID,
+            i.INSIDE_OR_OUTSIDE,
+            i.INSURANCE_ID,
+            i.PENSION_INSURANCE_INDIVIDUAL,
+            i.UNEMPLOYMENT_INSURANCE_INDIVIDUAL,
+            i.MEDICAL_INSURANCE_INDIVIDUAL,
+            i.MEDICAL_MUTUAL_AID_INDIVIDUAL,
+            i.CORPORATE_ANNUITY_INDIVIDUAL,
+            i.PENSION_INSURANCE_UNIT,
+            i.UNEMPLOYMENT_INSURANCE_UNIT,
+            i.WORK_INJURY_INSURANCE_UNIT,
+            i.MATERNITY_INSURANCE_UNIT,
+            i.MEDICAL_INSURANCE_UNIT,
+            i.MEDICAL_MUTUAL_AID_UNIT,
+            i.PUBLIC_THERAPY_SUPPLEMENT_UNIT,
+            i.CORPORATE_ANNUITY_UNIT,
+            i.CREATE_TIME,
+            i.MODIFY_TIME,
+            i.`YEAR`,
+            i.`MONTH`,
+            cii.PENSION_INSURANCE_BASE,
+            cii.WORK_INJURY_INSURANCE_BASE,
+            cii.MEDICAL_INSURANCE_BASE,
+            s.STAFF_ID,
+            s.`NAME`,
+            s.ID_NUM,
+            -1 AS sortNum1,
+            s.SORT_NUM AS sortNum
+            FROM cy_insurance AS i
+            LEFT JOIN cy_insurance_inside AS cii ON(cii.ID=i.INSURANCE_ID)
+            LEFT JOIN cy_staff_inside AS s ON(s.STAFF_ID=cii.STAFF_ID)
+            WHERE i.INSIDE_OR_OUTSIDE='0'
+            <if test="insurance.name != null and insurance.name != ''">
+                AND s.`NAME` LIKE CONCAT('%',#{insurance.name},'%')
+            </if>
+            <if test="insurance.idNum != null and insurance.idNum != ''">
+                AND s.ID_NUM LIKE CONCAT('%',#{insurance.idNum},'%')
+            </if>
+            <if test="insurance.year != null and insurance.year != ''">
+                AND i.`YEAR` = #{insurance.year}
+            </if>
+            <if test="insurance.month != null and insurance.month != ''">
+                AND i.`MONTH` = #{insurance.month}
+            </if>
+            ORDER BY sortNum1 ASC, sortNum ASC
+        </if>
+        <if test="insurance.insideOrOutside == 1">
+            SELECT
+            i.ID,
+            i.INSIDE_OR_OUTSIDE,
+            i.INSURANCE_ID,
+            i.PENSION_INSURANCE_INDIVIDUAL,
+            i.UNEMPLOYMENT_INSURANCE_INDIVIDUAL,
+            i.MEDICAL_INSURANCE_INDIVIDUAL,
+            i.MEDICAL_MUTUAL_AID_INDIVIDUAL,
+            i.CORPORATE_ANNUITY_INDIVIDUAL,
+            i.PENSION_INSURANCE_UNIT,
+            i.UNEMPLOYMENT_INSURANCE_UNIT,
+            i.WORK_INJURY_INSURANCE_UNIT,
+            i.MATERNITY_INSURANCE_UNIT,
+            i.MEDICAL_INSURANCE_UNIT,
+            i.MEDICAL_MUTUAL_AID_UNIT,
+            i.PUBLIC_THERAPY_SUPPLEMENT_UNIT,
+            i.CORPORATE_ANNUITY_UNIT,
+            i.CREATE_TIME,
+            i.MODIFY_TIME,
+            i.`YEAR`,
+            i.`MONTH`,
+            cio.PENSION_INSURANCE_BASE,
+            cio.WORK_INJURY_INSURANCE_BASE,
+            cio.MEDICAL_INSURANCE_BASE,
+            s.STAFF_ID,
+            s.`NAME`,
+            s.ID_NUM,
+            s.SORT_NUM_1 AS sortNum1,
+            s.SORT_NUM_2 AS sortNum
+            FROM cy_insurance AS i
+            LEFT JOIN cy_insurance_outside AS cio ON(cio.ID=i.INSURANCE_ID)
+            LEFT JOIN cy_staff_outside AS s ON(s.STAFF_ID=cio.STAFF_ID)
+            WHERE i.INSIDE_OR_OUTSIDE='1'
+            <if test="insurance.name != null and insurance.name != ''">
+                AND s.`NAME` LIKE CONCAT('%',#{insurance.name},'%')
+            </if>
+            <if test="insurance.idNum != null and insurance.idNum != ''">
+                AND s.ID_NUM LIKE CONCAT('%',#{insurance.idNum},'%')
+            </if>
+            <if test="insurance.year != null and insurance.year != ''">
+                AND i.`YEAR` = #{insurance.year}
+            </if>
+            <if test="insurance.month != null and insurance.month != ''">
+                AND i.`MONTH` = #{insurance.month}
+            </if>
+            ORDER BY sortNum1 ASC, sortNum ASC
+        </if>
+        <if test="insurance.insideOrOutside == 2">
+            SELECT
+            i.ID,
+            i.INSIDE_OR_OUTSIDE,
+            i.INSURANCE_ID,
+            i.PENSION_INSURANCE_INDIVIDUAL,
+            i.UNEMPLOYMENT_INSURANCE_INDIVIDUAL,
+            i.MEDICAL_INSURANCE_INDIVIDUAL,
+            i.MEDICAL_MUTUAL_AID_INDIVIDUAL,
+            i.CORPORATE_ANNUITY_INDIVIDUAL,
+            i.PENSION_INSURANCE_UNIT,
+            i.UNEMPLOYMENT_INSURANCE_UNIT,
+            i.WORK_INJURY_INSURANCE_UNIT,
+            i.MATERNITY_INSURANCE_UNIT,
+            i.MEDICAL_INSURANCE_UNIT,
+            i.MEDICAL_MUTUAL_AID_UNIT,
+            i.PUBLIC_THERAPY_SUPPLEMENT_UNIT,
+            i.CORPORATE_ANNUITY_UNIT,
+            i.CREATE_TIME,
+            i.MODIFY_TIME,
+            i.`YEAR`,
+            i.`MONTH`,
+            cii.PENSION_INSURANCE_BASE,
+            cii.WORK_INJURY_INSURANCE_BASE,
+            cii.MEDICAL_INSURANCE_BASE,
+            s.STAFF_ID,
+            s.`NAME`,
+            s.ID_NUM,
+            -1 AS sortNum1,
+            s.SORT_NUM AS sortNum
+            FROM cy_insurance AS i
+            LEFT JOIN cy_insurance_inside AS cii ON(cii.ID=i.INSURANCE_ID)
+            LEFT JOIN cy_staff_inside AS s ON(s.STAFF_ID=cii.STAFF_ID)
+            WHERE i.INSIDE_OR_OUTSIDE='0'
+            <if test="insurance.name != null and insurance.name != ''">
+                AND s.`NAME` LIKE CONCAT('%',#{insurance.name},'%')
+            </if>
+            <if test="insurance.idNum != null and insurance.idNum != ''">
+                AND s.ID_NUM LIKE CONCAT('%',#{insurance.idNum},'%')
+            </if>
+            <if test="insurance.year != null and insurance.year != ''">
+                AND i.`YEAR` = #{insurance.year}
+            </if>
+            <if test="insurance.month != null and insurance.month != ''">
+                AND i.`MONTH` = #{insurance.month}
+            </if>
+            UNION ALL
+            SELECT
+            i.ID,
+            i.INSIDE_OR_OUTSIDE,
+            i.INSURANCE_ID,
+            i.PENSION_INSURANCE_INDIVIDUAL,
+            i.UNEMPLOYMENT_INSURANCE_INDIVIDUAL,
+            i.MEDICAL_INSURANCE_INDIVIDUAL,
+            i.MEDICAL_MUTUAL_AID_INDIVIDUAL,
+            i.CORPORATE_ANNUITY_INDIVIDUAL,
+            i.PENSION_INSURANCE_UNIT,
+            i.UNEMPLOYMENT_INSURANCE_UNIT,
+            i.WORK_INJURY_INSURANCE_UNIT,
+            i.MATERNITY_INSURANCE_UNIT,
+            i.MEDICAL_INSURANCE_UNIT,
+            i.MEDICAL_MUTUAL_AID_UNIT,
+            i.PUBLIC_THERAPY_SUPPLEMENT_UNIT,
+            i.CORPORATE_ANNUITY_UNIT,
+            i.CREATE_TIME,
+            i.MODIFY_TIME,
+            i.`YEAR`,
+            i.`MONTH`,
+            cio.PENSION_INSURANCE_BASE,
+            cio.WORK_INJURY_INSURANCE_BASE,
+            cio.MEDICAL_INSURANCE_BASE,
+            s.STAFF_ID,
+            s.`NAME`,
+            s.ID_NUM,
+            s.SORT_NUM_1 AS sortNum1,
+            s.SORT_NUM_2 AS sortNum
+            FROM cy_insurance AS i
+            LEFT JOIN cy_insurance_outside AS cio ON(cio.ID=i.INSURANCE_ID)
+            LEFT JOIN cy_staff_outside AS s ON(s.STAFF_ID=cio.STAFF_ID)
+            WHERE i.INSIDE_OR_OUTSIDE='1'
+            <if test="insurance.name != null and insurance.name != ''">
+                AND s.`NAME` LIKE CONCAT('%',#{insurance.name},'%')
+            </if>
+            <if test="insurance.idNum != null and insurance.idNum != ''">
+                AND s.ID_NUM LIKE CONCAT('%',#{insurance.idNum},'%')
+            </if>
+            <if test="insurance.year != null and insurance.year != ''">
+                AND i.`YEAR` = #{insurance.year}
+            </if>
+            <if test="insurance.month != null and insurance.month != ''">
+                AND i.`MONTH` = #{insurance.month}
+            </if>
+            ORDER BY sortNum1 ASC, sortNum ASC
+        </if>
+    </select>
+
+    <select id="findInsuranceSummary" resultType="cc.mrbird.febs.chaoyang3team.domain.Insurance">
+        SELECT
+        SUM(i.PENSION_INSURANCE_INDIVIDUAL) AS PENSION_INSURANCE_INDIVIDUAL,
+        SUM(i.UNEMPLOYMENT_INSURANCE_INDIVIDUAL) AS UNEMPLOYMENT_INSURANCE_INDIVIDUAL,
+        SUM(i.MEDICAL_INSURANCE_INDIVIDUAL) AS MEDICAL_INSURANCE_INDIVIDUAL,
+        SUM(i.MEDICAL_MUTUAL_AID_INDIVIDUAL) AS MEDICAL_MUTUAL_AID_INDIVIDUAL,
+        SUM(i.CORPORATE_ANNUITY_INDIVIDUAL) AS CORPORATE_ANNUITY_INDIVIDUAL,
+        SUM(i.PENSION_INSURANCE_UNIT) AS PENSION_INSURANCE_UNIT,
+        SUM(i.UNEMPLOYMENT_INSURANCE_UNIT) AS UNEMPLOYMENT_INSURANCE_UNIT,
+        SUM(i.WORK_INJURY_INSURANCE_UNIT) AS WORK_INJURY_INSURANCE_UNIT,
+        SUM(i.MATERNITY_INSURANCE_UNIT) AS MATERNITY_INSURANCE_UNIT,
+        SUM(i.MEDICAL_INSURANCE_UNIT) AS MEDICAL_INSURANCE_UNIT,
+        SUM(i.MEDICAL_MUTUAL_AID_UNIT) AS MEDICAL_MUTUAL_AID_UNIT,
+        SUM(i.PUBLIC_THERAPY_SUPPLEMENT_UNIT) AS PUBLIC_THERAPY_SUPPLEMENT_UNIT,
+        SUM(i.CORPORATE_ANNUITY_UNIT) AS CORPORATE_ANNUITY_UNIT
+        FROM cy_insurance AS i
+        WHERE i.INSIDE_OR_OUTSIDE='0'
+        AND (i.`YEAR`=#{insurance.yearForm} AND FIND_IN_SET(i.`MONTH`,#{insurance.monthForm}))
+        <if test="insurance.yearTo != null and insurance.yearTo != ''">
+            OR (i.`YEAR`=#{insurance.yearTo} AND FIND_IN_SET(i.`MONTH`,#{insurance.monthTo}))
+        </if>
+        UNION ALL
+        SELECT
+        SUM(i.PENSION_INSURANCE_INDIVIDUAL) AS PENSION_INSURANCE_INDIVIDUAL,
+        SUM(i.UNEMPLOYMENT_INSURANCE_INDIVIDUAL) AS UNEMPLOYMENT_INSURANCE_INDIVIDUAL,
+        SUM(i.MEDICAL_INSURANCE_INDIVIDUAL) AS MEDICAL_INSURANCE_INDIVIDUAL,
+        SUM(i.MEDICAL_MUTUAL_AID_INDIVIDUAL) AS MEDICAL_MUTUAL_AID_INDIVIDUAL,
+        SUM(i.CORPORATE_ANNUITY_INDIVIDUAL) AS CORPORATE_ANNUITY_INDIVIDUAL,
+        SUM(i.PENSION_INSURANCE_UNIT) AS PENSION_INSURANCE_UNIT,
+        SUM(i.UNEMPLOYMENT_INSURANCE_UNIT) AS UNEMPLOYMENT_INSURANCE_UNIT,
+        SUM(i.WORK_INJURY_INSURANCE_UNIT) AS WORK_INJURY_INSURANCE_UNIT,
+        SUM(i.MATERNITY_INSURANCE_UNIT) AS MATERNITY_INSURANCE_UNIT,
+        SUM(i.MEDICAL_INSURANCE_UNIT) AS MEDICAL_INSURANCE_UNIT,
+        SUM(i.MEDICAL_MUTUAL_AID_UNIT) AS MEDICAL_MUTUAL_AID_UNIT,
+        SUM(i.PUBLIC_THERAPY_SUPPLEMENT_UNIT) AS PUBLIC_THERAPY_SUPPLEMENT_UNIT,
+        SUM(i.CORPORATE_ANNUITY_UNIT) AS CORPORATE_ANNUITY_UNIT
+        FROM cy_insurance AS i
+        WHERE i.INSIDE_OR_OUTSIDE='1'
+        AND (i.`YEAR`=#{insurance.yearForm} AND FIND_IN_SET(i.`MONTH`,#{insurance.monthForm}))
+        <if test="insurance.yearTo != null and insurance.yearTo != ''">
+            OR (i.`YEAR`=#{insurance.yearTo} AND FIND_IN_SET(i.`MONTH`,#{insurance.monthTo}))
+        </if>
+    </select>
+
+</mapper>

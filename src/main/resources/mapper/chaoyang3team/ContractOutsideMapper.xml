@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.mrbird.febs.chaoyang3team.dao.ContractOutsideMapper">
+    <select id="findContractOutsideDetail" resultType="cc.mrbird.febs.chaoyang3team.domain.ContractOutside">
+        SELECT
+        cci.ID,
+        cci.ID_NUM,
+        cci.REMARK_ON_FIXED_PERIOD,
+        cci.REMARK_RENEW,
+        cci.REMARK,
+        cci.CONTRACT_PERIOD,
+        cci.CONTRACT_PERIOD_DATE,
+        csi.STAFF_ID,
+        csi.`NAME`
+        FROM cy_contract_outside AS cci
+        LEFT JOIN cy_staff_outside AS csi ON(csi.ID_NUM=cci.ID_NUM)
+        WHERE 1=1
+        <if test="contractOutside.idNum != null and contractOutside.idNum != ''">
+            AND cci.ID_NUM LIKE CONCAT('%',#{contractOutside.idNum},'%')
+        </if>
+        <if test="contractOutside.remarkOnFixedPeriod != null and contractOutside.remarkOnFixedPeriod != ''">
+            AND cci.REMARK_ON_FIXED_PERIOD LIKE CONCAT('%',#{contractOutside.remarkOnFixedPeriod},'%')
+        </if>
+        <!--<if test="contractOutside.contractLaborStart != null and contractOutside.contractLaborStart !=''">-->
+        <!--AND cci.CONTRACT_LABOR_START &gt; #{contractOutside.contractLaborStart}-->
+        <!--</if>-->
+        <!--<if test="contractOutside.contractLaborEnd!= null and contractOutside.contractLaborEnd !=''">-->
+        <!--AND cci.CONTRACT_LABOR_END &lt; #{contractOutside.contractLaborEnd}-->
+        <!--</if>-->
+        <!--<if test="contractOutside.jobAgreementStart != null and contractOutside.jobAgreementStart !=''">-->
+        <!--AND cci.JOB_AGREEMENT_START &gt; #{contractOutside.jobAgreementStart}-->
+        <!--</if>-->
+        <!--<if test="contractOutside.jobAgreementEnd!= null and contractOutside.jobAgreementEnd !=''">-->
+        <!--AND cci.JOB_AGREEMENT_END &lt; #{contractOutside.jobAgreementEnd}-->
+        <!--</if>-->
+        <if test="contractOutside.remarkRenew != null and contractOutside.remarkRenew != ''">
+            AND cci.REMARK_RENEW LIKE CONCAT('%',#{contractOutside.remarkRenew},'%')
+        </if>
+        <if test="contractOutside.remark != null and contractOutside.remark != ''">
+            AND cci.REMARK LIKE CONCAT('%',#{contractOutside.remark},'%')
+        </if>
+        <if test="contractOutside.name != null and contractOutside.name != ''">
+            AND csi.NAME LIKE CONCAT('%',#{contractOutside.name},'%')
+        </if>
+    </select>
+
+    <select id="getContractOutside" resultType="cc.mrbird.febs.chaoyang3team.domain.ContractOutside">
+        SELECT
+        cci.ID,
+        cci.ID_NUM,
+        cci.REMARK_ON_FIXED_PERIOD,
+        cci.CONTRACT_PERIOD,
+        cci.CONTRACT_PERIOD_DATE,
+        cci.REMARK_RENEW,
+        cci.REMARK
+        FROM cy_contract_outside AS cci
+        WHERE cci.ID_NUM=#{idNum}
+    </select>
+
+    <select id="getStaffOutsideIds" resultType="java.lang.String">
+        SELECT cso.STAFF_ID
+        FROM cy_contract_outside AS cco
+        LEFT JOIN cy_staff_outside AS cso ON(cso.ID_NUM=cco.ID_NUM)
+        WHERE FIND_IN_SET(cco.ID, #{contractOutsideIdsStr})
+    </select>
+</mapper>

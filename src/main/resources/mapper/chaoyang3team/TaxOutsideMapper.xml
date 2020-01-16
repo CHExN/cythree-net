@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.mrbird.febs.chaoyang3team.dao.TaxOutsideMapper">
+
+    <select id="findTaxOutsideDetailCount" resultType="java.lang.Integer">
+        SELECT COUNT(1)
+        FROM cy_tax_outside AS t
+        LEFT JOIN cy_staff_outside AS s ON(s.STAFF_ID=t.STAFF_ID)
+        WHERE 1=1
+        <if test="taxOutside.staffName != null and taxOutside.staffName != ''">
+            AND s.`NAME` LIKE CONCAT('%',#{taxOutside.staffName},'%')
+        </if>
+        <if test="taxOutside.idCardType != null and taxOutside.idCardType != ''">
+            AND FIND_IN_SET(t.ID_CARD_TYPE, #{taxOutside.idCardType})
+        </if>
+        <if test="taxOutside.staffIdCard != null and taxOutside.staffIdCard != ''">
+            AND s.ID_NUM LIKE CONCAT('%',#{taxOutside.staffIdCard},'%')
+        </if>
+        <if test="taxOutside.remark != null and taxOutside.remark != ''">
+            AND t.REMARK LIKE CONCAT('%',#{taxOutside.remark},'%')
+        </if>
+        <if test="taxOutside.year != null and taxOutside.year != ''">
+            AND t.`YEAR` = #{taxOutside.year}
+        </if>
+        <if test="taxOutside.month != null and taxOutside.month != ''">
+            AND t.`MONTH` = #{taxOutside.month}
+        </if>
+    </select>
+
+    <select id="findTaxOutsideDetail" resultType="cc.mrbird.febs.chaoyang3team.domain.TaxOutside">
+        SELECT
+        t.ID AS id,
+        t.ID_CARD_TYPE,
+        s.STAFF_ID,
+        s.`NAME` AS staffName,
+        s.ID_NUM AS staffIdCard,
+        s.SORT_NUM_1 AS sortNum1,
+        s.SORT_NUM_2 AS sortNum,
+        t.CURRENT_INCOME,
+        t.CURRENT_TAX_FREE_INCOME,
+        t.BASIC_PENSION_IP,
+        t.BASIC_MEDICAL_IP,
+        t.UNEMPLOYMENT_IP,
+        t.HOUSING_FUND,
+        t.CUMULATIVE_CHILD_E,
+        t.CUMULATIVE_CONTINUING_E,
+        t.CUMULATIVE_HOME_LOAN_INTEREST,
+        t.CUMULATIVE_HOUSING_RENT,
+        t.CUMULATIVE_ELDERLY_SUPPORT,
+        t.CORPORATE_ANNUITY,
+        t.COMMERCIAL_HEALTH_INSURANCE,
+        t.TAX_EXTENSION_PENSION_INSURANCE,
+        t.OTHER,
+        t.ALLOWANCE_FOR_DEDUCTION,
+        t.TAX_DEDUCTION,
+        t.FINAL_WAGE,
+        (SELECT SUM(t.CURRENT_INCOME) FROM cy_tax_outside AS t WHERE s.STAFF_ID=t.STAFF_ID AND `YEAR`=#{taxOutside.year} AND FIND_IN_SET(`MONTH`,#{taxOutside.monthArr}) GROUP BY t.STAFF_ID) AS currentIncomeSum,
+        (SELECT SUM(t.CURRENT_TAX_FREE_INCOME) FROM cy_tax_outside AS t WHERE s.STAFF_ID=t.STAFF_ID AND `YEAR`=#{taxOutside.year} AND FIND_IN_SET(`MONTH`,#{taxOutside.monthArr}) GROUP BY t.STAFF_ID) AS currentTaxFreeIncomeSum,
+        (SELECT SUM(t.BASIC_PENSION_IP) FROM cy_tax_outside AS t WHERE s.STAFF_ID=t.STAFF_ID AND `YEAR`=#{taxOutside.year} AND FIND_IN_SET(`MONTH`,#{taxOutside.monthArr}) GROUP BY t.STAFF_ID) AS basicPensionIpSum,
+        (SELECT SUM(t.BASIC_MEDICAL_IP) FROM cy_tax_outside AS t WHERE s.STAFF_ID=t.STAFF_ID AND `YEAR`=#{taxOutside.year} AND FIND_IN_SET(`MONTH`,#{taxOutside.monthArr}) GROUP BY t.STAFF_ID) AS basicMedicalIpSum,
+        (SELECT SUM(t.UNEMPLOYMENT_IP) FROM cy_tax_outside AS t WHERE s.STAFF_ID=t.STAFF_ID AND `YEAR`=#{taxOutside.year} AND FIND_IN_SET(`MONTH`,#{taxOutside.monthArr}) GROUP BY t.STAFF_ID) AS unemploymentIpSum,
+        (SELECT SUM(t.HOUSING_FUND) FROM cy_tax_outside AS t WHERE s.STAFF_ID=t.STAFF_ID AND `YEAR`=#{taxOutside.year} AND FIND_IN_SET(`MONTH`,#{taxOutside.monthArr}) GROUP BY t.STAFF_ID) AS housingFundSum,
+        (SELECT SUM(t.CUMULATIVE_CHILD_E) FROM cy_tax_outside AS t WHERE s.STAFF_ID=t.STAFF_ID AND `YEAR`=#{taxOutside.year} AND FIND_IN_SET(`MONTH`,#{taxOutside.monthArr}) GROUP BY t.STAFF_ID) AS cumulativeChildESum,
+        (SELECT SUM(t.CUMULATIVE_CONTINUING_E) FROM cy_tax_outside AS t WHERE s.STAFF_ID=t.STAFF_ID AND `YEAR`=#{taxOutside.year} AND FIND_IN_SET(`MONTH`,#{taxOutside.monthArr}) GROUP BY t.STAFF_ID) AS cumulativeContinuingESum,
+        (SELECT SUM(t.CUMULATIVE_HOME_LOAN_INTEREST) FROM cy_tax_outside AS t WHERE s.STAFF_ID=t.STAFF_ID AND `YEAR`=#{taxOutside.year} AND FIND_IN_SET(`MONTH`,#{taxOutside.monthArr}) GROUP BY t.STAFF_ID) AS cumulativeHomeLoanInterestSum,
+        (SELECT SUM(t.CUMULATIVE_HOUSING_RENT) FROM cy_tax_outside AS t WHERE s.STAFF_ID=t.STAFF_ID AND `YEAR`=#{taxOutside.year} AND FIND_IN_SET(`MONTH`,#{taxOutside.monthArr}) GROUP BY t.STAFF_ID) AS cumulativeHousingRentSum,
+        (SELECT SUM(t.CUMULATIVE_ELDERLY_SUPPORT) FROM cy_tax_outside AS t WHERE s.STAFF_ID=t.STAFF_ID AND `YEAR`=#{taxOutside.year} AND FIND_IN_SET(`MONTH`,#{taxOutside.monthArr}) GROUP BY t.STAFF_ID) AS cumulativeElderlySupportSum,
+        (SELECT SUM(t.CORPORATE_ANNUITY) FROM cy_tax_outside AS t WHERE s.STAFF_ID=t.STAFF_ID AND `YEAR`=#{taxOutside.year} AND FIND_IN_SET(`MONTH`,#{taxOutside.monthArr}) GROUP BY t.STAFF_ID) AS corporateAnnuitySum,
+        (SELECT SUM(t.COMMERCIAL_HEALTH_INSURANCE) FROM cy_tax_outside AS t WHERE s.STAFF_ID=t.STAFF_ID AND `YEAR`=#{taxOutside.year} AND FIND_IN_SET(`MONTH`,#{taxOutside.monthArr}) GROUP BY t.STAFF_ID) AS commercialHealthInsuranceSum,
+        (SELECT SUM(t.TAX_EXTENSION_PENSION_INSURANCE) FROM cy_tax_outside AS t WHERE s.STAFF_ID=t.STAFF_ID AND `YEAR`=#{taxOutside.year} AND FIND_IN_SET(`MONTH`,#{taxOutside.monthArr}) GROUP BY t.STAFF_ID) AS taxExtensionPensionInsuranceSum,
+        (SELECT SUM(t.OTHER) FROM cy_tax_outside AS t WHERE s.STAFF_ID=t.STAFF_ID AND `YEAR`=#{taxOutside.year} AND FIND_IN_SET(`MONTH`,#{taxOutside.monthArr}) GROUP BY t.STAFF_ID) AS otherSum,
+        (SELECT SUM(t.ALLOWANCE_FOR_DEDUCTION) FROM cy_tax_outside AS t WHERE s.STAFF_ID=t.STAFF_ID AND `YEAR`=#{taxOutside.year} AND FIND_IN_SET(`MONTH`,#{taxOutside.monthArr}) GROUP BY t.STAFF_ID) AS allowanceForDeductionSum,
+        (SELECT SUM(t.TAX_DEDUCTION) FROM cy_tax_outside AS t WHERE s.STAFF_ID=t.STAFF_ID AND `YEAR`=#{taxOutside.year} AND FIND_IN_SET(`MONTH`,#{taxOutside.monthArr}) GROUP BY t.STAFF_ID) AS taxDeductionSum,
+        (SELECT SUM(t.FINAL_WAGE) FROM cy_tax_outside AS t WHERE s.STAFF_ID=t.STAFF_ID AND `YEAR`=#{taxOutside.year} AND FIND_IN_SET(`MONTH`,#{taxOutside.monthArr}) GROUP BY t.STAFF_ID) AS finalWageSum,
+        t.REMARK,
+        t.CREATE_TIME,
+        t.MODIFY_TIME,
+        t.`YEAR`,
+        t.`MONTH`
+        FROM cy_tax_outside AS t
+        LEFT JOIN cy_staff_outside AS s ON(s.STAFF_ID=t.STAFF_ID)
+        WHERE 1=1
+        <if test="taxOutside.staffName != null and taxOutside.staffName != ''">
+            AND s.`NAME` LIKE CONCAT('%',#{taxOutside.staffName},'%')
+        </if>
+        <if test="taxOutside.idCardType != null and taxOutside.idCardType != ''">
+            AND FIND_IN_SET(t.ID_CARD_TYPE, #{taxOutside.idCardType})
+        </if>
+        <if test="taxOutside.staffIdCard != null and taxOutside.staffIdCard != ''">
+            AND s.ID_NUM LIKE CONCAT('%',#{taxOutside.staffIdCard},'%')
+        </if>
+        <if test="taxOutside.remark != null and taxOutside.remark != ''">
+            AND t.REMARK LIKE CONCAT('%',#{taxOutside.remark},'%')
+        </if>
+        <if test="taxOutside.year != null and taxOutside.year != ''">
+            AND t.`YEAR` = #{taxOutside.year}
+        </if>
+        <if test="taxOutside.month != null and taxOutside.month != ''">
+            AND t.`MONTH` = #{taxOutside.month}
+        </if>
+        ORDER BY sortNum1 ASC, sortNum ASC
+    </select>
+
+    <select id="getTaxOutsideReport" resultType="cc.mrbird.febs.chaoyang3team.domain.TaxOutside">
+        SELECT
+        t.ID,
+        t.ID_CARD_TYPE,
+        s.STAFF_ID,
+        s.`NAME` AS staffName,
+        s.ID_NUM AS staffIdCard,
+        s.SORT_NUM_1 AS sortNum1,
+        s.SORT_NUM_2 AS sortNum,
+        t.CURRENT_INCOME,
+        t.CURRENT_TAX_FREE_INCOME,
+        t.BASIC_PENSION_IP,
+        t.BASIC_MEDICAL_IP,
+        t.UNEMPLOYMENT_IP,
+        t.HOUSING_FUND,
+        t.CUMULATIVE_CHILD_E,
+        t.CUMULATIVE_CONTINUING_E,
+        t.CUMULATIVE_HOME_LOAN_INTEREST,
+        t.CUMULATIVE_HOUSING_RENT,
+        t.CUMULATIVE_ELDERLY_SUPPORT,
+        t.CORPORATE_ANNUITY,
+        t.COMMERCIAL_HEALTH_INSURANCE,
+        t.TAX_EXTENSION_PENSION_INSURANCE,
+        t.OTHER,
+        t.ALLOWANCE_FOR_DEDUCTION,
+        t.TAX_DEDUCTION,
+        t.FINAL_WAGE,
+        t.REMARK,
+        t.CREATE_TIME,
+        t.MODIFY_TIME,
+        CONCAT(t.`YEAR`,'-',t.`MONTH`) AS year
+        FROM cy_tax_outside AS t
+        LEFT JOIN cy_staff_outside AS s ON(s.STAFF_ID=t.STAFF_ID)
+        WHERE (t.`YEAR`=#{taxOutside.yearForm} AND FIND_IN_SET(t.`MONTH`,#{taxOutside.monthForm}))
+        <if test="taxOutside.yearTo != null and taxOutside.yearTo != ''">
+            OR (t.`YEAR`=#{taxOutside.yearTo} AND FIND_IN_SET(t.`MONTH`,#{taxOutside.monthTo}))
+        </if>
+        ORDER BY sortNum1 ASC, sortNum ASC
+    </select>
+
+    <select id="getTaxOutsideAmount" resultType="cc.mrbird.febs.chaoyang3team.domain.TaxOutside">
+        SELECT
+        SUM(t.CURRENT_INCOME) AS CURRENT_INCOME,
+        SUM(t.CURRENT_TAX_FREE_INCOME) AS CURRENT_TAX_FREE_INCOME,
+        SUM(t.BASIC_PENSION_IP) AS BASIC_PENSION_IP,
+        SUM(t.BASIC_MEDICAL_IP) AS BASIC_MEDICAL_IP,
+        SUM(t.UNEMPLOYMENT_IP) AS UNEMPLOYMENT_IP,
+        SUM(t.HOUSING_FUND) AS HOUSING_FUND,
+        SUM(t.CUMULATIVE_CHILD_E) AS CUMULATIVE_CHILD_E,
+        SUM(t.CUMULATIVE_CONTINUING_E) AS CUMULATIVE_CONTINUING_E,
+        SUM(t.CUMULATIVE_HOME_LOAN_INTEREST) AS CUMULATIVE_HOME_LOAN_INTEREST,
+        SUM(t.CUMULATIVE_HOUSING_RENT) AS CUMULATIVE_HOUSING_RENT,
+        SUM(t.CUMULATIVE_ELDERLY_SUPPORT) AS CUMULATIVE_ELDERLY_SUPPORT,
+        SUM(t.CORPORATE_ANNUITY) AS CORPORATE_ANNUITY,
+        SUM(t.COMMERCIAL_HEALTH_INSURANCE) AS COMMERCIAL_HEALTH_INSURANCE,
+        SUM(t.TAX_EXTENSION_PENSION_INSURANCE) AS TAX_EXTENSION_PENSION_INSURANCE,
+        SUM(t.OTHER) AS OTHER,
+        SUM(t.ALLOWANCE_FOR_DEDUCTION) AS ALLOWANCE_FOR_DEDUCTION,
+        SUM(t.TAX_DEDUCTION) AS TAX_DEDUCTION,
+        SUM(t.FINAL_WAGE) AS FINAL_WAGE
+        FROM cy_tax_outside AS t
+        WHERE (t.`YEAR`=#{taxOutside.yearForm} AND FIND_IN_SET(t.`MONTH`,#{taxOutside.monthForm}))
+        <if test="taxOutside.yearTo != null and taxOutside.yearTo != ''">
+            OR (t.`YEAR`=#{taxOutside.yearTo} AND FIND_IN_SET(t.`MONTH`,#{taxOutside.monthTo}))
+        </if>
+    </select>
+
+    <select id="getTaxOutsideInfoList" resultType="cc.mrbird.febs.chaoyang3team.domain.TaxOutside">
+        SELECT
+        t.STAFF_ID,
+        t.MONTH,
+        t.CURRENT_INCOME,
+        t.CURRENT_TAX_FREE_INCOME,
+        t.BASIC_PENSION_IP,
+        t.BASIC_MEDICAL_IP,
+        t.UNEMPLOYMENT_IP,
+        t.HOUSING_FUND,
+        t.CUMULATIVE_CHILD_E,
+        t.CUMULATIVE_CONTINUING_E,
+        t.CUMULATIVE_HOME_LOAN_INTEREST,
+        t.CUMULATIVE_HOUSING_RENT,
+        t.CUMULATIVE_ELDERLY_SUPPORT,
+        t.CORPORATE_ANNUITY,
+        t.COMMERCIAL_HEALTH_INSURANCE,
+        t.TAX_EXTENSION_PENSION_INSURANCE,
+        t.OTHER,
+        t.ALLOWANCE_FOR_DEDUCTION,
+        t.TAX_DEDUCTION,
+        t.FINAL_WAGE
+        FROM  cy_tax_outside AS t
+        WHERE t.STAFF_ID=#{taxOutside.staffId} AND t.`YEAR`=#{taxOutside.year} AND FIND_IN_SET(t.`MONTH`,#{taxOutside.monthArr})
+    </select>
+
+</mapper>
