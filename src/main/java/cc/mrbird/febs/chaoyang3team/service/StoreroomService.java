@@ -5,6 +5,7 @@ import cc.mrbird.febs.common.domain.QueryRequest;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 
+import javax.servlet.ServletRequest;
 import java.util.List;
 
 /**
@@ -19,7 +20,7 @@ public interface StoreroomService extends IService<Storeroom> {
      * @param storeroom 查询条件
      * @return 库存详情数据
      */
-    IPage<Storeroom> findStoreroomsDetail(QueryRequest request, Storeroom storeroom);
+    IPage<Storeroom> findStoreroomsDetail(QueryRequest request, Storeroom storeroom, ServletRequest servletRequest);
 
     /**
      * 出入库物品明细

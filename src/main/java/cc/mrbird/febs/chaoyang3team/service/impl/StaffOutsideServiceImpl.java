@@ -23,9 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author CHExN
@@ -90,23 +88,52 @@ public class StaffOutsideServiceImpl extends ServiceImpl<StaffOutsideMapper, Sta
 
     @Override
     @Transactional
-    public void createStaffOutside(StaffOutside staffOutside) {
+    public void createStaffOutside(StaffOutside staffOutside, ServletRequest servletRequest) {
+        HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
+        String username = JWTUtil.getUsername(FebsUtil.decryptToken(httpServletRequest.getHeader("Authentication")));
+        staffOutside.setType("0");
         staffOutside.setCreateTime(LocalDateTime.now());
+        if (staffOutside.getSortNum2() == null) staffOutside.setSortNum2("9999");
+        // 通过用户名获取用户权限集合
+        Set<String> userPermissions = this.userManager.getUserPermissions(username);
+        if (userPermissions.contains("staffOutside:viewNorth")) {
+            staffOutside.setType("1");
+            staffOutside.setTeam("北分队");
+        } else if (userPermissions.contains("staffOutside:viewSouth")) {
+            staffOutside.setType("2");
+            staffOutside.setTeam("南分队");
+        } else if (userPermissions.contains("staffOutside:viewClean")) {
+            staffOutside.setType("3");
+            staffOutside.setTeam("保洁分队");
+        } // 没有维修分队，因为维修分队好像是由劳资录入的
+
+        // 插入
         this.save(staffOutside);
+
+        // 更新序号
+        this.updateStaffOutsideSortNum(staffOutside.getType());
     }
+
+
 
     @Override
     @Transactional
     public void updateStaffOutside(StaffOutside staffOutside) {
+        System.out.println("=========================");
+        System.out.println(staffOutside);
         staffOutside.setModifyTime(LocalDateTime.now());
         if (staffOutside.getIsLeave().equals("0")) {
             staffOutside.setLeaveDate(null);
         }
         this.baseMapper.update(
                 staffOutside,
-                Wrappers.<StaffOutside>lambdaUpdate()
+                Wrappers.<StaffOutside>lambdaUpdate() // 这里set是因为如果用默认的update，null值是不会更新的，set的话，不管你是什么都会更新
                         .set(StaffOutside::getLeaveDate, staffOutside.getLeaveDate())
                         .eq(StaffOutside::getStaffId, staffOutside.getStaffId()));
+        if (staffOutside.getSortNum2() != null) {
+            // 更新序号
+            this.updateStaffOutsideSortNum(staffOutside.getType());
+        }
     }
 
     @Override
@@ -114,6 +141,8 @@ public class StaffOutsideServiceImpl extends ServiceImpl<StaffOutsideMapper, Sta
     public void deleteStaffOutside(String[] staffOutsideIds) {
         List<String> list = Arrays.asList(staffOutsideIds);
         this.baseMapper.deleteBatchIds(list);
+        // 更新序号
+        this.updateStaffOutsideSortNum(null);
     }
 
     @Override
@@ -125,8 +154,11 @@ public class StaffOutsideServiceImpl extends ServiceImpl<StaffOutsideMapper, Sta
         String staffOutsideIdsStr = StringUtils.join(staffOutsideIdsList, ',');
         // 查找ContractOutsideIds
         List<String> contractOutsideIdList = this.baseMapper.getContractOutsideIds(staffOutsideIdsStr);
-        // 删除
+        // 删除编外人员信息
         this.baseMapper.deleteBatchIds(staffOutsideIdsList);
+        // 更新编外人员序号
+        this.updateStaffOutsideSortNum(null);
+        // 删除合同信息
         this.contractOutsideService.deleteContractOutside((String[]) contractOutsideIdList.toArray());
     }
 
@@ -149,4 +181,53 @@ public class StaffOutsideServiceImpl extends ServiceImpl<StaffOutsideMapper, Sta
     public StaffOutside getStaffIdByIdNum(String idNum) {
         return baseMapper.getStaffIdByIdNum(idNum);
     }
+
+    @Override
+    @Transactional
+    public Map<String, Object> updateSortStaffOutside(StaffOutside staffOutside, String isUp) {
+        Map<String, Object> data = new HashMap<>();
+        // 判断如果是第一名想要往上调位，或最后一名想往下调为，则直接返回
+        if (staffOutside.getSortNum2().equals("1") && isUp.equals("0")) {
+            data.put("status", 0);
+            data.put("message", "已排名第一，无法再往上调序");
+            return data;
+        }
+        Map<String, String> staffOutsideTypeCount = this.baseMapper.getStaffOutsideTypeCount();
+        // 这里不能直接用String类型接收，并且不能toString(),会报类型转换错误java.math.BigDecimal cannot be cast to java.lang.String
+        Object count = staffOutsideTypeCount.get(staffOutside.getType());
+        if (staffOutside.getSortNum2().equals(count.toString()) && isUp.equals("1")) {
+            data.put("status", 0);
+            data.put("message", "已排名最后，无法再往下调序");
+            return data;
+        }
+
+        // 这里进行位置调换操作
+        long sortNum1 = Long.parseLong(staffOutside.getSortNum1());
+        long sortNum2 = Long.parseLong(staffOutside.getSortNum2());
+        this.baseMapper.updateStaffOutsideSwapSort(
+                // 要调整排序位置
+                sortNum1,
+                sortNum2,
+                // 被调换排序位置
+                isUp.equals("0") ? sortNum1 - 1 : sortNum1 + 1,
+                isUp.equals("0") ? sortNum2 - 1 : sortNum2 + 1);
+
+        data.put("status", 1);
+        data.put("message", "调整排序成功");
+        return data;
+    }
+
+
+    public void updateStaffOutsideSortNum(String type) {
+        // 更新序号
+        this.baseMapper.updateStaffOutsideSortNum1();
+        if (type == null) {
+            for (int i = 0; i < 4; i++) {
+                this.baseMapper.updateStaffOutsideSortNum2(i + "");
+            }
+        } else {
+            this.baseMapper.updateStaffOutsideSortNum2(type);
+        }
+    }
+
 }

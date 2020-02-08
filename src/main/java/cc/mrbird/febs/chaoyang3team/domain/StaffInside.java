@@ -127,9 +127,9 @@ public class StaffInside implements Serializable {
     @ExcelField(value = "出生年月")
     private String birthDate;
 
-    @TableField("AGE")
-    @ExcelField(value = "年龄")
-    private Integer age;
+//    @TableField("AGE")
+//    @ExcelField(value = "年龄")
+//    private Integer age;
 
 //    @TableField("RETIREMENT_YEAR")
 //    @ExcelField(value = "退休年份")
@@ -146,6 +146,10 @@ public class StaffInside implements Serializable {
     @TableField("TRANSFER_DATE")
     @ExcelField(value = "调入环卫或报到日期")
     private String transferDate;
+
+    @TableField("TO_TEAM_DATE")
+    @ExcelField(value = "到本场队日期")
+    private String toTeamDate;
 
     /**
      * 现任岗位职务

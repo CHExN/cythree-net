@@ -31,6 +31,9 @@
         <if test="storeroom.receipt != null and storeroom.receipt != ''">
             AND s.RECEIPT LIKE CONCAT('%',#{storeroom.receipt},'%')
         </if>
+        <if test="storeroom.typeApplicationAuthority != null and storeroom.typeApplicationAuthority != ''">
+            AND FIND_IN_SET(s.TYPE_APPLICATION, #{storeroom.typeApplicationAuthority})
+        </if>
         <if test="storeroom.typeApplication != null and storeroom.typeApplication != ''">
             AND FIND_IN_SET(s.TYPE_APPLICATION, #{storeroom.typeApplication})
         </if>

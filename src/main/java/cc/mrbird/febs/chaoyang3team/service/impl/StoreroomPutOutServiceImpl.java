@@ -26,10 +26,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.StringJoiner;
+import java.util.*;
 
 /**
  * @author CHExN
@@ -51,7 +48,41 @@ public class StoreroomPutOutServiceImpl extends ServiceImpl<StoreroomPutOutMappe
     private UserManager userManager;
 
     @Override
-    public IPage<StoreroomPutOut> findStoreroomPutDetail(QueryRequest request, StoreroomPutOut storeroomPutOut) {
+    public IPage<StoreroomPutOut> findStoreroomPutDetail(QueryRequest request, StoreroomPutOut storeroomPutOut, ServletRequest servletRequest) {
+        HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
+        String username = JWTUtil.getUsername(FebsUtil.decryptToken(httpServletRequest.getHeader("Authentication")));
+        // 通过用户名获取用户权限集合
+        Set<String> userPermissions = this.userManager.getUserPermissions(username);
+        // 如果拥有以下任意一个或复数权限，就代表只能看到这些物品的权限，搜索也是一样，搜只会出现这些的物质类别
+        List<String> typeApplicationAuthorityList = new ArrayList<>();
+        if (userPermissions.contains("storeroom:view1")) {
+            typeApplicationAuthorityList.add("1");
+        }
+        if (userPermissions.contains("storeroom:view2")) {
+            typeApplicationAuthorityList.add("2");
+        }
+        if (userPermissions.contains("storeroom:view3")) {
+            typeApplicationAuthorityList.add("3");
+        }
+        if (userPermissions.contains("storeroom:view4")) {
+            typeApplicationAuthorityList.add("4");
+        }
+        if (userPermissions.contains("storeroom:view5")) {
+            typeApplicationAuthorityList.add("5");
+        }
+        if (userPermissions.contains("storeroom:view6")) {
+            typeApplicationAuthorityList.add("6");
+        }
+        if (userPermissions.contains("storeroom:view7")) {
+            typeApplicationAuthorityList.add("7");
+        }
+        if (userPermissions.contains("storeroom:view8")) {
+            typeApplicationAuthorityList.add("8");
+        }
+        if (userPermissions.contains("storeroom:view9")) {
+            typeApplicationAuthorityList.add("9");
+        }
+        storeroomPutOut.setTypeApplicationAuthority(String.join(",", typeApplicationAuthorityList));
         try {
             storeroomPutOut.setIsPut("1");
             Page<StoreroomPutOut> page = new Page<>();
@@ -64,7 +95,41 @@ public class StoreroomPutOutServiceImpl extends ServiceImpl<StoreroomPutOutMappe
     }
 
     @Override
-    public IPage<StoreroomPutOut> findStoreroomOutDetail(QueryRequest request, StoreroomPutOut storeroomPutOut) {
+    public IPage<StoreroomPutOut> findStoreroomOutDetail(QueryRequest request, StoreroomPutOut storeroomPutOut, ServletRequest servletRequest) {
+        HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
+        String username = JWTUtil.getUsername(FebsUtil.decryptToken(httpServletRequest.getHeader("Authentication")));
+        // 通过用户名获取用户权限集合
+        Set<String> userPermissions = this.userManager.getUserPermissions(username);
+        // 如果拥有以下任意一个或复数权限，就代表只能看到这些物品的权限，搜索也是一样，搜只会出现这些的物质类别
+        List<String> typeApplicationAuthorityList = new ArrayList<>();
+        if (userPermissions.contains("storeroom:view1")) {
+            typeApplicationAuthorityList.add("1");
+        }
+        if (userPermissions.contains("storeroom:view2")) {
+            typeApplicationAuthorityList.add("2");
+        }
+        if (userPermissions.contains("storeroom:view3")) {
+            typeApplicationAuthorityList.add("3");
+        }
+        if (userPermissions.contains("storeroom:view4")) {
+            typeApplicationAuthorityList.add("4");
+        }
+        if (userPermissions.contains("storeroom:view5")) {
+            typeApplicationAuthorityList.add("5");
+        }
+        if (userPermissions.contains("storeroom:view6")) {
+            typeApplicationAuthorityList.add("6");
+        }
+        if (userPermissions.contains("storeroom:view7")) {
+            typeApplicationAuthorityList.add("7");
+        }
+        if (userPermissions.contains("storeroom:view8")) {
+            typeApplicationAuthorityList.add("8");
+        }
+        if (userPermissions.contains("storeroom:view9")) {
+            typeApplicationAuthorityList.add("9");
+        }
+        storeroomPutOut.setTypeApplicationAuthority(String.join(",", typeApplicationAuthorityList));
         try {
             storeroomPutOut.setIsPut("2");
             Page<StoreroomPutOut> page = new Page<>();

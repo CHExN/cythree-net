@@ -204,7 +204,7 @@ public class WageController extends BaseController {
                                 0,
                                 entity.getStaffIdCard(),
                                 "证照号码",
-                                "查询不到此编" + (entity.getInsideOrOutside() == 1 ? "内" : "外") + "人员的信息"));
+                                "查询不到此编" + (entity.getInsideOrOutside() == 1 ? "外" : "内") + "人员的信息"));
                         onError(sheetIndex, rowIndex, errorFields);
                     } else {
                         Wage wage = new Wage();
@@ -212,29 +212,29 @@ public class WageController extends BaseController {
                         wage.setStaffId(staffInside == null ? staffOutside.getStaffId() : staffInside.getStaffId());
                         wage.setStaffName(staffInside == null ? staffOutside.getName() : staffInside.getName());
                         wage.setStaffIdCard(entity.getStaffIdCard());
-                        wage.setCurrentIncome(entity.getCurrentIncome().equals("$EMPTY_CELL$") ? zero : new BigDecimal(entity.getCurrentIncome()));
-                        wage.setReissueSalaryScale(entity.getReissueSalaryScale().equals("$EMPTY_CELL$") ? zero : new BigDecimal(entity.getReissueSalaryScale()));
-                        wage.setSalarySalary(entity.getSalarySalary().equals("$EMPTY_CELL$") ? zero : new BigDecimal(entity.getSalarySalary()));
-                        wage.setPostAllowance(entity.getPostAllowance().equals("$EMPTY_CELL$") ? zero : new BigDecimal(entity.getPostAllowance()));
-                        wage.setFinancialBurdenPerformancePay(entity.getFinancialBurdenPerformancePay().equals("$EMPTY_CELL$") ? zero : new BigDecimal(entity.getFinancialBurdenPerformancePay()));
-                        wage.setOvertimePay(entity.getOvertimePay().equals("$EMPTY_CELL$") ? zero : new BigDecimal(entity.getOvertimePay()));
-                        wage.setEnvironmentalSanitationDutyAllowance(entity.getEnvironmentalSanitationDutyAllowance().equals("$EMPTY_CELL$") ? zero : new BigDecimal(entity.getEnvironmentalSanitationDutyAllowance()));
-                        wage.setHousingSubsidy(entity.getHousingSubsidy().equals("$EMPTY_CELL$") ? zero : new BigDecimal(entity.getHousingSubsidy()));
-                        wage.setOnlyChildFee(entity.getOnlyChildFee().equals("$EMPTY_CELL$") ? zero : new BigDecimal(entity.getOnlyChildFee()));
-                        wage.setTemporarySubsidy(entity.getTemporarySubsidy().equals("$EMPTY_CELL$") ? zero : new BigDecimal(entity.getTemporarySubsidy()));
-                        wage.setJobPerformance(entity.getJobPerformance().equals("$EMPTY_CELL$") ? zero : new BigDecimal(entity.getJobPerformance()));
-                        wage.setHolidayCosts(entity.getHolidayCosts().equals("$EMPTY_CELL$") ? zero : new BigDecimal(entity.getHolidayCosts()));
-                        wage.setAnnualLeavePay(entity.getAnnualLeavePay().equals("$EMPTY_CELL$") ? zero : new BigDecimal(entity.getAnnualLeavePay()));
-                        wage.setComprehensiveSubsidy(entity.getComprehensiveSubsidy().equals("$EMPTY_CELL$") ? zero : new BigDecimal(entity.getComprehensiveSubsidy()));
-                        wage.setPayable(entity.getPayable().equals("$EMPTY_CELL$") ? zero : new BigDecimal(entity.getPayable()));
-                        wage.setHousingFund(entity.getHousingFund().equals("$EMPTY_CELL$") ? zero : new BigDecimal(entity.getHousingFund()));
-                        wage.setBasicPensionIp(entity.getBasicPensionIp().equals("$EMPTY_CELL$") ? zero : new BigDecimal(entity.getBasicPensionIp()));
-                        wage.setUnemploymentIp(entity.getUnemploymentIp().equals("$EMPTY_CELL$") ? zero : new BigDecimal(entity.getUnemploymentIp()));
-                        wage.setBasicMedicalIp(entity.getBasicMedicalIp().equals("$EMPTY_CELL$") ? zero : new BigDecimal(entity.getBasicMedicalIp()));
-                        wage.setMedicalMutualAid(entity.getMedicalMutualAid().equals("$EMPTY_CELL$") ? zero : new BigDecimal(entity.getMedicalMutualAid()));
-                        wage.setCorporateAnnuity(entity.getCorporateAnnuity().equals("$EMPTY_CELL$") ? zero : new BigDecimal(entity.getCorporateAnnuity()));
-                        wage.setTaxDeduction(entity.getTaxDeduction().equals("$EMPTY_CELL$") ? zero : new BigDecimal(entity.getTaxDeduction()));
-                        wage.setRealWage(entity.getRealWage().equals("$EMPTY_CELL$") ? zero : new BigDecimal(entity.getRealWage()));
+                        wage.setCurrentIncome(entity.getCurrentIncome().equals("$EMPTY_CELL$") || entity.getCurrentIncome().equals("") ? zero : new BigDecimal(entity.getCurrentIncome()));
+                        wage.setReissueSalaryScale(entity.getReissueSalaryScale().equals("$EMPTY_CELL$") || entity.getReissueSalaryScale().equals("") ? zero : new BigDecimal(entity.getReissueSalaryScale()));
+                        wage.setSalarySalary(entity.getSalarySalary().equals("$EMPTY_CELL$") || entity.getSalarySalary().equals("") ? zero : new BigDecimal(entity.getSalarySalary()));
+                        wage.setPostAllowance(entity.getPostAllowance().equals("$EMPTY_CELL$") || entity.getPostAllowance().equals("") ? zero : new BigDecimal(entity.getPostAllowance()));
+                        wage.setFinancialBurdenPerformancePay(entity.getFinancialBurdenPerformancePay().equals("$EMPTY_CELL$") || entity.getFinancialBurdenPerformancePay().equals("") ? zero : new BigDecimal(entity.getFinancialBurdenPerformancePay()));
+                        wage.setOvertimePay(entity.getOvertimePay().equals("$EMPTY_CELL$") || entity.getOvertimePay().equals("") ? zero : new BigDecimal(entity.getOvertimePay()));
+                        wage.setEnvironmentalSanitationDutyAllowance(entity.getEnvironmentalSanitationDutyAllowance().equals("$EMPTY_CELL$") || entity.getEnvironmentalSanitationDutyAllowance().equals("") ? zero : new BigDecimal(entity.getEnvironmentalSanitationDutyAllowance()));
+                        wage.setHousingSubsidy(entity.getHousingSubsidy().equals("$EMPTY_CELL$") || entity.getHousingSubsidy().equals("") ? zero : new BigDecimal(entity.getHousingSubsidy()));
+                        wage.setOnlyChildFee(entity.getOnlyChildFee().equals("$EMPTY_CELL$") || entity.getOnlyChildFee().equals("") ? zero : new BigDecimal(entity.getOnlyChildFee()));
+                        wage.setTemporarySubsidy(entity.getTemporarySubsidy().equals("$EMPTY_CELL$") || entity.getTemporarySubsidy().equals("") ? zero : new BigDecimal(entity.getTemporarySubsidy()));
+                        wage.setJobPerformance(entity.getJobPerformance().equals("$EMPTY_CELL$") || entity.getJobPerformance().equals("") ? zero : new BigDecimal(entity.getJobPerformance()));
+                        wage.setHolidayCosts(entity.getHolidayCosts().equals("$EMPTY_CELL$") || entity.getHolidayCosts().equals("") ? zero : new BigDecimal(entity.getHolidayCosts()));
+                        wage.setAnnualLeavePay(entity.getAnnualLeavePay().equals("$EMPTY_CELL$") || entity.getAnnualLeavePay().equals("") ? zero : new BigDecimal(entity.getAnnualLeavePay()));
+                        wage.setComprehensiveSubsidy(entity.getComprehensiveSubsidy().equals("$EMPTY_CELL$") || entity.getComprehensiveSubsidy().equals("") ? zero : new BigDecimal(entity.getComprehensiveSubsidy()));
+                        wage.setPayable(entity.getPayable().equals("$EMPTY_CELL$") || entity.getPayable().equals("") ? zero : new BigDecimal(entity.getPayable()));
+                        wage.setHousingFund(entity.getHousingFund().equals("$EMPTY_CELL$") || entity.getHousingFund().equals("") ? zero : new BigDecimal(entity.getHousingFund()));
+                        wage.setBasicPensionIp(entity.getBasicPensionIp().equals("$EMPTY_CELL$") || entity.getBasicPensionIp().equals("") ? zero : new BigDecimal(entity.getBasicPensionIp()));
+                        wage.setUnemploymentIp(entity.getUnemploymentIp().equals("$EMPTY_CELL$") || entity.getUnemploymentIp().equals("") ? zero : new BigDecimal(entity.getUnemploymentIp()));
+                        wage.setBasicMedicalIp(entity.getBasicMedicalIp().equals("$EMPTY_CELL$") || entity.getBasicMedicalIp().equals("") ? zero : new BigDecimal(entity.getBasicMedicalIp()));
+                        wage.setMedicalMutualAid(entity.getMedicalMutualAid().equals("$EMPTY_CELL$") || entity.getMedicalMutualAid().equals("") ? zero : new BigDecimal(entity.getMedicalMutualAid()));
+                        wage.setCorporateAnnuity(entity.getCorporateAnnuity().equals("$EMPTY_CELL$") || entity.getCorporateAnnuity().equals("") ? zero : new BigDecimal(entity.getCorporateAnnuity()));
+                        wage.setTaxDeduction(entity.getTaxDeduction().equals("$EMPTY_CELL$") || entity.getTaxDeduction().equals("") ? zero : new BigDecimal(entity.getTaxDeduction()));
+                        wage.setRealWage(entity.getRealWage().equals("$EMPTY_CELL$") || entity.getRealWage().equals("") ? zero : new BigDecimal(entity.getRealWage()));
                         wage.setCreateTime(now.toString());
                         wage.setYear(dateArr[0]);
                         wage.setMonth(dateArr[1]);

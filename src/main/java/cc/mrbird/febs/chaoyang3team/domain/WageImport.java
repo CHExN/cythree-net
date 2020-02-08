@@ -35,6 +35,9 @@ public class WageImport implements Serializable {
     @ExcelField(value = "岗位津贴", validator = NumericValidator.class)
     private String postAllowance;
 
+    @ExcelField(value = "岗位绩效", validator = NumericValidator.class)
+    private String jobPerformance;
+
     @ExcelField(value = "财政负担", validator = NumericValidator.class)
     private String financialBurdenPerformancePay;
 
@@ -52,9 +55,6 @@ public class WageImport implements Serializable {
 
     @ExcelField(value = "临时性补贴", validator = NumericValidator.class)
     private String temporarySubsidy;
-
-    @ExcelField(value = "岗位绩效", validator = NumericValidator.class)
-    private String jobPerformance;
 
     @ExcelField(value = "过节费", validator = NumericValidator.class)
     private String holidayCosts;

@@ -80,7 +80,7 @@ public class StoreroomPutOut implements Serializable {
      */
     @TableField("TYPE_APPLICATION")
     private String typeApplication;
-//    private transient String typeApplicationToDict;
+    private transient String typeApplicationAuthority;
 
     /**
      * 操作账号

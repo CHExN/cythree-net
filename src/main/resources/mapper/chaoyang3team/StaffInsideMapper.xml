@@ -26,10 +26,10 @@
         csi.PHONE_LAND_LINE,
         csi.PHONE_CELL,
         csi.BIRTH_DATE,
-        csi.RETIREMENT_YEAR,
         csi.WORK_DATE,
         csi.FARMER_WORK_DATE,
         csi.TRANSFER_DATE,
+        csi.TO_TEAM_DATE,
         csi.CURRENT_POSITION,
         csi.POST,
         csi.POST_LEVEL,
@@ -172,11 +172,10 @@
         csi.PHONE_LAND_LINE,
         csi.PHONE_CELL,
         csi.BIRTH_DATE,
-        csi.AGE,
-        csi.RETIREMENT_YEAR,
         csi.WORK_DATE,
         csi.FARMER_WORK_DATE,
         csi.TRANSFER_DATE,
+        csi.TO_TEAM_DATE,
         csi.CURRENT_POSITION,
         csi.POST,
         csi.POST_LEVEL,
@@ -224,7 +223,7 @@
         FROM cy_staff_inside AS csi
         WHERE csi.IS_LEAVE=#{staffInside.isLeave}
         <if test="staffInside.isLeave == 0">
-            AND csi.CREATE_TIME LIKE CONCAT(#{staffInside.birthDate},'%')
+            AND csi.TO_TEAM_DATE, LIKE CONCAT(#{staffInside.birthDate},'%')
         </if>
         <if test="staffInside.isLeave == 1">
             AND csi.LEAVE_DATE LIKE CONCAT(#{staffInside.birthDate},'%')
@@ -240,7 +239,7 @@
         FROM cy_staff_outside AS cso
         WHERE cso.IS_LEAVE=#{staffInside.isLeave}
         <if test="staffInside.isLeave == 0">
-            AND cso.CREATE_TIME LIKE CONCAT(#{staffInside.birthDate},'%')
+            AND cso.TO_TEAM_DATE LIKE CONCAT(#{staffInside.birthDate},'%')
         </if>
         <if test="staffInside.isLeave == 1">
             AND cso.LEAVE_DATE LIKE CONCAT(#{staffInside.birthDate},'%')

@@ -7,7 +7,7 @@
         cci.ID,
         cci.FILE_NUM,
         cci.BAD_NUM,
-        cci.REMARK_ON_FIXED_PERIOD,
+        cci.IS_FIXED_PERIOD,
         cci.CONTRACT_LABOR_START AS contractLaborStart,
         cci.CONTRACT_LABOR_END AS contractLaborEnd,
         cci.JOB_AGREEMENT_START AS jobAgreementStart,
@@ -24,9 +24,6 @@
         </if>
         <if test="contractInside.badNum != null and contractInside.badNum != ''">
             AND cci.BAD_NUM LIKE CONCAT('%',#{contractInside.badNum},'%')
-        </if>
-        <if test="contractInside.remarkOnFixedPeriod != null and contractInside.remarkOnFixedPeriod != ''">
-            AND cci.REMARK_ON_FIXED_PERIOD LIKE CONCAT('%',#{contractInside.remarkOnFixedPeriod},'%')
         </if>
         <!--<if test="contractInside.contractLaborStart != null and contractInside.contractLaborStart !=''">-->
             <!--AND cci.CONTRACT_LABOR_START &gt; #{contractInside.contractLaborStart}-->
@@ -56,7 +53,7 @@
         cci.ID,
         cci.FILE_NUM,
         cci.BAD_NUM,
-        cci.REMARK_ON_FIXED_PERIOD,
+        cci.IS_FIXED_PERIOD,
         cci.CONTRACT_LABOR_START AS contractLaborStart,
         cci.CONTRACT_LABOR_END AS contractLaborEnd,
         cci.JOB_AGREEMENT_START AS jobAgreementStart,

@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author CHExN
@@ -30,4 +31,28 @@ public interface StaffOutsideMapper extends BaseMapper<StaffOutside> {
     List<String> getTeam();
 
     StaffOutside getStaffIdByIdNum(String idNum);
+
+    /**
+     * 查询编外在职人员各各分队的人数
+     *
+     * @return 各分队人数集合
+     */
+    Map<String, String> getStaffOutsideTypeCount();
+
+    void updateStaffOutsideSwapSort(
+            @Param("sortNum1") Long sortNum1,
+            @Param("sortNum2") Long sortNum2,
+            @Param("beSortNum1") Long beSortNum1,
+            @Param("beSortNum2") Long beSortNum2);
+
+    /**
+     * 更新编外人员总序号
+     */
+    void updateStaffOutsideSortNum1();
+
+    /**
+     * 更新编外人员分队序号
+     */
+    void updateStaffOutsideSortNum2(String type);
+
 }

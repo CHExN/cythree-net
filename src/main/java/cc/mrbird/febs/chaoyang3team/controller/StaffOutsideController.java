@@ -36,6 +36,19 @@ public class StaffOutsideController extends BaseController {
     @Autowired
     private StaffOutsideService staffOutsideService;
 
+    @Log("调整编外人员位置")
+    @PutMapping("updateSort")
+    @RequiresPermissions("staffOutside:update")
+    public Map<String, Object> updateSortStaffOutside(@Valid StaffOutside staffOutside, String isUp) throws FebsException {
+        try {
+            return this.staffOutsideService.updateSortStaffOutside(staffOutside, isUp);
+        } catch (Exception e) {
+            message = "调整编外人员位置失败";
+            log.error(message, e);
+            throw new FebsException(message);
+        }
+    }
+
     @GetMapping("getTechnicalType")
     public List<String> getTechnicalType() {
         return this.staffOutsideService.getTechnicalType();
@@ -78,9 +91,9 @@ public class StaffOutsideController extends BaseController {
     @Log("新增编外人员信息")
     @PostMapping
     @RequiresPermissions("staffOutside:add")
-    public void addStaffOutside(@Valid StaffOutside staffOutside) throws FebsException {
+    public void addStaffOutside(@Valid StaffOutside staffOutside, ServletRequest servletRequest) throws FebsException {
         try {
-            this.staffOutsideService.createStaffOutside(staffOutside);
+            this.staffOutsideService.createStaffOutside(staffOutside, servletRequest);
         } catch (Exception e) {
             message = "新增编外人员信息失败";
             log.error(message, e);

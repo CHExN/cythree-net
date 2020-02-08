@@ -42,8 +42,8 @@ public class StoreroomOutController extends BaseController {
 
     @GetMapping
     @RequiresPermissions("storeroomOut:view")
-    public Map<String, Object> outStoreroomList(QueryRequest request, StoreroomPutOut storeroomPutOut) {
-        return getDataTable(this.storeroomPutOutService.findStoreroomOutDetail(request, storeroomPutOut));
+    public Map<String, Object> outStoreroomList(QueryRequest request, StoreroomPutOut storeroomPutOut, ServletRequest servletRequest) {
+        return getDataTable(this.storeroomPutOutService.findStoreroomOutDetail(request, storeroomPutOut, servletRequest));
     }
 
     @GetMapping("getStoreroomOutSimplify")

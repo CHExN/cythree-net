@@ -53,8 +53,8 @@ public class StoreroomPutController extends BaseController {
 
     @GetMapping
     @RequiresPermissions("storeroomPut:view")
-    public Map<String, Object> putStoreroomList(QueryRequest request, StoreroomPutOut storeroomPutOut) {
-        return getDataTable(this.storeroomPutOutService.findStoreroomPutDetail(request, storeroomPutOut));
+    public Map<String, Object> putStoreroomList(QueryRequest request, StoreroomPutOut storeroomPutOut, ServletRequest servletRequest) {
+        return getDataTable(this.storeroomPutOutService.findStoreroomPutDetail(request, storeroomPutOut, servletRequest));
     }
 
     @GetMapping("storeroomByPutId")

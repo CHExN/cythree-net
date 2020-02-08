@@ -12,9 +12,9 @@ import javax.servlet.ServletRequest;
  */
 public interface StoreroomPutOutService extends IService<StoreroomPutOut> {
 
-    IPage<StoreroomPutOut> findStoreroomPutDetail(QueryRequest request, StoreroomPutOut storeroomPutOut);
+    IPage<StoreroomPutOut> findStoreroomPutDetail(QueryRequest request, StoreroomPutOut storeroomPutOut, ServletRequest servletRequest);
 
-    IPage<StoreroomPutOut> findStoreroomOutDetail(QueryRequest request, StoreroomPutOut storeroomPutOut);
+    IPage<StoreroomPutOut> findStoreroomOutDetail(QueryRequest request, StoreroomPutOut storeroomPutOut, ServletRequest servletRequest);
 
     IPage<StoreroomPutOut> getStoreroomOutSimplify(QueryRequest request, StoreroomPutOut storeroomPutOut);
 

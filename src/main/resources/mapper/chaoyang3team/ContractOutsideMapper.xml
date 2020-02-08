@@ -5,11 +5,13 @@
         SELECT
         cci.ID,
         cci.ID_NUM,
-        cci.REMARK_ON_FIXED_PERIOD,
+        cci.IS_FIXED_PERIOD,
         cci.REMARK_RENEW,
         cci.REMARK,
         cci.CONTRACT_PERIOD,
         cci.CONTRACT_PERIOD_DATE,
+        cci.JOB_AGREEMENT,
+        cci.JOB_AGREEMENT_DATE,
         csi.STAFF_ID,
         csi.`NAME`
         FROM cy_contract_outside AS cci
@@ -17,9 +19,6 @@
         WHERE 1=1
         <if test="contractOutside.idNum != null and contractOutside.idNum != ''">
             AND cci.ID_NUM LIKE CONCAT('%',#{contractOutside.idNum},'%')
-        </if>
-        <if test="contractOutside.remarkOnFixedPeriod != null and contractOutside.remarkOnFixedPeriod != ''">
-            AND cci.REMARK_ON_FIXED_PERIOD LIKE CONCAT('%',#{contractOutside.remarkOnFixedPeriod},'%')
         </if>
         <!--<if test="contractOutside.contractLaborStart != null and contractOutside.contractLaborStart !=''">-->
         <!--AND cci.CONTRACT_LABOR_START &gt; #{contractOutside.contractLaborStart}-->
@@ -48,9 +47,11 @@
         SELECT
         cci.ID,
         cci.ID_NUM,
-        cci.REMARK_ON_FIXED_PERIOD,
+        cci.IS_FIXED_PERIOD,
         cci.CONTRACT_PERIOD,
         cci.CONTRACT_PERIOD_DATE,
+        cci.JOB_AGREEMENT,
+        cci.JOB_AGREEMENT_DATE,
         cci.REMARK_RENEW,
         cci.REMARK
         FROM cy_contract_outside AS cci

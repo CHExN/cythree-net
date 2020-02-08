@@ -77,7 +77,7 @@ public class Storeroom implements Serializable {
      */
     @TableField("TYPE_APPLICATION")
     private String typeApplication;
-//    private transient String typeApplicationToDict;
+    private transient String typeApplicationAuthority;
 
     /**
      * 是否是库房数据 0库房数据 1入库数据 2出库数据

@@ -46,11 +46,10 @@ public class ContractInside implements Serializable {
     private String badNum;
 
     /**
-     * 无固定期备注
+     * 无固定期 0有1无
      */
-    @TableField("REMARK_ON_FIXED_PERIOD")
-    @ExcelField(value = "无固定期备注")
-    private String remarkOnFixedPeriod;
+    @TableField("IS_FIXED_PERIOD")
+    private String isFixedPeriod;
 
     /**
      * 劳动合同起始日期

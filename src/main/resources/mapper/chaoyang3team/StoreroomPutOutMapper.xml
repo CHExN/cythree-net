@@ -34,6 +34,9 @@
         FROM
         cy_storeroom_put_out AS sp
         WHERE sp.IS_PUT = #{sPut.isPut}
+        <if test="sPut.typeApplicationAuthority != null and sPut.typeApplicationAuthority != ''">
+            AND FIND_IN_SET(sp.TYPE_APPLICATION, #{sPut.typeApplicationAuthority})
+        </if>
         <if test="sPut.typeApplication != null and sPut.typeApplication != ''">
             AND FIND_IN_SET(sp.TYPE_APPLICATION, #{sPut.typeApplication})
         </if>
@@ -77,6 +80,9 @@
         cy_storeroom_put_out AS sp
         LEFT JOIN t_dept d1 ON (d1.DEPT_ID = sp.TO_DEPT_ID)
         WHERE sp.IS_PUT = #{sOut.isPut}
+        <if test="sOut.typeApplicationAuthority != null and sOut.typeApplicationAuthority != ''">
+            AND FIND_IN_SET(sp.TYPE_APPLICATION, #{sOut.typeApplicationAuthority})
+        </if>
         <if test="sOut.typeApplication != null and sOut.typeApplication != ''">
             AND FIND_IN_SET(sp.TYPE_APPLICATION, #{sOut.typeApplication})
         </if>

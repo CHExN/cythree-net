@@ -7,6 +7,7 @@
         cso.STAFF_ID,
         cso.SORT_NUM_1,
         cso.SORT_NUM_2,
+        cso.TYPE,
         cso.TEMPORARY,
         cso.TEAM,
         cso.`NAME`,
@@ -21,7 +22,6 @@
         cso.PHONE_LAND_LINE,
         cso.PHONE_CELL,
         cso.BIRTH_DATE,
-        cso.RETIREMENT_YEAR,
         cso.TRANSFER_DATE,
         cso.TO_TEAM_DATE,
         cso.POST,
@@ -117,6 +117,7 @@
         cso.STAFF_ID,
         cso.SORT_NUM_1,
         cso.SORT_NUM_2,
+        cso.TYPE,
         cso.TEMPORARY,
         cso.TEAM,
         cso.`NAME`,
@@ -131,8 +132,6 @@
         cso.PHONE_LAND_LINE,
         cso.PHONE_CELL,
         cso.BIRTH_DATE,
-        cso.AGE,
-        cso.RETIREMENT_YEAR,
         cso.TRANSFER_DATE,
         cso.TO_TEAM_DATE,
         cso.POST,
@@ -148,6 +147,7 @@
         cso.STAFF_ID,
         cso.SORT_NUM_1,
         cso.SORT_NUM_2,
+        cso.TYPE,
         cso.TEMPORARY,
         cso.TEAM,
         cso.`NAME`,
@@ -162,8 +162,6 @@
         cso.PHONE_LAND_LINE,
         cso.PHONE_CELL,
         cso.BIRTH_DATE,
-        cso.AGE,
-        cso.RETIREMENT_YEAR,
         cso.TRANSFER_DATE,
         cso.TO_TEAM_DATE,
         cso.POST,
@@ -195,4 +193,44 @@
     <select id="getStaffIdByIdNum" resultType="cc.mrbird.febs.chaoyang3team.domain.StaffOutside">
         SELECT STAFF_ID,`NAME` FROM cy_staff_outside WHERE ID_NUM = #{idNum} LIMIT 1
     </select>
+
+    <select id="getStaffOutsideTypeCount" resultType="Map">
+        SELECT
+        SUM(if(cso.TYPE = 0,1,0)) AS '0',
+        SUM(if(cso.TYPE = 1,1,0)) AS '1',
+        SUM(if(cso.TYPE = 2,1,0)) AS '2',
+        SUM(if(cso.TYPE = 3,1,0)) AS '3'
+        FROM cy_staff_outside AS cso WHERE cso.IS_LEAVE=0
+    </select>
+
+    <update id="updateStaffOutsideSwapSort">
+        UPDATE cy_staff_outside AS c1
+        JOIN cy_staff_outside AS c2 ON (c1.SORT_NUM_1=#{sortNum1} AND c1.SORT_NUM_2=#{sortNum2} AND c2.SORT_NUM_1=#{beSortNum1} AND c2.SORT_NUM_2=#{beSortNum2})
+        SET c1.SORT_NUM_1=c2.SORT_NUM_1,
+            c1.SORT_NUM_2=c2.SORT_NUM_2,
+            c2.SORT_NUM_1=c1.SORT_NUM_1,
+            c2.SORT_NUM_2=c1.SORT_NUM_2
+        WHERE c1.IS_LEAVE=0 AND c2.IS_LEAVE=0
+    </update>
+
+    <update id="updateStaffOutsideSortNum1">
+        UPDATE cy_staff_outside AS a INNER JOIN (
+            SELECT cso.STAFF_ID,(@i:=@i+1) AS pm,IF(cso.MODIFY_TIME IS NULL,cso.CREATE_TIME,cso.MODIFY_TIME) AS datetime
+            FROM cy_staff_outside AS cso,(select @i:=0) AS it
+            WHERE cso.IS_LEAVE=0
+            ORDER BY cso.TYPE ASC,cso.SORT_NUM_2 ASC,datetime DESC
+        ) AS b ON a.STAFF_ID=b.STAFF_ID
+        SET a.SORT_NUM_1=b.pm
+    </update>
+
+    <update id="updateStaffOutsideSortNum2">
+        UPDATE cy_staff_outside AS a INNER JOIN (
+            SELECT cso.STAFF_ID,(@i:=@i+1) AS pm,IF(cso.MODIFY_TIME IS NULL,cso.CREATE_TIME,cso.MODIFY_TIME) AS datetime
+            FROM cy_staff_outside AS cso,(select @i:=0) AS it
+            WHERE cso.IS_LEAVE=0 AND cso.TYPE=#{type}
+            ORDER BY cso.TYPE ASC,cso.SORT_NUM_2 ASC,datetime DESC
+        ) AS b ON a.STAFF_ID=b.STAFF_ID
+        SET a.SORT_NUM_2=b.pm
+    </update>
+
 </mapper>

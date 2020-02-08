@@ -7,7 +7,7 @@ public class NumericValidator implements Validator {
     @Override
     public String valid(Object value) {
         String valueString = (String) value;
-        if (valueString.equals("$EMPTY_CELL$")) return null;
+        if (valueString.equals("$EMPTY_CELL$") || valueString.equals("")) return null;
         return ValidatorUtil.isNumeric(valueString) ? null : "[" + valueString + "]不是正确的浮点数或者整数.";
     }
 }

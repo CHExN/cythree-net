@@ -174,7 +174,7 @@ public class InsuranceController extends BaseController {
                                 0,
                                 entity.getIdNum(),
                                 "证照号码",
-                                "查询不到此编" + (entity.getInsideOrOutside() == 1 ? "内" : "外") + "人员的保险信息"));
+                                "查询不到此编" + (entity.getInsideOrOutside() == 1 ? "外" : "内") + "人员的保险信息"));
                         onError(sheetIndex, rowIndex, errorFields);
                     } else {
                         Insurance insurance = new Insurance();

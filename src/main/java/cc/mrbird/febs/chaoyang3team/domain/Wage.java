@@ -69,6 +69,11 @@ public class Wage implements Serializable {
     @ExcelField(value = "岗位津贴")
     private transient BigDecimal postAllowanceSum;
 
+    @TableField("JOB_PERFORMANCE")
+    private BigDecimal jobPerformance;
+    @ExcelField(value = "岗位绩效")
+    private transient BigDecimal jobPerformanceSum;
+
     @TableField("FINANCIAL_BURDEN_PERFORMANCE_PAY")
     private BigDecimal financialBurdenPerformancePay;
     @ExcelField(value = "财政负担")
@@ -98,11 +103,6 @@ public class Wage implements Serializable {
     private BigDecimal temporarySubsidy;
     @ExcelField(value = "临时性补贴")
     private transient BigDecimal temporarySubsidySum;
-
-    @TableField("JOB_PERFORMANCE")
-    private BigDecimal jobPerformance;
-    @ExcelField(value = "岗位绩效")
-    private transient BigDecimal jobPerformanceSum;
 
     @TableField("HOLIDAY_COSTS")
     private BigDecimal holidayCosts;

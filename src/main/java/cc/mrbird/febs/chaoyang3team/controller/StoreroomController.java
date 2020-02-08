@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.ServletRequest;
 import java.util.List;
 import java.util.Map;
 
@@ -30,8 +31,8 @@ public class StoreroomController extends BaseController {
 
     @GetMapping
     @RequiresPermissions("storeroom:view")
-    public Map<String, Object> storeroomList(QueryRequest request, Storeroom storeroom) {
-        return getDataTable(this.storeroomService.findStoreroomsDetail(request, storeroom));
+    public Map<String, Object> storeroomList(QueryRequest request, Storeroom storeroom, ServletRequest servletRequest) {
+        return getDataTable(this.storeroomService.findStoreroomsDetail(request, storeroom, servletRequest));
     }
 
     @GetMapping("itemDetails")

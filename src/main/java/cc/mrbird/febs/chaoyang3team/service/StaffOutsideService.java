@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 
 import javax.servlet.ServletRequest;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author CHExN
@@ -21,7 +22,7 @@ public interface StaffOutsideService extends IService<StaffOutside> {
 
     StaffOutside getStaffOutsideByIdNum(String idNum);
 
-    void createStaffOutside(StaffOutside staffOutside);
+    void createStaffOutside(StaffOutside staffOutside, ServletRequest servletRequest);
 
     void updateStaffOutside(StaffOutside staffOutside);
 
@@ -48,4 +49,14 @@ public interface StaffOutsideService extends IService<StaffOutside> {
     List<String> getTeam();
 
     StaffOutside getStaffIdByIdNum(String idNum);
+
+    /**
+     * 调整排序
+     * @param staffOutside 要调整的编外人员信息
+     * @param isUp 往上调序还是往下
+     * @return 结果
+     */
+    Map<String, Object> updateSortStaffOutside(StaffOutside staffOutside, String isUp);
+
+
 }

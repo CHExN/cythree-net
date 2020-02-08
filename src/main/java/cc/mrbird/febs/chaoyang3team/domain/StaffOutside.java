@@ -27,6 +27,20 @@ public class StaffOutside implements Serializable {
     @TableId(value = "STAFF_ID", type = IdType.AUTO)
     private Long staffId;
 
+    @TableField("SORT_NUM_1")
+    @ExcelField(value = "总序号")
+    private String sortNum1;
+
+    @TableField("SORT_NUM_2")
+    @ExcelField(value = "分队序号")
+    private String sortNum2;
+
+    /**
+     * 类型 0head 1北分队 2南分队 3保洁分队
+     */
+    @TableField("TYPE")
+    private String type;
+
     /**
      * 人员类型 内容选择有：临时合同工
      */
@@ -125,12 +139,9 @@ public class StaffOutside implements Serializable {
     @ExcelField(value = "出生年月")
     private String birthDate;
 
-    /**
-     * 年龄
-     */
-    @TableField("AGE")
-    @ExcelField(value = "年龄")
-    private Integer age;
+//    @TableField("AGE")
+//    @ExcelField(value = "年龄")
+//    private Integer age;
 
 //    @TableField("RETIREMENT_YEAR")
 //    @ExcelField(value = "退休年份")
@@ -170,18 +181,6 @@ public class StaffOutside implements Serializable {
     @TableField("REMARK")
     @ExcelField(value = "备注")
     private String remark;
-
-    /**
-     * 排序序号1 0head 1北分队 2南分队 3保洁分队
-     */
-    @TableField("SORT_NUM_1")
-    private String sortNum1;
-
-    /**
-     * 排序序号2
-     */
-    @TableField("SORT_NUM_2")
-    private String sortNum2;
 
     /**
      * 创建时间
