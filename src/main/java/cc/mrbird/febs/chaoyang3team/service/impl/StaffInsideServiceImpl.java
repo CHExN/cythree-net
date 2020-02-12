@@ -58,8 +58,13 @@ public class StaffInsideServiceImpl extends ServiceImpl<StaffInsideMapper, Staff
     }
 
     @Override
-    public StaffInside getStaffInside(String staffId) {
-        return this.baseMapper.getStaffInside(staffId);
+    public StaffInside getStaffInsideByIdNum(String idNum) {
+        return this.baseMapper.getStaffInsideByIdNum(idNum);
+    }
+
+    @Override
+    public StaffInside getStaffInsideByStaffId(String staffId) {
+        return this.baseMapper.getStaffInsideByStaffId(staffId);
     }
 
     @Override

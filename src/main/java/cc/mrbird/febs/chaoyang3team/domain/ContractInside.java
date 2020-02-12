@@ -26,10 +26,12 @@ public class ContractInside implements Serializable {
     @TableId(value = "ID", type = IdType.AUTO)
     private Long id;
 
-    /**
-     * 姓名
-     */
+    @ExcelField(value = "姓名")
     private transient String name;
+
+    @TableField("ID_NUM")
+    @ExcelField(value = "身份证号")
+    private String idNum;
 
     /**
      * 档案编号 内容选择有：编内合同制、编内固定工
@@ -38,9 +40,6 @@ public class ContractInside implements Serializable {
     @ExcelField(value = "档案编号")
     private String fileNum;
 
-    /**
-     * 胸牌号码
-     */
     @TableField("BAD_NUM")
     @ExcelField(value = "胸牌号码")
     private String badNum;
@@ -51,51 +50,29 @@ public class ContractInside implements Serializable {
     @TableField("IS_FIXED_PERIOD")
     private String isFixedPeriod;
 
-    /**
-     * 劳动合同起始日期
-     */
-    @TableField("CONTRACT_LABOR_START")
-    @ExcelField(value = "劳动合同起始日期")
-    private String contractLaborStart;
-
-    /**
-     * 劳动合同结束日期
-     */
-    @TableField("CONTRACT_LABOR_END")
-    @ExcelField(value = "劳动合同结束日期")
-    private String contractLaborEnd;
-
-    /**
-     * 岗位协议起始日期
-     */
-    @TableField("JOB_AGREEMENT_START")
-    @ExcelField(value = "岗位协议起始日期")
-    private String jobAgreementStart;
-
-    /**
-     * 岗位协议结束日期
-     */
-    @TableField("JOB_AGREEMENT_END")
-    @ExcelField(value = "岗位协议结束日期")
-    private String jobAgreementEnd;
-
-    /**
-     * 续签备注
-     */
     @TableField("REMARK_RENEW")
     @ExcelField(value = "续签备注")
     private String remarkRenew;
 
-    /**
-     * 备注
-     */
     @TableField("REMARK")
     @ExcelField(value = "备注")
     private String remark;
 
-    /**
-     * 人员id
-     */
-    @TableField("STAFF_ID")
-    private Long staffId;
+
+    @TableField("CONTRACT_PERIOD")
+    @ExcelField(value = "合同期")
+    private String contractPeriod;
+
+    @TableField("CONTRACT_PERIOD_DATE")
+    @ExcelField(value = "合同期日期")
+    private String contractPeriodDate;
+
+    @TableField("JOB_AGREEMENT")
+    @ExcelField(value = "职位协议")
+    private String jobAgreement;
+
+    @TableField("JOB_AGREEMENT_DATE")
+    @ExcelField(value = "职位协议日期")
+    private String jobAgreementDate;
+
 }

@@ -244,4 +244,7 @@ public class StaffInside implements Serializable {
 
     private transient String mini;
     private transient String max;
+
+    private transient String createTimeFrom;
+    private transient String createTimeTo;
 }

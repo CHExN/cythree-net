@@ -15,7 +15,7 @@ public interface ContractInsideMapper extends BaseMapper<ContractInside> {
 
     IPage<ContractInside> findContractInsideDetail(Page<ContractInside> page, @Param("contractInside") ContractInside contractInside);
 
-    ContractInside getContractInside(String staffInsideId);
+    ContractInside getContractInside(String idNum);
 
     List<String> getStaffInsideIds(String contractInsideIdsStr);
 }

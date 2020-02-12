@@ -8,6 +8,7 @@
         cso.SORT_NUM_1,
         cso.SORT_NUM_2,
         cso.TYPE,
+        cso.CAUSE,
         cso.TEMPORARY,
         cso.TEAM,
         cso.`NAME`,
@@ -38,6 +39,9 @@
         </if>
         <if test="staffOutside.name != null and staffOutside.name != ''">
             AND cso.NAME LIKE CONCAT('%',#{staffOutside.name},'%')
+        </if>
+        <if test="staffOutside.cause != null and staffOutside.cause != ''">
+            AND cso.CAUSE LIKE CONCAT('%',#{staffOutside.cause},'%')
         </if>
         <if test="staffOutside.gender != null and staffOutside.gender != ''">
             AND cso.GENDER = #{staffOutside.gender}
@@ -84,6 +88,12 @@
         <if test="staffOutside.max != null and staffOutside.max != ''">
             AND cso.BIRTH_DATE &gt;= DATE_SUB(CURDATE(),INTERVAL #{staffOutside.max} YEAR)
         </if>
+        <if test="staffOutside.createTimeFrom != null and staffOutside.createTimeFrom !=''">
+            AND cso.LEAVE_DATE &gt;= #{staffOutside.createTimeFrom}
+        </if>
+        <if test="staffOutside.createTimeTo!= null and staffOutside.createTimeTo !=''">
+            AND cso.LEAVE_DATE &lt;= #{staffOutside.createTimeTo}
+        </if>
         ORDER BY SORT_NUM_1 ASC, SORT_NUM_2 ASC
     </select>
 
@@ -118,6 +128,7 @@
         cso.SORT_NUM_1,
         cso.SORT_NUM_2,
         cso.TYPE,
+        cso.CAUSE,
         cso.TEMPORARY,
         cso.TEAM,
         cso.`NAME`,
@@ -148,6 +159,7 @@
         cso.SORT_NUM_1,
         cso.SORT_NUM_2,
         cso.TYPE,
+        cso.CAUSE,
         cso.TEMPORARY,
         cso.TEAM,
         cso.`NAME`,
@@ -194,7 +206,7 @@
         SELECT STAFF_ID,`NAME` FROM cy_staff_outside WHERE ID_NUM = #{idNum} LIMIT 1
     </select>
 
-    <select id="getStaffOutsideTypeCount" resultType="Map">
+    <select id="getStaffOutsideTypeCount" resultType="java.util.Map">
         SELECT
         SUM(if(cso.TYPE = 0,1,0)) AS '0',
         SUM(if(cso.TYPE = 1,1,0)) AS '1',

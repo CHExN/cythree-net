@@ -44,8 +44,8 @@ public class ContractInsideServiceImpl extends ServiceImpl<ContractInsideMapper,
     }
 
     @Override
-    public ContractInside getContractInside(String staffInsideId) {
-        return this.baseMapper.getContractInside(staffInsideId);
+    public ContractInside getContractInside(String idNum) {
+        return this.baseMapper.getContractInside(idNum);
     }
 
     @Override

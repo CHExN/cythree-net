@@ -17,7 +17,9 @@ public interface StaffInsideMapper extends BaseMapper<StaffInside> {
 
     IPage<StaffInside> findStaffInsideSimplify(Page<StaffInside> page, @Param("staffInside") StaffInside staffInside);
 
-    StaffInside getStaffInside(String staffId);
+    StaffInside getStaffInsideByIdNum(String idNum);
+
+    StaffInside getStaffInsideByStaffId(String staffId);
 
     List<String> getContractInsideIds(String staffInsideIdsStr);
 

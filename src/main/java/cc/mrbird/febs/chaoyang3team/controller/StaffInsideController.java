@@ -55,10 +55,16 @@ public class StaffInsideController extends BaseController {
         return this.staffInsideService.getPostLevel();
     }
 
-    @GetMapping("getStaffInside")
+    @GetMapping("getStaffInsideByIdNum")
+    @RequiresPermissions("staffInside:view")
+    public StaffInside getStaffInsideByIdNum(String idNum) {
+        return this.staffInsideService.getStaffInsideByIdNum(idNum);
+    }
+
+    @GetMapping("getStaffInsideByStaffId")
     @RequiresPermissions("staffInside:view")
     public StaffInside getStaffInside(String staffId) {
-        return this.staffInsideService.getStaffInside(staffId);
+        return this.staffInsideService.getStaffInsideByStaffId(staffId);
     }
 
     @GetMapping("staffInsideSimplify")

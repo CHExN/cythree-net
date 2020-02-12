@@ -16,7 +16,9 @@ public interface StaffInsideService extends IService<StaffInside> {
 
     IPage<StaffInside> findStaffInsideSimplify(QueryRequest request, StaffInside staffInside);
 
-    StaffInside getStaffInside(String staffId);
+    StaffInside getStaffInsideByIdNum(String idNum);
+
+    StaffInside getStaffInsideByStaffId(String staffId);
 
     void createStaffInside(StaffInside staffInside);
 

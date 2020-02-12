@@ -42,6 +42,13 @@ public class StaffOutside implements Serializable {
     private String type;
 
     /**
+     * 事由 内容选择有：在册、增加、解除、终止、退休、亡故
+     */
+    @TableField("CAUSE")
+    @ExcelField(value = "事由")
+    private String cause;
+
+    /**
      * 人员类型 内容选择有：临时合同工
      */
     @TableField("TEMPORARY")
@@ -208,5 +215,8 @@ public class StaffOutside implements Serializable {
 
     private transient String mini;
     private transient String max;
+
+    private transient String createTimeFrom;
+    private transient String createTimeTo;
 
 }

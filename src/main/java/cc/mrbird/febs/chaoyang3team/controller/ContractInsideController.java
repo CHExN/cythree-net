@@ -37,8 +37,8 @@ public class ContractInsideController extends BaseController {
 
     @GetMapping("getContractInside")
     @RequiresPermissions("contractInside:view")
-    public ContractInside getContractInside(String staffInsideId) {
-        return this.contractInsideService.getContractInside(staffInsideId);
+    public ContractInside getContractInside(String idNum) {
+        return this.contractInsideService.getContractInside(idNum);
     }
 
     @GetMapping

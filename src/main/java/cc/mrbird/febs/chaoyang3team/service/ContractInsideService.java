@@ -12,7 +12,7 @@ public interface ContractInsideService extends IService<ContractInside> {
 
     IPage<ContractInside> findContractInsideDetail(QueryRequest request, ContractInside contractInside);
 
-    ContractInside getContractInside(String staffInsideId);
+    ContractInside getContractInside(String idNum);
 
     void createContractInside(ContractInside contractInside);
 
