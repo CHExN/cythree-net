@@ -176,6 +176,28 @@ public class Wage implements Serializable {
     @ExcelField(value = "实发工资")
     private transient BigDecimal realWageSum;
 
+
+    @TableField("EMPTY_COLUMN_01")
+    private BigDecimal emptyColumn01;
+    @ExcelField(value = "空列01")
+    private transient BigDecimal emptyColumn01Sum;
+    @TableField("EMPTY_COLUMN_02")
+    private BigDecimal emptyColumn02;
+    @ExcelField(value = "空列02")
+    private transient BigDecimal emptyColumn02Sum;
+    @TableField("EMPTY_COLUMN_03")
+    private BigDecimal emptyColumn03;
+    @ExcelField(value = "空列03")
+    private transient BigDecimal emptyColumn03Sum;
+    @TableField("EMPTY_COLUMN_04")
+    private BigDecimal emptyColumn04;
+    @ExcelField(value = "空列04")
+    private transient BigDecimal emptyColumn04Sum;
+    @TableField("EMPTY_COLUMN_05")
+    private BigDecimal emptyColumn05;
+    @ExcelField(value = "空列05")
+    private transient BigDecimal emptyColumn05Sum;
+
     /**
      * 创建时间
      */
@@ -188,16 +210,10 @@ public class Wage implements Serializable {
     @TableField("MODIFY_TIME")
     private String modifyTime;
 
-    /**
-     * 年
-     */
     @TableField("YEAR")
     @ExcelField(value = "年份")
     private String year;
 
-    /**
-     * 月
-     */
     @TableField("MONTH")
     @ExcelField(value = "月份")
     private String month;

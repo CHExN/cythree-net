@@ -19,10 +19,4 @@ public interface WageMapper extends BaseMapper<Wage> {
 
     List<Wage> getWageInfoList(@Param("wage") Wage wage);
 
-    // 废弃
-    List<Wage> getWageReport(@Param("wage") Wage wage);
-
-    // 废弃
-    Wage getWageAmount(@Param("wage") Wage wage);
-
 }

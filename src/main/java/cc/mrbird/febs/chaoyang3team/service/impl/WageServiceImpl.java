@@ -71,15 +71,4 @@ public class WageServiceImpl extends ServiceImpl<WageMapper, Wage> implements Wa
         this.baseMapper.deleteBatchIds(ids);
     }
 
-    @Override
-    public List<Wage> getWageReport(Wage wage) {
-        // 查询汇总行
-        Wage wageAmount = this.baseMapper.getWageAmount(wage);
-        wageAmount.setStaffIdCard("汇总");
-        // 查询其余行
-        List<Wage> wageReport = this.baseMapper.getWageReport(wage);
-        // 合并
-        wageReport.add(wageAmount);
-        return wageReport;
-    }
 }

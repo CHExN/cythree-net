@@ -99,9 +99,13 @@ public class StaffInside implements Serializable {
     @ExcelField(value = "有无残疾证", writeConverterExp = "0=无,1=有")
     private String isDisabilityCertificate;
 
-    @TableField("WORK_INJURY_CERTIFICATE_DATE")
-    @ExcelField(value = "工伤证发证日期")
-    private String workInjuryCertificateDate;
+//    @TableField("WORK_INJURY_CERTIFICATE_DATE")
+//    @ExcelField(value = "工伤证发证日期")
+//    private String workInjuryCertificateDate;
+
+    @TableField("DISABILITY_CERTIFICATE_NUMBER")
+    @ExcelField(value = "残疾证编号")
+    private String disabilityCertificateNumber;
 
     @TableField("DISABILITY_IDENTIFICATION_LEVEL")
     @ExcelField(value = "伤残鉴定等级")
@@ -147,9 +151,9 @@ public class StaffInside implements Serializable {
     @ExcelField(value = "调入环卫或报到日期")
     private String transferDate;
 
-    @TableField("TO_TEAM_DATE")
-    @ExcelField(value = "到本场队日期")
-    private String toTeamDate;
+//    @TableField("TO_TEAM_DATE")
+//    @ExcelField(value = "到本场队日期")
+//    private String toTeamDate;
 
     /**
      * 现任岗位职务
@@ -174,7 +178,7 @@ public class StaffInside implements Serializable {
 
 
     /**
-     * 岗位 0管理 1技工 2普工 3专技
+     * 岗位 0管理岗 1技工 2工勤岗 3专业技术岗
      */
     @TableField("POST")
     @ExcelField(value = "岗位")
@@ -183,6 +187,10 @@ public class StaffInside implements Serializable {
     @TableField("POST_LEVEL")
     @ExcelField(value = "岗位级别")
     private String postLevel;
+
+    @TableField("HIRING_POSITIONS")
+    @ExcelField(value = "聘任岗位")
+    private String hiringPositions;
 
     @TableField("APPOINTMENT_DATE")
     @ExcelField(value = "聘任时间")

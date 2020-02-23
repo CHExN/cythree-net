@@ -194,15 +194,15 @@ public class WageController extends BaseController {
                     StaffOutside staffOutside = null;
                     StaffInside staffInside = null;
                     if (entity.getInsideOrOutside() == 0) {
-                        staffInside = staffInsideService.getStaffIdByIdNum(entity.getStaffIdCard());
+                        staffInside = staffInsideService.getStaffIdByIdNum(entity.getStaffIdCard().trim());
                     } else {
-                        staffOutside = staffOutsideService.getStaffIdByIdNum(entity.getStaffIdCard());
+                        staffOutside = staffOutsideService.getStaffIdByIdNum(entity.getStaffIdCard().trim());
                     }
                     if (staffInside == null && staffOutside == null) {
                         List<ExcelErrorField> errorFields = new ArrayList<>();
                         errorFields.add(new ExcelErrorField(
                                 0,
-                                entity.getStaffIdCard(),
+                                entity.getStaffIdCard().trim(),
                                 "证照号码",
                                 "查询不到此编" + (entity.getInsideOrOutside() == 1 ? "外" : "内") + "人员的信息"));
                         onError(sheetIndex, rowIndex, errorFields);
@@ -211,7 +211,7 @@ public class WageController extends BaseController {
                         wage.setInsideOrOutside(entity.getInsideOrOutside() + "");
                         wage.setStaffId(staffInside == null ? staffOutside.getStaffId() : staffInside.getStaffId());
                         wage.setStaffName(staffInside == null ? staffOutside.getName() : staffInside.getName());
-                        wage.setStaffIdCard(entity.getStaffIdCard());
+                        wage.setStaffIdCard(entity.getStaffIdCard().trim());
                         wage.setCurrentIncome(entity.getCurrentIncome().equals("$EMPTY_CELL$") || entity.getCurrentIncome().equals("") ? zero : new BigDecimal(entity.getCurrentIncome()));
                         wage.setReissueSalaryScale(entity.getReissueSalaryScale().equals("$EMPTY_CELL$") || entity.getReissueSalaryScale().equals("") ? zero : new BigDecimal(entity.getReissueSalaryScale()));
                         wage.setSalarySalary(entity.getSalarySalary().equals("$EMPTY_CELL$") || entity.getSalarySalary().equals("") ? zero : new BigDecimal(entity.getSalarySalary()));
@@ -235,6 +235,11 @@ public class WageController extends BaseController {
                         wage.setCorporateAnnuity(entity.getCorporateAnnuity().equals("$EMPTY_CELL$") || entity.getCorporateAnnuity().equals("") ? zero : new BigDecimal(entity.getCorporateAnnuity()));
                         wage.setTaxDeduction(entity.getTaxDeduction().equals("$EMPTY_CELL$") || entity.getTaxDeduction().equals("") ? zero : new BigDecimal(entity.getTaxDeduction()));
                         wage.setRealWage(entity.getRealWage().equals("$EMPTY_CELL$") || entity.getRealWage().equals("") ? zero : new BigDecimal(entity.getRealWage()));
+                        wage.setRealWage(entity.getEmptyColumn01().equals("$EMPTY_CELL$") || entity.getEmptyColumn01().equals("") ? zero : new BigDecimal(entity.getEmptyColumn01()));
+                        wage.setRealWage(entity.getEmptyColumn02().equals("$EMPTY_CELL$") || entity.getEmptyColumn02().equals("") ? zero : new BigDecimal(entity.getEmptyColumn02()));
+                        wage.setRealWage(entity.getEmptyColumn03().equals("$EMPTY_CELL$") || entity.getEmptyColumn03().equals("") ? zero : new BigDecimal(entity.getEmptyColumn03()));
+                        wage.setRealWage(entity.getEmptyColumn04().equals("$EMPTY_CELL$") || entity.getEmptyColumn04().equals("") ? zero : new BigDecimal(entity.getEmptyColumn04()));
+                        wage.setRealWage(entity.getEmptyColumn05().equals("$EMPTY_CELL$") || entity.getEmptyColumn05().equals("") ? zero : new BigDecimal(entity.getEmptyColumn05()));
                         wage.setCreateTime(now.toString());
                         wage.setYear(dateArr[0]);
                         wage.setMonth(dateArr[1]);

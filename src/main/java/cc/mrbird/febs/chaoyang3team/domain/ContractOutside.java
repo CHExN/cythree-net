@@ -26,6 +26,12 @@ public class ContractOutside implements Serializable {
     @TableId(value = "ID", type = IdType.AUTO)
     private Long id;
 
+    @ExcelField(value = "总序号")
+    private transient String sortNum1;
+
+    @ExcelField(value = "分队序号")
+    private transient String sortNum2;
+
     @ExcelField(value = "姓名")
     private transient String name;
 

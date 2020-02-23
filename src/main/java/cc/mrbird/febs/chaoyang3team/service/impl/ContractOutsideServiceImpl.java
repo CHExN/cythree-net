@@ -35,7 +35,7 @@ public class ContractOutsideServiceImpl extends ServiceImpl<ContractOutsideMappe
     public IPage<ContractOutside> findContractOutsideDetail(QueryRequest request, ContractOutside contractOutside) {
         try {
             Page<ContractOutside> page = new Page<>();
-            SortUtil.handlePageSort(request, page, "id", FebsConstant.ORDER_ASC, false);
+            SortUtil.handlePageSort(request, page, false);
             return this.baseMapper.findContractOutsideDetail(page, contractOutside);
         } catch (Exception e) {
             log.error("查询编外合同信息异常", e);

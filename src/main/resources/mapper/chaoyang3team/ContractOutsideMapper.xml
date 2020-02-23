@@ -13,7 +13,9 @@
         cci.REMARK_RENEW,
         cci.REMARK,
         csi.STAFF_ID,
-        csi.`NAME`
+        csi.`NAME`,
+        csi.SORT_NUM_1,
+        csi.SORT_NUM_2
         FROM cy_contract_outside AS cci
         LEFT JOIN cy_staff_outside AS csi ON(csi.ID_NUM=cci.ID_NUM)
         WHERE 1=1
@@ -29,6 +31,7 @@
         <if test="contractOutside.name != null and contractOutside.name != ''">
             AND csi.NAME LIKE CONCAT('%',#{contractOutside.name},'%')
         </if>
+        ORDER BY SORT_NUM_1 ASC
     </select>
 
     <select id="getContractOutside" resultType="cc.mrbird.febs.chaoyang3team.domain.ContractOutside">

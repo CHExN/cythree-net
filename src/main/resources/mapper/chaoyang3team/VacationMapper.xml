@@ -96,18 +96,18 @@
         csi.SORT_NUM AS sortNum,
         csi.`NAME`,
         csi.WORK_DATE,
-        (SELECT GROUP_CONCAT(cv.REMARK) FROM cy_vacation AS cv WHERE cv.STAFF_ID=csi.STAFF_ID AND cv.DATE&gt;=CONCAT(#{vacation.day}-1,'-12-16') AND cv.DATE&lt;=CONCAT(#{vacation.day},'-01-15')) AS january,
-        (SELECT GROUP_CONCAT(cv.REMARK) FROM cy_vacation AS cv WHERE cv.STAFF_ID=csi.STAFF_ID AND cv.DATE&gt;=CONCAT(#{vacation.day},'-01-16') AND cv.DATE&lt;=CONCAT(#{vacation.day},'-02-15')) AS february,
-        (SELECT GROUP_CONCAT(cv.REMARK) FROM cy_vacation AS cv WHERE cv.STAFF_ID=csi.STAFF_ID AND cv.DATE&gt;=CONCAT(#{vacation.day},'-02-16') AND cv.DATE&lt;=CONCAT(#{vacation.day},'-03-15')) AS march,
-        (SELECT GROUP_CONCAT(cv.REMARK) FROM cy_vacation AS cv WHERE cv.STAFF_ID=csi.STAFF_ID AND cv.DATE&gt;=CONCAT(#{vacation.day},'-03-16') AND cv.DATE&lt;=CONCAT(#{vacation.day},'-04-15')) AS april,
-        (SELECT GROUP_CONCAT(cv.REMARK) FROM cy_vacation AS cv WHERE cv.STAFF_ID=csi.STAFF_ID AND cv.DATE&gt;=CONCAT(#{vacation.day},'-04-16') AND cv.DATE&lt;=CONCAT(#{vacation.day},'-05-15')) AS may,
-        (SELECT GROUP_CONCAT(cv.REMARK) FROM cy_vacation AS cv WHERE cv.STAFF_ID=csi.STAFF_ID AND cv.DATE&gt;=CONCAT(#{vacation.day},'-05-16') AND cv.DATE&lt;=CONCAT(#{vacation.day},'-06-15')) AS june,
-        (SELECT GROUP_CONCAT(cv.REMARK) FROM cy_vacation AS cv WHERE cv.STAFF_ID=csi.STAFF_ID AND cv.DATE&gt;=CONCAT(#{vacation.day},'-06-16') AND cv.DATE&lt;=CONCAT(#{vacation.day},'-07-15')) AS july,
-        (SELECT GROUP_CONCAT(cv.REMARK) FROM cy_vacation AS cv WHERE cv.STAFF_ID=csi.STAFF_ID AND cv.DATE&gt;=CONCAT(#{vacation.day},'-07-16') AND cv.DATE&lt;=CONCAT(#{vacation.day},'-08-15')) AS august,
-        (SELECT GROUP_CONCAT(cv.REMARK) FROM cy_vacation AS cv WHERE cv.STAFF_ID=csi.STAFF_ID AND cv.DATE&gt;=CONCAT(#{vacation.day},'-08-16') AND cv.DATE&lt;=CONCAT(#{vacation.day},'-09-15')) AS september,
-        (SELECT GROUP_CONCAT(cv.REMARK) FROM cy_vacation AS cv WHERE cv.STAFF_ID=csi.STAFF_ID AND cv.DATE&gt;=CONCAT(#{vacation.day},'-09-16') AND cv.DATE&lt;=CONCAT(#{vacation.day},'-10-15')) AS october,
-        (SELECT GROUP_CONCAT(cv.REMARK) FROM cy_vacation AS cv WHERE cv.STAFF_ID=csi.STAFF_ID AND cv.DATE&gt;=CONCAT(#{vacation.day},'-10-16') AND cv.DATE&lt;=CONCAT(#{vacation.day},'-11-15')) AS november,
-        (SELECT GROUP_CONCAT(cv.REMARK) FROM cy_vacation AS cv WHERE cv.STAFF_ID=csi.STAFF_ID AND cv.DATE&gt;=CONCAT(#{vacation.day},'-11-16') AND cv.DATE&lt;=CONCAT(#{vacation.day},'-12-15')) AS december
+        (SELECT GROUP_CONCAT(CONCAT(cv.TYPE,cv.DAY,'天',cv.REMARK)) FROM cy_vacation AS cv WHERE cv.STAFF_ID=csi.STAFF_ID AND cv.DATE&gt;=CONCAT(#{vacation.day}-1,'-12-16') AND cv.DATE&lt;=CONCAT(#{vacation.day},'-01-15')) AS january,
+        (SELECT GROUP_CONCAT(CONCAT(cv.TYPE,cv.DAY,'天',cv.REMARK)) FROM cy_vacation AS cv WHERE cv.STAFF_ID=csi.STAFF_ID AND cv.DATE&gt;=CONCAT(#{vacation.day},'-01-16') AND cv.DATE&lt;=CONCAT(#{vacation.day},'-02-15')) AS february,
+        (SELECT GROUP_CONCAT(CONCAT(cv.TYPE,cv.DAY,'天',cv.REMARK)) FROM cy_vacation AS cv WHERE cv.STAFF_ID=csi.STAFF_ID AND cv.DATE&gt;=CONCAT(#{vacation.day},'-02-16') AND cv.DATE&lt;=CONCAT(#{vacation.day},'-03-15')) AS march,
+        (SELECT GROUP_CONCAT(CONCAT(cv.TYPE,cv.DAY,'天',cv.REMARK)) FROM cy_vacation AS cv WHERE cv.STAFF_ID=csi.STAFF_ID AND cv.DATE&gt;=CONCAT(#{vacation.day},'-03-16') AND cv.DATE&lt;=CONCAT(#{vacation.day},'-04-15')) AS april,
+        (SELECT GROUP_CONCAT(CONCAT(cv.TYPE,cv.DAY,'天',cv.REMARK)) FROM cy_vacation AS cv WHERE cv.STAFF_ID=csi.STAFF_ID AND cv.DATE&gt;=CONCAT(#{vacation.day},'-04-16') AND cv.DATE&lt;=CONCAT(#{vacation.day},'-05-15')) AS may,
+        (SELECT GROUP_CONCAT(CONCAT(cv.TYPE,cv.DAY,'天',cv.REMARK)) FROM cy_vacation AS cv WHERE cv.STAFF_ID=csi.STAFF_ID AND cv.DATE&gt;=CONCAT(#{vacation.day},'-05-16') AND cv.DATE&lt;=CONCAT(#{vacation.day},'-06-15')) AS june,
+        (SELECT GROUP_CONCAT(CONCAT(cv.TYPE,cv.DAY,'天',cv.REMARK)) FROM cy_vacation AS cv WHERE cv.STAFF_ID=csi.STAFF_ID AND cv.DATE&gt;=CONCAT(#{vacation.day},'-06-16') AND cv.DATE&lt;=CONCAT(#{vacation.day},'-07-15')) AS july,
+        (SELECT GROUP_CONCAT(CONCAT(cv.TYPE,cv.DAY,'天',cv.REMARK)) FROM cy_vacation AS cv WHERE cv.STAFF_ID=csi.STAFF_ID AND cv.DATE&gt;=CONCAT(#{vacation.day},'-07-16') AND cv.DATE&lt;=CONCAT(#{vacation.day},'-08-15')) AS august,
+        (SELECT GROUP_CONCAT(CONCAT(cv.TYPE,cv.DAY,'天',cv.REMARK)) FROM cy_vacation AS cv WHERE cv.STAFF_ID=csi.STAFF_ID AND cv.DATE&gt;=CONCAT(#{vacation.day},'-08-16') AND cv.DATE&lt;=CONCAT(#{vacation.day},'-09-15')) AS september,
+        (SELECT GROUP_CONCAT(CONCAT(cv.TYPE,cv.DAY,'天',cv.REMARK)) FROM cy_vacation AS cv WHERE cv.STAFF_ID=csi.STAFF_ID AND cv.DATE&gt;=CONCAT(#{vacation.day},'-09-16') AND cv.DATE&lt;=CONCAT(#{vacation.day},'-10-15')) AS october,
+        (SELECT GROUP_CONCAT(CONCAT(cv.TYPE,cv.DAY,'天',cv.REMARK)) FROM cy_vacation AS cv WHERE cv.STAFF_ID=csi.STAFF_ID AND cv.DATE&gt;=CONCAT(#{vacation.day},'-10-16') AND cv.DATE&lt;=CONCAT(#{vacation.day},'-11-15')) AS november,
+        (SELECT GROUP_CONCAT(CONCAT(cv.TYPE,cv.DAY,'天',cv.REMARK)) FROM cy_vacation AS cv WHERE cv.STAFF_ID=csi.STAFF_ID AND cv.DATE&gt;=CONCAT(#{vacation.day},'-11-16') AND cv.DATE&lt;=CONCAT(#{vacation.day},'-12-15')) AS december
         FROM cy_staff_inside AS csi
         LEFT JOIN cy_vacation AS cv ON(cv.STAFF_ID=csi.STAFF_ID)
         WHERE cv.INS_OUT='0' AND cv.DATE&gt;=CONCAT(#{vacation.day}-1,'-12-16') AND cv.DATE&lt;=CONCAT(#{vacation.day},'-12-15')
@@ -131,18 +131,18 @@
         cso.SORT_NUM_1,
         cso.SORT_NUM_2,
         cso.`NAME`,
-        (SELECT GROUP_CONCAT(cv.REMARK) FROM cy_vacation AS cv WHERE cv.STAFF_ID=cso.STAFF_ID AND cv.DATE&gt;=CONCAT(#{vacation.day}-1,'-12-16') AND cv.DATE&lt;=CONCAT(#{vacation.day},'-01-15')) AS january,
-        (SELECT GROUP_CONCAT(cv.REMARK) FROM cy_vacation AS cv WHERE cv.STAFF_ID=cso.STAFF_ID AND cv.DATE&gt;=CONCAT(#{vacation.day},'-01-16') AND cv.DATE&lt;=CONCAT(#{vacation.day},'-02-15')) AS february,
-        (SELECT GROUP_CONCAT(cv.REMARK) FROM cy_vacation AS cv WHERE cv.STAFF_ID=cso.STAFF_ID AND cv.DATE&gt;=CONCAT(#{vacation.day},'-02-16') AND cv.DATE&lt;=CONCAT(#{vacation.day},'-03-15')) AS march,
-        (SELECT GROUP_CONCAT(cv.REMARK) FROM cy_vacation AS cv WHERE cv.STAFF_ID=cso.STAFF_ID AND cv.DATE&gt;=CONCAT(#{vacation.day},'-03-16') AND cv.DATE&lt;=CONCAT(#{vacation.day},'-04-15')) AS april,
-        (SELECT GROUP_CONCAT(cv.REMARK) FROM cy_vacation AS cv WHERE cv.STAFF_ID=cso.STAFF_ID AND cv.DATE&gt;=CONCAT(#{vacation.day},'-04-16') AND cv.DATE&lt;=CONCAT(#{vacation.day},'-05-15')) AS may,
-        (SELECT GROUP_CONCAT(cv.REMARK) FROM cy_vacation AS cv WHERE cv.STAFF_ID=cso.STAFF_ID AND cv.DATE&gt;=CONCAT(#{vacation.day},'-05-16') AND cv.DATE&lt;=CONCAT(#{vacation.day},'-06-15')) AS june,
-        (SELECT GROUP_CONCAT(cv.REMARK) FROM cy_vacation AS cv WHERE cv.STAFF_ID=cso.STAFF_ID AND cv.DATE&gt;=CONCAT(#{vacation.day},'-06-16') AND cv.DATE&lt;=CONCAT(#{vacation.day},'-07-15')) AS july,
-        (SELECT GROUP_CONCAT(cv.REMARK) FROM cy_vacation AS cv WHERE cv.STAFF_ID=cso.STAFF_ID AND cv.DATE&gt;=CONCAT(#{vacation.day},'-07-16') AND cv.DATE&lt;=CONCAT(#{vacation.day},'-08-15')) AS august,
-        (SELECT GROUP_CONCAT(cv.REMARK) FROM cy_vacation AS cv WHERE cv.STAFF_ID=cso.STAFF_ID AND cv.DATE&gt;=CONCAT(#{vacation.day},'-08-16') AND cv.DATE&lt;=CONCAT(#{vacation.day},'-09-15')) AS september,
-        (SELECT GROUP_CONCAT(cv.REMARK) FROM cy_vacation AS cv WHERE cv.STAFF_ID=cso.STAFF_ID AND cv.DATE&gt;=CONCAT(#{vacation.day},'-09-16') AND cv.DATE&lt;=CONCAT(#{vacation.day},'-10-15')) AS october,
-        (SELECT GROUP_CONCAT(cv.REMARK) FROM cy_vacation AS cv WHERE cv.STAFF_ID=cso.STAFF_ID AND cv.DATE&gt;=CONCAT(#{vacation.day},'-10-16') AND cv.DATE&lt;=CONCAT(#{vacation.day},'-11-15')) AS november,
-        (SELECT GROUP_CONCAT(cv.REMARK) FROM cy_vacation AS cv WHERE cv.STAFF_ID=cso.STAFF_ID AND cv.DATE&gt;=CONCAT(#{vacation.day},'-11-16') AND cv.DATE&lt;=CONCAT(#{vacation.day},'-12-15')) AS december
+        (SELECT GROUP_CONCAT(CONCAT(cv.TYPE,cv.DAY,'天',cv.REMARK)) FROM cy_vacation AS cv WHERE cv.STAFF_ID=cso.STAFF_ID AND cv.DATE&gt;=CONCAT(#{vacation.day}-1,'-12-16') AND cv.DATE&lt;=CONCAT(#{vacation.day},'-01-15')) AS january,
+        (SELECT GROUP_CONCAT(CONCAT(cv.TYPE,cv.DAY,'天',cv.REMARK)) FROM cy_vacation AS cv WHERE cv.STAFF_ID=cso.STAFF_ID AND cv.DATE&gt;=CONCAT(#{vacation.day},'-01-16') AND cv.DATE&lt;=CONCAT(#{vacation.day},'-02-15')) AS february,
+        (SELECT GROUP_CONCAT(CONCAT(cv.TYPE,cv.DAY,'天',cv.REMARK)) FROM cy_vacation AS cv WHERE cv.STAFF_ID=cso.STAFF_ID AND cv.DATE&gt;=CONCAT(#{vacation.day},'-02-16') AND cv.DATE&lt;=CONCAT(#{vacation.day},'-03-15')) AS march,
+        (SELECT GROUP_CONCAT(CONCAT(cv.TYPE,cv.DAY,'天',cv.REMARK)) FROM cy_vacation AS cv WHERE cv.STAFF_ID=cso.STAFF_ID AND cv.DATE&gt;=CONCAT(#{vacation.day},'-03-16') AND cv.DATE&lt;=CONCAT(#{vacation.day},'-04-15')) AS april,
+        (SELECT GROUP_CONCAT(CONCAT(cv.TYPE,cv.DAY,'天',cv.REMARK)) FROM cy_vacation AS cv WHERE cv.STAFF_ID=cso.STAFF_ID AND cv.DATE&gt;=CONCAT(#{vacation.day},'-04-16') AND cv.DATE&lt;=CONCAT(#{vacation.day},'-05-15')) AS may,
+        (SELECT GROUP_CONCAT(CONCAT(cv.TYPE,cv.DAY,'天',cv.REMARK)) FROM cy_vacation AS cv WHERE cv.STAFF_ID=cso.STAFF_ID AND cv.DATE&gt;=CONCAT(#{vacation.day},'-05-16') AND cv.DATE&lt;=CONCAT(#{vacation.day},'-06-15')) AS june,
+        (SELECT GROUP_CONCAT(CONCAT(cv.TYPE,cv.DAY,'天',cv.REMARK)) FROM cy_vacation AS cv WHERE cv.STAFF_ID=cso.STAFF_ID AND cv.DATE&gt;=CONCAT(#{vacation.day},'-06-16') AND cv.DATE&lt;=CONCAT(#{vacation.day},'-07-15')) AS july,
+        (SELECT GROUP_CONCAT(CONCAT(cv.TYPE,cv.DAY,'天',cv.REMARK)) FROM cy_vacation AS cv WHERE cv.STAFF_ID=cso.STAFF_ID AND cv.DATE&gt;=CONCAT(#{vacation.day},'-07-16') AND cv.DATE&lt;=CONCAT(#{vacation.day},'-08-15')) AS august,
+        (SELECT GROUP_CONCAT(CONCAT(cv.TYPE,cv.DAY,'天',cv.REMARK)) FROM cy_vacation AS cv WHERE cv.STAFF_ID=cso.STAFF_ID AND cv.DATE&gt;=CONCAT(#{vacation.day},'-08-16') AND cv.DATE&lt;=CONCAT(#{vacation.day},'-09-15')) AS september,
+        (SELECT GROUP_CONCAT(CONCAT(cv.TYPE,cv.DAY,'天',cv.REMARK)) FROM cy_vacation AS cv WHERE cv.STAFF_ID=cso.STAFF_ID AND cv.DATE&gt;=CONCAT(#{vacation.day},'-09-16') AND cv.DATE&lt;=CONCAT(#{vacation.day},'-10-15')) AS october,
+        (SELECT GROUP_CONCAT(CONCAT(cv.TYPE,cv.DAY,'天',cv.REMARK)) FROM cy_vacation AS cv WHERE cv.STAFF_ID=cso.STAFF_ID AND cv.DATE&gt;=CONCAT(#{vacation.day},'-10-16') AND cv.DATE&lt;=CONCAT(#{vacation.day},'-11-15')) AS november,
+        (SELECT GROUP_CONCAT(CONCAT(cv.TYPE,cv.DAY,'天',cv.REMARK)) FROM cy_vacation AS cv WHERE cv.STAFF_ID=cso.STAFF_ID AND cv.DATE&gt;=CONCAT(#{vacation.day},'-11-16') AND cv.DATE&lt;=CONCAT(#{vacation.day},'-12-15')) AS december
         FROM cy_staff_outside AS cso
         LEFT JOIN cy_vacation AS cv ON(cv.STAFF_ID=cso.STAFF_ID)
         WHERE cv.INS_OUT='1' AND cv.DATE&gt;=CONCAT(#{vacation.day}-1,'-12-16') AND cv.DATE&lt;=CONCAT(#{vacation.day},'-12-15')

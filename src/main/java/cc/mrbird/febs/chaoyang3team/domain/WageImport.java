@@ -2,11 +2,13 @@ package cc.mrbird.febs.chaoyang3team.domain;
 
 
 import cc.mrbird.febs.common.validator.NumericValidator;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.wuwenze.poi.annotation.Excel;
 import com.wuwenze.poi.annotation.ExcelField;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 /**
  * @author CHExN
@@ -103,4 +105,17 @@ public class WageImport implements Serializable {
 
     @ExcelField(value = "实发工资", validator = NumericValidator.class)
     private String realWage;
+
+    @ExcelField(value = "空列01")
+    private String emptyColumn01;
+    @ExcelField(value = "空列02")
+    private String emptyColumn02;
+    @ExcelField(value = "空列03")
+    private String emptyColumn03;
+    @ExcelField(value = "空列04")
+    private String emptyColumn04;
+    @ExcelField(value = "空列05")
+    private String emptyColumn05;
+
+
 }

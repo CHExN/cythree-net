@@ -18,7 +18,7 @@
         csi.GRADUATION_DATE,
         csi.POLITICAL_FACE,
         csi.IS_DISABILITY_CERTIFICATE,
-        csi.WORK_INJURY_CERTIFICATE_DATE,
+        csi.DISABILITY_CERTIFICATE_NUMBER,
         csi.DISABILITY_IDENTIFICATION_LEVEL,
         csi.ID_NUM,
         csi.ADDRESS,
@@ -28,10 +28,10 @@
         csi.WORK_DATE,
         csi.FARMER_WORK_DATE,
         csi.TRANSFER_DATE,
-        csi.TO_TEAM_DATE,
         csi.CURRENT_POSITION,
         csi.POST,
         csi.POST_LEVEL,
+        csi.HIRING_POSITIONS,
         csi.APPOINTMENT_DATE,
         csi.TECHNICAL_TYPE,
         csi.TECHNICAL_LEVEL_DATE,
@@ -169,7 +169,7 @@
         csi.GRADUATION_DATE,
         csi.POLITICAL_FACE,
         csi.IS_DISABILITY_CERTIFICATE,
-        csi.WORK_INJURY_CERTIFICATE_DATE,
+        csi.DISABILITY_CERTIFICATE_NUMBER,
         csi.DISABILITY_IDENTIFICATION_LEVEL,
         csi.ID_NUM,
         csi.ADDRESS,
@@ -179,10 +179,10 @@
         csi.WORK_DATE,
         csi.FARMER_WORK_DATE,
         csi.TRANSFER_DATE,
-        csi.TO_TEAM_DATE,
         csi.CURRENT_POSITION,
         csi.POST,
         csi.POST_LEVEL,
+        csi.HIRING_POSITIONS,
         csi.APPOINTMENT_DATE,
         csi.TECHNICAL_TYPE,
         csi.TECHNICAL_LEVEL_DATE,
@@ -213,7 +213,7 @@
         csi.GRADUATION_DATE,
         csi.POLITICAL_FACE,
         csi.IS_DISABILITY_CERTIFICATE,
-        csi.WORK_INJURY_CERTIFICATE_DATE,
+        csi.DISABILITY_CERTIFICATE_NUMBER,
         csi.DISABILITY_IDENTIFICATION_LEVEL,
         csi.ID_NUM,
         csi.ADDRESS,
@@ -223,10 +223,10 @@
         csi.WORK_DATE,
         csi.FARMER_WORK_DATE,
         csi.TRANSFER_DATE,
-        csi.TO_TEAM_DATE,
         csi.CURRENT_POSITION,
         csi.POST,
         csi.POST_LEVEL,
+        csi.HIRING_POSITIONS,
         csi.APPOINTMENT_DATE,
         csi.TECHNICAL_TYPE,
         csi.TECHNICAL_LEVEL_DATE,
@@ -271,7 +271,7 @@
         FROM cy_staff_inside AS csi
         WHERE csi.IS_LEAVE=#{staffInside.isLeave}
         <if test="staffInside.isLeave == 0">
-            AND csi.TO_TEAM_DATE, LIKE CONCAT(#{staffInside.birthDate},'%')
+            AND csi.TRANSFER_DATE, LIKE CONCAT(#{staffInside.birthDate},'%')
         </if>
         <if test="staffInside.isLeave == 1">
             AND csi.LEAVE_DATE LIKE CONCAT(#{staffInside.birthDate},'%')
@@ -287,7 +287,7 @@
         FROM cy_staff_outside AS cso
         WHERE cso.IS_LEAVE=#{staffInside.isLeave}
         <if test="staffInside.isLeave == 0">
-            AND cso.TO_TEAM_DATE LIKE CONCAT(#{staffInside.birthDate},'%')
+            AND cso.TRANSFER_DATE LIKE CONCAT(#{staffInside.birthDate},'%')
         </if>
         <if test="staffInside.isLeave == 1">
             AND cso.LEAVE_DATE LIKE CONCAT(#{staffInside.birthDate},'%')

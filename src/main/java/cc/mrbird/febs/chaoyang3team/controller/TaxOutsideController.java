@@ -181,12 +181,12 @@ public class TaxOutsideController extends BaseController {
                 @Override
                 public void onSuccess(int sheetIndex, int rowIndex, TaxOutsideImport entity) {
                     // 数据校验成功时，加入集合
-                    StaffOutside staffOutside = staffOutsideService.getStaffIdByIdNum(entity.getStaffIdCard());
+                    StaffOutside staffOutside = staffOutsideService.getStaffIdByIdNum(entity.getStaffIdCard().trim());
                     if (staffOutside == null) {
                         List<ExcelErrorField> errorFields = new ArrayList<>();
                         errorFields.add(new ExcelErrorField(
                                 0,
-                                entity.getStaffIdCard(),
+                                entity.getStaffIdCard().trim(),
                                 "证照号码",
                                 "查询不到此编外人员的信息"));
                         onError(sheetIndex, rowIndex, errorFields);
@@ -195,7 +195,7 @@ public class TaxOutsideController extends BaseController {
                         taxOutside.setStaffId(staffOutside.getStaffId());
                         taxOutside.setStaffName(staffOutside.getName());
                         taxOutside.setIdCardType(entity.getIdCardType());
-                        taxOutside.setStaffIdCard(entity.getStaffIdCard());
+                        taxOutside.setStaffIdCard(entity.getStaffIdCard().trim());
                         taxOutside.setCurrentIncome(entity.getCurrentIncome().equals("$EMPTY_CELL$") ? zero : new BigDecimal(entity.getCurrentIncome()));
                         taxOutside.setCurrentTaxFreeIncome(entity.getCurrentTaxFreeIncome().equals("$EMPTY_CELL$") ? zero : new BigDecimal(entity.getCurrentTaxFreeIncome()));
                         taxOutside.setBasicPensionIp(entity.getBasicPensionIp().equals("$EMPTY_CELL$") ? zero : new BigDecimal(entity.getBasicPensionIp()));

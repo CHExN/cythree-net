@@ -130,7 +130,7 @@ public class StaffOutsideServiceImpl extends ServiceImpl<StaffOutsideMapper, Sta
                         .eq(StaffOutside::getStaffId, staffOutside.getStaffId()));
         if (staffOutside.getSortNum2() != null || staffOutside.getLeaveDate() != null) {
             // 更新序号
-            this.updateStaffOutsideSortNum(staffOutside.getType());
+            this.updateStaffOutsideSortNum(null);
         }
     }
 
