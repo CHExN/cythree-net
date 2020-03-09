@@ -25,8 +25,8 @@
         <if test="letter.createTimeTo!= null and letter.createTimeTo !=''">
             AND s.DATETIME &lt;= #{letter.createTimeTo}
         </if>
-        <if test="letter.process!= null and seal.process !=''">
-            AND FIND_IN_SET(s.PROCESS, #{letter.process})
+        <if test="letter.process!= null">
+            AND s.PROCESS = #{letter.process}
         </if>
     </select>
 </mapper>

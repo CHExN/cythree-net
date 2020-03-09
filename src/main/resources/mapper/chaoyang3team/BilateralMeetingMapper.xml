@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.mrbird.febs.chaoyang3team.dao.BilateralMeetingMapper">
+
+    <select id="findBilateralMeeting" resultType="cc.mrbird.febs.chaoyang3team.domain.BilateralMeeting">
+        SELECT
+        bm.ID,
+        bm.DEPT_ID,
+        bm.DEPT_NAME,
+        bm.BILATERAL_MEETING,
+        bm.PROPOSED_CAUSE_SUMMARY,
+        bm.MODIFY_TIME,
+        bm.CREATE_TIME,
+        bm.MEETING_TIME,
+        bm.PROCESS,
+        bm.STEP,
+        bm.REVIEW,
+        bm.APPLICANT,
+        bm.USERNAME,
+        bm.OPINION_OFFICE,
+        bm.OPINION_CAPTAIN,
+        bm.DATE_OFFICE,
+        bm.DATE_CAPTAIN
+        FROM cy_bilateral_meeting AS bm
+        WHERE 1=1
+        <if test="bilateralMeeting.deptId != null and bilateralMeeting.deptId !=''">
+            AND bm.DEPT_ID = #{bilateralMeeting.deptId}
+        </if>
+        <if test="bilateralMeeting.createTimeFrom != null and bilateralMeeting.createTimeFrom !=''">
+            AND bm.CREATE_TIME &gt;= #{bilateralMeeting.createTimeFrom}
+        </if>
+        <if test="bilateralMeeting.createTimeTo!= null and bilateralMeeting.createTimeTo !=''">
+            AND bm.CREATE_TIME &lt;= #{bilateralMeeting.createTimeTo}
+        </if>
+        <if test="bilateralMeeting.process!= null">
+            AND bm.PROCESS = #{bilateralMeeting.process}
+        </if>
+    </select>
+</mapper>

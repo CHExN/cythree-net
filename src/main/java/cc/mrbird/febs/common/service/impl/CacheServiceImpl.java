@@ -72,8 +72,6 @@ public class CacheServiceImpl implements CacheService {
     @Override
     public List<Menu> getPermissions(String username) throws Exception {
         String permissionListString = this.redisService.get(FebsConstant.USER_PERMISSION_CACHE_PREFIX + username);
-//        System.out.println("======== getPermissions => permissionListString ========");
-//        System.out.println(permissionListString);
         if (StringUtils.isBlank(permissionListString)) {
             System.out.println("permissionListString 为 blank");
             throw new Exception();

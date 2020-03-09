@@ -26,8 +26,8 @@
         <if test="seal.createTimeTo!= null and seal.createTimeTo !=''">
             AND s.DATETIME &lt;= #{seal.createTimeTo}
         </if>
-        <if test="seal.process!= null and seal.process !=''">
-            AND FIND_IN_SET(s.PROCESS, #{seal.process})
+        <if test="seal.process!= null">
+            AND s.PROCESS = #{seal.process}
         </if>
     </select>
 </mapper>

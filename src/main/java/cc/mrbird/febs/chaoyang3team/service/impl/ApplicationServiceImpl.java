@@ -61,8 +61,8 @@ public class ApplicationServiceImpl extends ServiceImpl<ApplicationMapper, Appli
             User user = this.userManager.getUser(username);
             application.setDeptId(user.getDeptId());
 
-            //判断用户角色是否包含“行政后勤”（id：73） 如果isLogistics为true，则能看到all data
-            boolean isLogistics = Arrays.asList(user.getRoleId().split(",")).contains("73");
+            //判断用户角色是否包含“审核采购申请”（id：86） 如果isLogistics为true，则能看到all data
+            boolean isLogistics = Arrays.asList(user.getRoleId().split(",")).contains("86");
 
             Page<Application> page = new Page<>();
             SortUtil.handlePageSort(request, page, "id", FebsConstant.ORDER_DESC, false);
@@ -107,6 +107,12 @@ public class ApplicationServiceImpl extends ServiceImpl<ApplicationMapper, Appli
     @Transactional
     public void updateApplication(Application application) {
         this.baseMapper.updateById(application);
+        if (application.getPlanList() != null) {
+            // 将JSON字符串转换为List<Plan>格式
+            JSONArray jsonArray = JSONArray.fromObject(application.getPlanList());
+            List<Plan> planList = (List<Plan>) JSONArray.toCollection(jsonArray, Plan.class);
+            this.planService.updateBatchById(planList);
+        }
         if (application.getProcess() != null && application.getProcess() != 0) {
             StringBuilder message = new StringBuilder();
             // 判断如果是办公用品或者固定资产，这两个的申请时每月申请单号的，也就是说application.getNum() == null，所以要新建立一个

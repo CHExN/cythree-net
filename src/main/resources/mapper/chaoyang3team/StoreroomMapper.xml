@@ -86,7 +86,7 @@
     </select>
 
     <select id="getOfficeSuppliesByDate" resultType="cc.mrbird.febs.chaoyang3team.domain.Storeroom">
-        SELECT
+        /*SELECT
         s.`NAME`,
         s.TYPE,
         s.AMOUNT,
@@ -102,8 +102,21 @@
         LEFT JOIN p_storeroom_out AS so ON(so.STOREROOM_ID=s.ID)
         LEFT JOIN cy_storeroom_put_out AS spo ON(spo.ID=so.OUT_ID)
         LEFT JOIN t_dept AS d ON(d.DEPT_ID=spo.TO_DEPT_ID)
-        WHERE spo.TYPE_APPLICATION=3 AND spo.IS_PUT=2
-        AND spo.DATE LIKE CONCAT(#{date},'%')
+        WHERE spo.TYPE_APPLICATION=3 AND spo.IS_PUT=2*/
+        SELECT
+        cp.`NAME`,
+        cp.TYPE,
+        cp.AMOUNT,
+        cp.UNIT,
+        cp.REMARK,
+        ca.CREATE_DATE,
+        td.DEPT_NAME AS toDeptName
+        FROM cy_application AS ca
+        LEFT JOIN p_application_plan AS pap ON (pap.APPLICATION_ID = ca.ID)
+        LEFT JOIN cy_plan AS cp ON (cp.ID = pap.PLAN_ID)
+        LEFT JOIN t_dept AS td ON(td.DEPT_ID=ca.DEPT_ID)
+        WHERE ca.TYPE_APPLICATION = 3
+        AND ca.CREATE_DATE LIKE CONCAT(#{date},'%')
     </select>
 
     <select id="getCanteenByDate" resultType="cc.mrbird.febs.chaoyang3team.domain.Storeroom">

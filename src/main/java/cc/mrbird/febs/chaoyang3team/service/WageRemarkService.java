@@ -6,6 +6,6 @@ import com.baomidou.mybatisplus.extension.service.IService;
 /**
  * @author CHExN
  */
-public interface ICyWageRemarkService extends IService<WageRemark> {
+public interface WageRemarkService extends IService<WageRemark> {
 
 }
