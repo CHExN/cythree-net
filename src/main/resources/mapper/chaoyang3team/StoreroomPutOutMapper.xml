@@ -107,9 +107,6 @@
         <if test="sOut.createTimeTo!= null and sOut.createTimeTo !=''">
             AND sp.DATE &lt;= #{sOut.createTimeTo}
         </if>
-        <if test="sOut.toDeptId!= null and sOut.toDeptId !=''">
-            AND sp.TO_DEPT_ID = #{sOut.toDeptId}
-        </if>
     </select>
 
     <select id="getStoreroomOutSimplify" resultType="cc.mrbird.febs.chaoyang3team.domain.StoreroomPutOut">

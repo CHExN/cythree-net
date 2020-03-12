@@ -34,7 +34,6 @@ public class ReviewModifyController extends BaseController {
     private ReviewModifyService reviewModifyService;
 
     @GetMapping("getOne")
-    @RequiresPermissions("reviewModify:view")
     public ReviewModify findByInfo(ReviewModify reviewModify, ServletRequest request) {
         return this.reviewModifyService.findByInfo(reviewModify, request);
     }

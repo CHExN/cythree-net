@@ -37,8 +37,8 @@ public class StoreroomController extends BaseController {
 
     @GetMapping("itemDetails")
     @RequiresPermissions("storeroomItemDetails:view")
-    public Map<String, Object> findStoreroomsItemDetails(QueryRequest request, Storeroom storeroom) {
-        return getDataTable(this.storeroomService.findStoreroomsItemDetails(request, storeroom));
+    public Map<String, Object> findStoreroomsItemDetails(QueryRequest request, Storeroom storeroom, ServletRequest servletRequest) {
+        return getDataTable(this.storeroomService.findStoreroomsItemDetails(request, storeroom, servletRequest));
     }
 
     @GetMapping("storeroomOutItem")

@@ -115,12 +115,6 @@ public class Contract implements Serializable {
     private Integer isInitiate;
 
     /**
-     * 文件id
-     */
-    @TableField("FILE_ID")
-    private Long fileId;
-
-    /**
      * 是联合审核 还是 逐一审核 1联合审核 0逐一审核
      */
     /*@TableField("IS_JOIN")
@@ -232,5 +226,7 @@ public class Contract implements Serializable {
      * 文件地址
      */
     private transient String address;
+
+    private transient String fileId;
 
 }

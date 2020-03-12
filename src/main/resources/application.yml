@@ -45,11 +45,11 @@ spring:
     time-zone: GMT+8
 
   redis:
-#    host: 114.115.154.244
+    host: 114.115.154.244
 #    host: 127.0.0.1
-    host: 182.92.64.172
+#    host: 182.92.64.172
     port: 6379
-    password:
+    password: Y9HzjUt0CEopsS2T
     jedis:
       pool:
         min-idle: 8
@@ -66,8 +66,7 @@ mybatis-plus:
   configuration:
     jdbc-type-for-null: null
   global-config:
-    # 关闭 mybatis-plus的 banner
-    banner: false
+    banner: false # 关闭 mybatis-plus的 banner
 
 management:
   endpoints:

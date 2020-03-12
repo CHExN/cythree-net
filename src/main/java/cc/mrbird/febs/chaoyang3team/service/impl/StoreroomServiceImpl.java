@@ -48,41 +48,41 @@ public class StoreroomServiceImpl extends ServiceImpl<StoreroomMapper, Storeroom
 
     @Override
     public IPage<Storeroom> findStoreroomsDetail(QueryRequest request, Storeroom storeroom, ServletRequest servletRequest) {
-        HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
-        String username = JWTUtil.getUsername(FebsUtil.decryptToken(httpServletRequest.getHeader("Authentication")));
-        // 通过用户名获取用户权限集合
-        Set<String> userPermissions = this.userManager.getUserPermissions(username);
-        // 如果拥有以下任意一个或复数权限，就代表只能看到这些物品的权限，搜索也是一样，搜只会出现这些的物质类别
-        List<String> typeApplicationAuthorityList = new ArrayList<>();
-        if (userPermissions.contains("storeroom:view1")) {
-            typeApplicationAuthorityList.add("1");
-        }
-        if (userPermissions.contains("storeroom:view2")) {
-            typeApplicationAuthorityList.add("2");
-        }
-        if (userPermissions.contains("storeroom:view3")) {
-            typeApplicationAuthorityList.add("3");
-        }
-        if (userPermissions.contains("storeroom:view4")) {
-            typeApplicationAuthorityList.add("4");
-        }
-        if (userPermissions.contains("storeroom:view5")) {
-            typeApplicationAuthorityList.add("5");
-        }
-        if (userPermissions.contains("storeroom:view6")) {
-            typeApplicationAuthorityList.add("6");
-        }
-        if (userPermissions.contains("storeroom:view7")) {
-            typeApplicationAuthorityList.add("7");
-        }
-        if (userPermissions.contains("storeroom:view8")) {
-            typeApplicationAuthorityList.add("8");
-        }
-        if (userPermissions.contains("storeroom:view9")) {
-            typeApplicationAuthorityList.add("9");
-        }
-        storeroom.setTypeApplicationAuthority(String.join(",", typeApplicationAuthorityList));
         try {
+            HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
+            String username = JWTUtil.getUsername(FebsUtil.decryptToken(httpServletRequest.getHeader("Authentication")));
+            // 通过用户名获取用户权限集合
+            Set<String> userPermissions = this.userManager.getUserPermissions(username);
+            // 如果拥有以下任意一个或复数权限，就代表只能看到这些物品的权限，搜索也是一样，搜只会出现这些的物质类别
+            List<String> typeApplicationAuthorityList = new ArrayList<>();
+            if (userPermissions.contains("storeroom:view1")) {
+                typeApplicationAuthorityList.add("1");
+            }
+            if (userPermissions.contains("storeroom:view2")) {
+                typeApplicationAuthorityList.add("2");
+            }
+            if (userPermissions.contains("storeroom:view3")) {
+                typeApplicationAuthorityList.add("3");
+            }
+            if (userPermissions.contains("storeroom:view4")) {
+                typeApplicationAuthorityList.add("4");
+            }
+            if (userPermissions.contains("storeroom:view5")) {
+                typeApplicationAuthorityList.add("5");
+            }
+            if (userPermissions.contains("storeroom:view6")) {
+                typeApplicationAuthorityList.add("6");
+            }
+            if (userPermissions.contains("storeroom:view7")) {
+                typeApplicationAuthorityList.add("7");
+            }
+            if (userPermissions.contains("storeroom:view8")) {
+                typeApplicationAuthorityList.add("8");
+            }
+            if (userPermissions.contains("storeroom:view9")) {
+                typeApplicationAuthorityList.add("9");
+            }
+            storeroom.setTypeApplicationAuthority(String.join(",", typeApplicationAuthorityList));
             Page<StoreroomPutOut> page = new Page<>();
             SortUtil.handlePageSort(request, page, "id", FebsConstant.ORDER_DESC, true);
             return this.baseMapper.findStoreroomsDetail(page, storeroom);
@@ -93,8 +93,42 @@ public class StoreroomServiceImpl extends ServiceImpl<StoreroomMapper, Storeroom
     }
 
     @Override
-    public IPage<Storeroom> findStoreroomsItemDetails(QueryRequest request, Storeroom storeroom) {
+    public IPage<Storeroom> findStoreroomsItemDetails(QueryRequest request, Storeroom storeroom, ServletRequest servletRequest) {
         try {
+            HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
+            String username = JWTUtil.getUsername(FebsUtil.decryptToken(httpServletRequest.getHeader("Authentication")));
+            // 通过用户名获取用户权限集合
+            Set<String> userPermissions = this.userManager.getUserPermissions(username);
+            // 如果拥有以下任意一个或复数权限，就代表只能看到这些物品的权限，搜索也是一样，搜只会出现这些的物质类别
+            List<String> typeApplicationAuthorityList = new ArrayList<>();
+            if (userPermissions.contains("storeroom:view1")) {
+                typeApplicationAuthorityList.add("1");
+            }
+            if (userPermissions.contains("storeroom:view2")) {
+                typeApplicationAuthorityList.add("2");
+            }
+            if (userPermissions.contains("storeroom:view3")) {
+                typeApplicationAuthorityList.add("3");
+            }
+            if (userPermissions.contains("storeroom:view4")) {
+                typeApplicationAuthorityList.add("4");
+            }
+            if (userPermissions.contains("storeroom:view5")) {
+                typeApplicationAuthorityList.add("5");
+            }
+            if (userPermissions.contains("storeroom:view6")) {
+                typeApplicationAuthorityList.add("6");
+            }
+            if (userPermissions.contains("storeroom:view7")) {
+                typeApplicationAuthorityList.add("7");
+            }
+            if (userPermissions.contains("storeroom:view8")) {
+                typeApplicationAuthorityList.add("8");
+            }
+            if (userPermissions.contains("storeroom:view9")) {
+                typeApplicationAuthorityList.add("9");
+            }
+            storeroom.setTypeApplicationAuthority(String.join(",", typeApplicationAuthorityList));
             Page<StoreroomPutOut> page = new Page<>();
             SortUtil.handlePageSort(request, page, "id", FebsConstant.ORDER_DESC, true);
             return this.baseMapper.findStoreroomsItemDetails(page, storeroom);

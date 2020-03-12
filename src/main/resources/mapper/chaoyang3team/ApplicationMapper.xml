@@ -36,8 +36,11 @@
             <!--<otherwise>-->
             <!--</otherwise>-->
         <!--</choose>-->
-        <if test="application.typeApplication != 3 and application.typeApplication != 5 and application.typeApplication != 8">
+        <if test="!is35">
             AND FIND_IN_SET(a.TYPE_APPLICATION, '1,2,4,6,7,9')
+        </if>
+        <if test="application.typeApplicationAuthority != null and application.typeApplicationAuthority != ''">
+            AND FIND_IN_SET(a.TYPE_APPLICATION, #{application.typeApplicationAuthority})
         </if>
         <if test="!isLogistics">
             AND (a.DEPT_ID = #{application.deptId} OR (a.PROCESS=0 AND FIND_IN_SET(#{application.username}, a.REVIEW)=a.STEP))

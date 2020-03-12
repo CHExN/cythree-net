@@ -4,6 +4,7 @@ import cc.mrbird.febs.chaoyang3team.dao.ContractMapper;
 import cc.mrbird.febs.chaoyang3team.domain.Contract;
 import cc.mrbird.febs.chaoyang3team.domain.ContractFile;
 import cc.mrbird.febs.chaoyang3team.domain.File;
+import cc.mrbird.febs.chaoyang3team.domain.SealFile;
 import cc.mrbird.febs.chaoyang3team.service.ContractFileService;
 import cc.mrbird.febs.chaoyang3team.service.ContractService;
 import cc.mrbird.febs.chaoyang3team.service.FileService;
@@ -114,6 +115,13 @@ public class ContractServiceImpl extends ServiceImpl<ContractMapper, Contract> i
 
         contract.setReview(review.toString());
         this.save(contract);
+        // 插入附件与上会议题的关联
+        if (contract.getFileId() != null) {
+            String[] fileIds = contract.getFileId().split(",");
+            for (String fileId : fileIds) {
+                this.contractFileService.createContractFile(new ContractFile(contract.getId(), Long.valueOf(fileId)));
+            }
+        }
     }
 
     @Override

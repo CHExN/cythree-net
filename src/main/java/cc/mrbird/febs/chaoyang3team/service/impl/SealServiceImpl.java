@@ -1,10 +1,7 @@
 package cc.mrbird.febs.chaoyang3team.service.impl;
 
 import cc.mrbird.febs.chaoyang3team.dao.SealMapper;
-import cc.mrbird.febs.chaoyang3team.domain.File;
-import cc.mrbird.febs.chaoyang3team.domain.Message;
-import cc.mrbird.febs.chaoyang3team.domain.Seal;
-import cc.mrbird.febs.chaoyang3team.domain.SealFile;
+import cc.mrbird.febs.chaoyang3team.domain.*;
 import cc.mrbird.febs.chaoyang3team.service.FileService;
 import cc.mrbird.febs.chaoyang3team.service.MessageService;
 import cc.mrbird.febs.chaoyang3team.service.SealFileService;
@@ -103,12 +100,18 @@ public class SealServiceImpl extends ServiceImpl<SealMapper, Seal> implements Se
         seal.setDeptName(user.getDeptName());
         seal.setDateTime(DateUtil.formatFullTime(LocalDateTime.now(), DateUtil.FULL_TIME_SPLIT_PATTERN));
         this.save(seal);
+        // 插入附件与上会议题的关联
+        if (seal.getFileId() != null) {
+            String[] fileIds = seal.getFileId().split(",");
+            for (String fileId : fileIds) {
+                this.sealFileService.createSealFile(new SealFile(seal.getSealId(), Long.valueOf(fileId)));
+            }
+        }
     }
 
     @Override
     @Transactional
     public void updateSeal(Seal seal) {
-        this.baseMapper.updateById(seal);
         // 判断更新的是否是更新状态的
         if (seal.getSealUser() == null && seal.getAmount() == null && seal.getRemark() == null && seal.getProcess() == 1) {
             String message = "已有一条印章使用审批单审核通过";
@@ -122,6 +125,7 @@ public class SealServiceImpl extends ServiceImpl<SealMapper, Seal> implements Se
                     null)
             );
         }
+        this.baseMapper.updateById(seal);
     }
 
     @Override

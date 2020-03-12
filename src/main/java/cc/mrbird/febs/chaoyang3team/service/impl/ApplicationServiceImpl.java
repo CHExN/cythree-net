@@ -30,6 +30,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author CHExN
@@ -61,12 +62,53 @@ public class ApplicationServiceImpl extends ServiceImpl<ApplicationMapper, Appli
             User user = this.userManager.getUser(username);
             application.setDeptId(user.getDeptId());
 
-            //判断用户角色是否包含“审核采购申请”（id：86） 如果isLogistics为true，则能看到all data
+            //判断用户角色是否包含“审核采购申请”（id：86）或 “保洁劳保库管”（id：87）、“维修库管”（id：92）、“行政后勤”（id：73）
+            //这四个是后勤部门所拥有的角色，如果包含其中一项，则能不受“只看本部门”的查询影响
             boolean isLogistics = Arrays.asList(user.getRoleId().split(",")).contains("86");
+            boolean isLbbjkg = Arrays.asList(user.getRoleId().split(",")).contains("87");
+            boolean isWxclkg = Arrays.asList(user.getRoleId().split(",")).contains("92");
+            boolean isXzhqbm = Arrays.asList(user.getRoleId().split(",")).contains("73");
 
+            // 通过用户名获取用户权限集合
+            Set<String> userPermissions = this.userManager.getUserPermissions(username);
+            // 如果拥有以下任意一个或复数权限，就代表只能看到这些物品的权限，搜索也是一样，搜只会出现这些的物质类别
+            List<String> typeApplicationAuthorityList = new ArrayList<>();
+            if (userPermissions.contains("storeroom:view1")) {
+                typeApplicationAuthorityList.add("1");
+            }
+            if (userPermissions.contains("storeroom:view2")) {
+                typeApplicationAuthorityList.add("2");
+            }
+            if (userPermissions.contains("storeroom:view3")) {
+                typeApplicationAuthorityList.add("3");
+            }
+            if (userPermissions.contains("storeroom:view4")) {
+                typeApplicationAuthorityList.add("4");
+            }
+            if (userPermissions.contains("storeroom:view5")) {
+                typeApplicationAuthorityList.add("5");
+            }
+            if (userPermissions.contains("storeroom:view6")) {
+                typeApplicationAuthorityList.add("6");
+            }
+            if (userPermissions.contains("storeroom:view7")) {
+                typeApplicationAuthorityList.add("7");
+            }
+            if (userPermissions.contains("storeroom:view8")) {
+                typeApplicationAuthorityList.add("8");
+            }
+            if (userPermissions.contains("storeroom:view9")) {
+                typeApplicationAuthorityList.add("9");
+            }
+            application.setTypeApplicationAuthority(String.join(",", typeApplicationAuthorityList));
+
+            boolean is35 = false;
+            if (application.getTypeApplication() != null) {
+                is35 = application.getTypeApplication().equals("3") || application.getTypeApplication().equals("5");
+            }
             Page<Application> page = new Page<>();
             SortUtil.handlePageSort(request, page, "id", FebsConstant.ORDER_DESC, false);
-            return this.baseMapper.findApplicationDetail(page, application, isLogistics);
+            return this.baseMapper.findApplicationDetail(page, application, is35, isLogistics || isLbbjkg || isWxclkg || isXzhqbm);
         } catch (Exception e) {
             log.error("查询采购申请单信息异常", e);
             return null;

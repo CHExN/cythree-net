@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.mrbird.febs.chaoyang3team.dao.FireExtinguisherMapper">
+
+    <select id="findFireExtinguisherDetail" resultType="cc.mrbird.febs.chaoyang3team.domain.FireExtinguisher">
+        SELECT
+        cfe.ID,
+        cfe.ASSET_NAME,
+        cfe.BRAND_MODEL,
+        cfe.ALLOTMENT_DATE,
+        cfe.USER,
+        cfe.TEST_DATE,
+        cw.WC_NAME,
+        cw.WC_NUM,
+        cfe.SPECIFICATION,
+        cfe.PLACE,
+        cfe.REMARK,
+        cfe.CREATE_TIME,
+        cfe.MODIFY_TIME,
+        cfe.DELETED
+        FROM
+        cy_Fire_extinguisher AS cfe
+        LEFT JOIN cy_wc AS cw ON(cw.WC_NUM = cfe.WC_NUM)
+        WHERE cfe.DELETED=0
+        <if test="fireExtinguisher.assetName != null and fireExtinguisher.assetName !=''">
+            AND cfe.ASSET_NAME LIKE CONCAT('%',#{fireExtinguisher.assetName},'%')
+        </if>
+        <if test="fireExtinguisher.brandModel != null and fireExtinguisher.brandModel !=''">
+            AND cfe.BRAND_MODEL LIKE CONCAT('%',#{fireExtinguisher.brandModel},'%')
+        </if>
+        <if test="fireExtinguisher.user != null and fireExtinguisher.user !=''">
+            AND cfe.USER LIKE CONCAT('%',#{fireExtinguisher.user},'%')
+        </if>
+        <if test="fireExtinguisher.wcName != null and fireExtinguisher.wcName !=''">
+            AND cw.WC_NAME LIKE CONCAT('%',#{fireExtinguisher.wcName},'%')
+        </if>
+        <if test="fireExtinguisher.wcNum != null and fireExtinguisher.wcNum !=''">
+            AND cw.WC_NUM LIKE CONCAT('%',#{fireExtinguisher.wcNum},'%')
+        </if>
+        <if test="fireExtinguisher.specification != null and fireExtinguisher.specification !=''">
+            AND cfe.SPECIFICATION LIKE CONCAT('%',#{fireExtinguisher.specification},'%')
+        </if>
+        <if test="fireExtinguisher.place != null and fireExtinguisher.place !=''">
+            AND cfe.PLACE LIKE CONCAT('%',#{fireExtinguisher.place},'%')
+        </if>
+        <if test="fireExtinguisher.remark != null and fireExtinguisher.remark !=''">
+            AND cfe.REMARK LIKE CONCAT('%',#{fireExtinguisher.remark},'%')
+        </if>
+    </select>
+</mapper>

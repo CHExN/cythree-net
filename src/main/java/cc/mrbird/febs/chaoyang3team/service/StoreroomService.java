@@ -29,7 +29,7 @@ public interface StoreroomService extends IService<Storeroom> {
      * @param storeroom 查询条件
      * @return 出入库物品明细数据
      */
-    IPage<Storeroom> findStoreroomsItemDetails(QueryRequest request, Storeroom storeroom);
+    IPage<Storeroom> findStoreroomsItemDetails(QueryRequest request, Storeroom storeroom, ServletRequest servletRequest);
 
     IPage<Storeroom> getStoreroomsDist(QueryRequest request, Storeroom storeroom);
 

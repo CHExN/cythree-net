@@ -19,8 +19,6 @@
         c.REVIEW,
         c.IS_FINANCE,
         c.IS_INITIATE,
-        c.FILE_ID,
-        f.ADDRESS AS address,
         c.OPINION_START,
         c.OPINION_LEGAL,
         c.OPINION_FINANCIAL,
@@ -40,7 +38,6 @@
         c.DATE_CAPTAIN
         FROM
         cy_contract AS c
-        LEFT JOIN t_file AS f ON(f.FILE_ID=c.FILE_ID)
         WHERE 1=1
         <if test="contract.deptId != null and contract.deptId !=''">
             AND (#{username} = 'finance' OR FIND_IN_SET(#{username},c.REVIEW)) AND c.DEPT_ID = #{contract.deptId}

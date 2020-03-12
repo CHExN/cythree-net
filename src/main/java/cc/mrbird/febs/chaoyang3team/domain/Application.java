@@ -31,7 +31,7 @@ public class Application implements Serializable {
      */
     @TableField("TYPE_APPLICATION")
     private String typeApplication;
-//    private transient String typeApplicationToDict;
+    private transient String typeApplicationAuthority;
 
     /**
      * 编号

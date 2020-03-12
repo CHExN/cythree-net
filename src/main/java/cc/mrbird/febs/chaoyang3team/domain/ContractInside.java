@@ -75,4 +75,21 @@ public class ContractInside implements Serializable {
     @ExcelField(value = "职位协议日期")
     private String jobAgreementDate;
 
+    // 合同开始的开始时间
+    private transient String contractPeriodFromFrom;
+    // 合同开始的结束时间
+    private transient String contractPeriodFromTo;
+    // 合同结束的开始时间
+    private transient String contractPeriodToFrom;
+    // 合同结束的结束时间
+    private transient String contractPeriodToTo;
+
+    // 职位协议开始的开始时间
+    private transient String jobAgreementFromFrom;
+    // 职位协议开始的结束时间
+    private transient String jobAgreementFromTo;
+    // 职位协议结束的开始时间
+    private transient String jobAgreementToFrom;
+    // 职位协议结束的结束时间
+    private transient String jobAgreementToTo;
 }

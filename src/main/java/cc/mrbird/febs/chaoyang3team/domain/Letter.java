@@ -77,4 +77,6 @@ public class Letter implements Serializable {
     private transient String createTimeFrom;
     private transient String createTimeTo;
 
+    private transient String fileId;
+
 }

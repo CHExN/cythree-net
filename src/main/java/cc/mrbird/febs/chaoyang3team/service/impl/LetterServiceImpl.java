@@ -1,10 +1,7 @@
 package cc.mrbird.febs.chaoyang3team.service.impl;
 
 import cc.mrbird.febs.chaoyang3team.dao.LetterMapper;
-import cc.mrbird.febs.chaoyang3team.domain.File;
-import cc.mrbird.febs.chaoyang3team.domain.Letter;
-import cc.mrbird.febs.chaoyang3team.domain.LetterFile;
-import cc.mrbird.febs.chaoyang3team.domain.Message;
+import cc.mrbird.febs.chaoyang3team.domain.*;
 import cc.mrbird.febs.chaoyang3team.service.FileService;
 import cc.mrbird.febs.chaoyang3team.service.LetterFileService;
 import cc.mrbird.febs.chaoyang3team.service.LetterService;
@@ -103,12 +100,18 @@ public class LetterServiceImpl extends ServiceImpl<LetterMapper, Letter> impleme
         letter.setDeptName(user.getDeptName());
         letter.setDateTime(DateUtil.formatFullTime(LocalDateTime.now(), DateUtil.FULL_TIME_SPLIT_PATTERN));
         this.save(letter);
+        // 插入附件与上会议题的关联
+        if (letter.getFileId() != null) {
+            String[] fileIds = letter.getFileId().split(",");
+            for (String fileId : fileIds) {
+                this.letterFileService.createLetterFile(new LetterFile(letter.getLetterId(), Long.valueOf(fileId)));
+            }
+        }
     }
 
     @Override
     @Transactional
     public void updateLetter(Letter letter) {
-        this.baseMapper.updateById(letter);
         // 判断更新的是否是更新状态的
         if (letter.getLetterUser() == null && letter.getRemark() == null) {
             String message = "";
@@ -124,6 +127,7 @@ public class LetterServiceImpl extends ServiceImpl<LetterMapper, Letter> impleme
                     null)
             );
         }
+        this.baseMapper.updateById(letter);
     }
 
     @Override

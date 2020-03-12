@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.mrbird.febs.chaoyang3team.dao.ChargingCabinetMapper">
+
+    <select id="findChargingCabinetDetail" resultType="cc.mrbird.febs.chaoyang3team.domain.ChargingCabinet">
+        SELECT
+        ccc.ID,
+        ccc.ASSET_NAME,
+        ccc.BRAND_MODEL,
+        ccc.ALLOTMENT_DATE,
+        ccc.USER,
+        ccc.USE_DEPT_NAME,
+        ccc.CHARGING_SECTIONS_NUMBER,
+        ccc.IF_CHARGE,
+        ccc.PLACE,
+        ccc.REMARK,
+        ccc.CREATE_TIME,
+        ccc.MODIFY_TIME,
+        ccc.DELETED
+        FROM
+        cy_charging_cabinet AS ccc
+        WHERE ccc.DELETED=0
+        <if test="chargingCabinet.assetName != null and chargingCabinet.assetName !=''">
+            AND ccc.ASSET_NAME LIKE CONCAT('%',#{chargingCabinet.assetName},'%')
+        </if>
+        <if test="chargingCabinet.brandModel != null and chargingCabinet.brandModel !=''">
+            AND ccc.BRAND_MODEL LIKE CONCAT('%',#{chargingCabinet.brandModel},'%')
+        </if>
+        <if test="chargingCabinet.user != null and chargingCabinet.user !=''">
+            AND ccc.USER LIKE CONCAT('%',#{chargingCabinet.user},'%')
+        </if>
+        <if test="chargingCabinet.useDeptName != null and chargingCabinet.useDeptName !=''">
+            AND ccc.USE_DEPT_NAME LIKE CONCAT('%',#{chargingCabinet.useDeptName},'%')
+        </if>
+        <if test="chargingCabinet.ifCharge != null and chargingCabinet.ifCharge !=''">
+            AND ccc.IF_CHARGE = #{chargingCabinet.ifCharge}
+        </if>
+        <if test="chargingCabinet.place != null and chargingCabinet.place !=''">
+            AND ccc.PLACE LIKE CONCAT('%',#{chargingCabinet.place},'%')
+        </if>
+        <if test="chargingCabinet.remark != null and chargingCabinet.remark !=''">
+            AND ccc.REMARK LIKE CONCAT('%',#{chargingCabinet.remark},'%')
+        </if>
+    </select>
+
+</mapper>

@@ -175,6 +175,9 @@
         LEFT JOIN p_storeroom_put AS psp ON psp.STOREROOM_ID=cs.ID
         LEFT JOIN cy_storeroom_put_out AS cspo ON cspo.ID=psp.PUT_ID
         WHERE cspo.IS_PUT='1'
+        <if test="storeroom.typeApplicationAuthority != null and storeroom.typeApplicationAuthority != ''">
+            AND FIND_IN_SET(cs.TYPE_APPLICATION, #{storeroom.typeApplicationAuthority})
+        </if>
         <if test="storeroom.name != null and storeroom.name != ''">
             AND cs.NAME LIKE CONCAT('%',#{storeroom.name},'%')
         </if>
@@ -221,7 +224,9 @@
         cs.PARENT_ID,
         td.DEPT_NAME AS toDeptName
         FROM cy_storeroom  AS cs
-        LEFT JOIN t_dept AS td ON td.DEPT_ID=cs.TO_DEPT_ID
+        LEFT JOIN p_storeroom_out AS pso ON(pso.STOREROOM_ID=cs.ID)
+        LEFT JOIN cy_storeroom_put_out AS cspo ON(cspo.ID=pso.OUT_ID)
+        LEFT JOIN t_dept AS td ON td.DEPT_ID = cspo.TO_DEPT_ID
         WHERE cs.PARENT_ID=#{parentId} AND (cs.ID=#{id})=0
     </select>
 </mapper>
