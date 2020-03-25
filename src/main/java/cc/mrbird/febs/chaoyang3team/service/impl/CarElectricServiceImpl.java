@@ -1,7 +1,7 @@
 package cc.mrbird.febs.chaoyang3team.service.impl;
 
-import cc.mrbird.febs.chaoyang3team.domain.CarElectric;
 import cc.mrbird.febs.chaoyang3team.dao.CarElectricMapper;
+import cc.mrbird.febs.chaoyang3team.domain.CarElectric;
 import cc.mrbird.febs.chaoyang3team.service.CarElectricService;
 import cc.mrbird.febs.common.domain.FebsConstant;
 import cc.mrbird.febs.common.domain.QueryRequest;
@@ -30,8 +30,10 @@ public class CarElectricServiceImpl extends ServiceImpl<CarElectricMapper, CarEl
     public IPage<CarElectric> findCarElectricDetail(QueryRequest request, CarElectric carElectric) {
         try {
             Page<CarElectric> page = new Page<>();
-            SortUtil.handlePageSort(request, page, "id", FebsConstant.ORDER_DESC, false);
-            return this.baseMapper.findCarElectricDetail(page, carElectric);
+            page.setSearchCount(false);
+            SortUtil.handlePageSort(request, page,"id", FebsConstant.ORDER_ASC, false);
+            Integer total = this.baseMapper.findCarElectricDetailCount(carElectric);
+            return total > 0 ? this.baseMapper.findCarElectricDetail(page, carElectric).setTotal(total) : null;
         } catch (Exception e) {
             log.error("查询电动车信息异常", e);
             return null;
@@ -57,5 +59,10 @@ public class CarElectricServiceImpl extends ServiceImpl<CarElectricMapper, CarEl
     public void deleteCarElectric(String[] carElectricIds) {
         List<String> list = Arrays.asList(carElectricIds);
         this.baseMapper.deleteBatchIds(list);
+    }
+
+    @Override
+    public void batchInsertCarElectric(List<CarElectric> carElectricList) {
+        this.saveBatch(carElectricList);
     }
 }

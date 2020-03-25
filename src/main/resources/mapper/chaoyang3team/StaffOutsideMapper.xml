@@ -101,20 +101,27 @@
         SELECT
         cso.STAFF_ID,
         cso.`NAME`,
+        cso.GENDER,
         cso.ID_NUM
         FROM cy_staff_outside AS cso
         WHERE FIND_IN_SET(cso.IS_LEAVE, #{staffOutside.isLeave})
         <if test="staffOutside.temporary != null and staffOutside.temporary != ''">
             AND (SELECT COUNT(1) FROM cy_contract_outside AS cco WHERE cco.ID_NUM=cso.ID_NUM) = 0
         </if>
-        <if test="staffOutside.team != null and staffOutside.team != ''">
+        <if test="staffOutside.post != null and staffOutside.post != ''">
             AND (SELECT COUNT(1) FROM cy_insurance_outside AS cio WHERE cio.STAFF_ID=cso.STAFF_ID) = 0
+        </if>
+        <if test="staffOutside.clan != null and staffOutside.clan != ''">
+            AND (cso.TECHNICAL_TYPE='保洁员')=0
         </if>
         <if test="staffOutside.idNum != null and staffOutside.idNum != ''">
             AND cso.ID_NUM LIKE CONCAT('%',#{staffOutside.idNum},'%')
         </if>
         <if test="staffOutside.name != null and staffOutside.name != ''">
             AND cso.NAME LIKE CONCAT('%',#{staffOutside.name},'%')
+        </if>
+        <if test="staffOutside.team != null and staffOutside.team != ''">
+            AND FIND_IN_SET(cso.TEAM, #{staffOutside.team})
         </if>
         <if test="staffOutside.technicalType != null and staffOutside.technicalType != ''">
             AND FIND_IN_SET(cso.TECHNICAL_TYPE, #{staffOutside.technicalType})

@@ -53,24 +53,44 @@
         t.ALLOWANCE_FOR_DEDUCTION,
         t.TAX_DEDUCTION,
         t.FINAL_WAGE,
-        (SELECT SUM(t.CURRENT_INCOME) FROM cy_tax_inside AS t WHERE s.STAFF_ID=t.STAFF_ID AND `YEAR`=#{taxInside.year} AND FIND_IN_SET(`MONTH`,#{taxInside.monthArr}) GROUP BY t.STAFF_ID) AS currentIncomeSum,
-        (SELECT SUM(t.CURRENT_TAX_FREE_INCOME) FROM cy_tax_inside AS t WHERE s.STAFF_ID=t.STAFF_ID AND `YEAR`=#{taxInside.year} AND FIND_IN_SET(`MONTH`,#{taxInside.monthArr}) GROUP BY t.STAFF_ID) AS currentTaxFreeIncomeSum,
-        (SELECT SUM(t.BASIC_PENSION_IP) FROM cy_tax_inside AS t WHERE s.STAFF_ID=t.STAFF_ID AND `YEAR`=#{taxInside.year} AND FIND_IN_SET(`MONTH`,#{taxInside.monthArr}) GROUP BY t.STAFF_ID) AS basicPensionIpSum,
-        (SELECT SUM(t.BASIC_MEDICAL_IP) FROM cy_tax_inside AS t WHERE s.STAFF_ID=t.STAFF_ID AND `YEAR`=#{taxInside.year} AND FIND_IN_SET(`MONTH`,#{taxInside.monthArr}) GROUP BY t.STAFF_ID) AS basicMedicalIpSum,
-        (SELECT SUM(t.UNEMPLOYMENT_IP) FROM cy_tax_inside AS t WHERE s.STAFF_ID=t.STAFF_ID AND `YEAR`=#{taxInside.year} AND FIND_IN_SET(`MONTH`,#{taxInside.monthArr}) GROUP BY t.STAFF_ID) AS unemploymentIpSum,
-        (SELECT SUM(t.HOUSING_FUND) FROM cy_tax_inside AS t WHERE s.STAFF_ID=t.STAFF_ID AND `YEAR`=#{taxInside.year} AND FIND_IN_SET(`MONTH`,#{taxInside.monthArr}) GROUP BY t.STAFF_ID) AS housingFundSum,
-        (SELECT SUM(t.CUMULATIVE_CHILD_E) FROM cy_tax_inside AS t WHERE s.STAFF_ID=t.STAFF_ID AND `YEAR`=#{taxInside.year} AND FIND_IN_SET(`MONTH`,#{taxInside.monthArr}) GROUP BY t.STAFF_ID) AS cumulativeChildESum,
-        (SELECT SUM(t.CUMULATIVE_CONTINUING_E) FROM cy_tax_inside AS t WHERE s.STAFF_ID=t.STAFF_ID AND `YEAR`=#{taxInside.year} AND FIND_IN_SET(`MONTH`,#{taxInside.monthArr}) GROUP BY t.STAFF_ID) AS cumulativeContinuingESum,
-        (SELECT SUM(t.CUMULATIVE_HOME_LOAN_INTEREST) FROM cy_tax_inside AS t WHERE s.STAFF_ID=t.STAFF_ID AND `YEAR`=#{taxInside.year} AND FIND_IN_SET(`MONTH`,#{taxInside.monthArr}) GROUP BY t.STAFF_ID) AS cumulativeHomeLoanInterestSum,
-        (SELECT SUM(t.CUMULATIVE_HOUSING_RENT) FROM cy_tax_inside AS t WHERE s.STAFF_ID=t.STAFF_ID AND `YEAR`=#{taxInside.year} AND FIND_IN_SET(`MONTH`,#{taxInside.monthArr}) GROUP BY t.STAFF_ID) AS cumulativeHousingRentSum,
-        (SELECT SUM(t.CUMULATIVE_ELDERLY_SUPPORT) FROM cy_tax_inside AS t WHERE s.STAFF_ID=t.STAFF_ID AND `YEAR`=#{taxInside.year} AND FIND_IN_SET(`MONTH`,#{taxInside.monthArr}) GROUP BY t.STAFF_ID) AS cumulativeElderlySupportSum,
-        (SELECT SUM(t.CORPORATE_ANNUITY) FROM cy_tax_inside AS t WHERE s.STAFF_ID=t.STAFF_ID AND `YEAR`=#{taxInside.year} AND FIND_IN_SET(`MONTH`,#{taxInside.monthArr}) GROUP BY t.STAFF_ID) AS corporateAnnuitySum,
-        (SELECT SUM(t.COMMERCIAL_HEALTH_INSURANCE) FROM cy_tax_inside AS t WHERE s.STAFF_ID=t.STAFF_ID AND `YEAR`=#{taxInside.year} AND FIND_IN_SET(`MONTH`,#{taxInside.monthArr}) GROUP BY t.STAFF_ID) AS commercialHealthInsuranceSum,
-        (SELECT SUM(t.TAX_EXTENSION_PENSION_INSURANCE) FROM cy_tax_inside AS t WHERE s.STAFF_ID=t.STAFF_ID AND `YEAR`=#{taxInside.year} AND FIND_IN_SET(`MONTH`,#{taxInside.monthArr}) GROUP BY t.STAFF_ID) AS taxExtensionPensionInsuranceSum,
-        (SELECT SUM(t.OTHER) FROM cy_tax_inside AS t WHERE s.STAFF_ID=t.STAFF_ID AND `YEAR`=#{taxInside.year} AND FIND_IN_SET(`MONTH`,#{taxInside.monthArr}) GROUP BY t.STAFF_ID) AS otherSum,
-        (SELECT SUM(t.ALLOWANCE_FOR_DEDUCTION) FROM cy_tax_inside AS t WHERE s.STAFF_ID=t.STAFF_ID AND `YEAR`=#{taxInside.year} AND FIND_IN_SET(`MONTH`,#{taxInside.monthArr}) GROUP BY t.STAFF_ID) AS allowanceForDeductionSum,
-        (SELECT SUM(t.TAX_DEDUCTION) FROM cy_tax_inside AS t WHERE s.STAFF_ID=t.STAFF_ID AND `YEAR`=#{taxInside.year} AND FIND_IN_SET(`MONTH`,#{taxInside.monthArr}) GROUP BY t.STAFF_ID) AS taxDeductionSum,
-        (SELECT SUM(t.FINAL_WAGE) FROM cy_tax_inside AS t WHERE s.STAFF_ID=t.STAFF_ID AND `YEAR`=#{taxInside.year} AND FIND_IN_SET(`MONTH`,#{taxInside.monthArr}) GROUP BY t.STAFF_ID) AS finalWageSum,
+        (SELECT SUM(t.CURRENT_INCOME)
+        FROM cy_tax_inside AS t WHERE s.STAFF_ID=t.STAFF_ID AND `YEAR`=#{taxInside.year} AND FIND_IN_SET(`MONTH`,#{taxInside.monthArr}) GROUP BY t.STAFF_ID) AS currentIncomeSum,
+        (SELECT SUM(t.CURRENT_TAX_FREE_INCOME)
+        FROM cy_tax_inside AS t WHERE s.STAFF_ID=t.STAFF_ID AND `YEAR`=#{taxInside.year} AND FIND_IN_SET(`MONTH`,#{taxInside.monthArr}) GROUP BY t.STAFF_ID) AS currentTaxFreeIncomeSum,
+        (SELECT SUM(t.BASIC_PENSION_IP)
+        FROM cy_tax_inside AS t WHERE s.STAFF_ID=t.STAFF_ID AND `YEAR`=#{taxInside.year} AND FIND_IN_SET(`MONTH`,#{taxInside.monthArr}) GROUP BY t.STAFF_ID) AS basicPensionIpSum,
+        (SELECT SUM(t.BASIC_MEDICAL_IP)
+        FROM cy_tax_inside AS t WHERE s.STAFF_ID=t.STAFF_ID AND `YEAR`=#{taxInside.year} AND FIND_IN_SET(`MONTH`,#{taxInside.monthArr}) GROUP BY t.STAFF_ID) AS basicMedicalIpSum,
+        (SELECT SUM(t.UNEMPLOYMENT_IP)
+        FROM cy_tax_inside AS t WHERE s.STAFF_ID=t.STAFF_ID AND `YEAR`=#{taxInside.year} AND FIND_IN_SET(`MONTH`,#{taxInside.monthArr}) GROUP BY t.STAFF_ID) AS unemploymentIpSum,
+        (SELECT SUM(t.HOUSING_FUND)
+        FROM cy_tax_inside AS t WHERE s.STAFF_ID=t.STAFF_ID AND `YEAR`=#{taxInside.year} AND FIND_IN_SET(`MONTH`,#{taxInside.monthArr}) GROUP BY t.STAFF_ID) AS housingFundSum,
+        (SELECT SUM(t.CUMULATIVE_CHILD_E)
+        FROM cy_tax_inside AS t WHERE s.STAFF_ID=t.STAFF_ID AND `YEAR`=#{taxInside.year} AND FIND_IN_SET(`MONTH`,#{taxInside.monthArr}) GROUP BY t.STAFF_ID) AS cumulativeChildESum,
+        (SELECT SUM(t.CUMULATIVE_CONTINUING_E)
+        FROM cy_tax_inside AS t WHERE s.STAFF_ID=t.STAFF_ID AND `YEAR`=#{taxInside.year} AND FIND_IN_SET(`MONTH`,#{taxInside.monthArr}) GROUP BY t.STAFF_ID) AS cumulativeContinuingESum,
+        (SELECT SUM(t.CUMULATIVE_HOME_LOAN_INTEREST)
+        FROM cy_tax_inside AS t WHERE s.STAFF_ID=t.STAFF_ID AND `YEAR`=#{taxInside.year} AND FIND_IN_SET(`MONTH`,#{taxInside.monthArr}) GROUP BY t.STAFF_ID) AS cumulativeHomeLoanInterestSum,
+        (SELECT SUM(t.CUMULATIVE_HOUSING_RENT)
+        FROM cy_tax_inside AS t WHERE s.STAFF_ID=t.STAFF_ID AND `YEAR`=#{taxInside.year} AND FIND_IN_SET(`MONTH`,#{taxInside.monthArr}) GROUP BY t.STAFF_ID) AS cumulativeHousingRentSum,
+        (SELECT SUM(t.CUMULATIVE_ELDERLY_SUPPORT)
+        FROM cy_tax_inside AS t WHERE s.STAFF_ID=t.STAFF_ID AND `YEAR`=#{taxInside.year} AND FIND_IN_SET(`MONTH`,#{taxInside.monthArr}) GROUP BY t.STAFF_ID) AS cumulativeElderlySupportSum,
+        (SELECT SUM(t.CORPORATE_ANNUITY)
+        FROM cy_tax_inside AS t WHERE s.STAFF_ID=t.STAFF_ID AND `YEAR`=#{taxInside.year} AND FIND_IN_SET(`MONTH`,#{taxInside.monthArr}) GROUP BY t.STAFF_ID) AS corporateAnnuitySum,
+        (SELECT SUM(t.COMMERCIAL_HEALTH_INSURANCE)
+        FROM cy_tax_inside AS t WHERE s.STAFF_ID=t.STAFF_ID AND `YEAR`=#{taxInside.year} AND FIND_IN_SET(`MONTH`,#{taxInside.monthArr}) GROUP BY t.STAFF_ID) AS commercialHealthInsuranceSum,
+        (SELECT SUM(t.TAX_EXTENSION_PENSION_INSURANCE)
+        FROM cy_tax_inside AS t WHERE s.STAFF_ID=t.STAFF_ID AND `YEAR`=#{taxInside.year} AND FIND_IN_SET(`MONTH`,#{taxInside.monthArr}) GROUP BY t.STAFF_ID) AS taxExtensionPensionInsuranceSum,
+        (SELECT SUM(t.OTHER)
+        FROM cy_tax_inside AS t WHERE s.STAFF_ID=t.STAFF_ID AND `YEAR`=#{taxInside.year} AND FIND_IN_SET(`MONTH`,#{taxInside.monthArr}) GROUP BY t.STAFF_ID) AS otherSum,
+        (SELECT SUM(t.ALLOWANCE_FOR_DEDUCTION)
+        FROM cy_tax_inside AS t WHERE s.STAFF_ID=t.STAFF_ID AND `YEAR`=#{taxInside.year} AND FIND_IN_SET(`MONTH`,#{taxInside.monthArr}) GROUP BY t.STAFF_ID) AS allowanceForDeductionSum,
+        (SELECT SUM(t.TAX_DEDUCTION)
+        FROM cy_tax_inside AS t WHERE s.STAFF_ID=t.STAFF_ID AND `YEAR`=#{taxInside.year} AND FIND_IN_SET(`MONTH`,#{taxInside.monthArr}) GROUP BY t.STAFF_ID) AS taxDeductionSum,
+        (SELECT SUM(t.FINAL_WAGE)
+        FROM cy_tax_inside AS t WHERE s.STAFF_ID=t.STAFF_ID AND `YEAR`=#{taxInside.year} AND FIND_IN_SET(`MONTH`,#{taxInside.monthArr}) GROUP BY t.STAFF_ID) AS finalWageSum,
+        (SELECT GROUP_CONCAT(t.FINAL_WAGE)
+        FROM cy_tax_inside AS t WHERE s.STAFF_ID=t.STAFF_ID AND `YEAR`=#{taxInside.year} AND FIND_IN_SET(`MONTH`,#{taxInside.monthArr}) GROUP BY t.STAFF_ID) AS finalWageList,
         t.REMARK,
         t.CREATE_TIME,
         t.MODIFY_TIME,

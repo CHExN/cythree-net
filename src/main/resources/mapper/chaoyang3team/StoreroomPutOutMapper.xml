@@ -78,7 +78,7 @@
         sp.MODIFY_TIME
         FROM
         cy_storeroom_put_out AS sp
-        LEFT JOIN t_dept d1 ON (d1.DEPT_ID = sp.TO_DEPT_ID)
+        LEFT JOIN t_dept AS d1 ON (d1.DEPT_ID = sp.TO_DEPT_ID)
         WHERE sp.IS_PUT = #{sOut.isPut}
         <if test="sOut.typeApplicationAuthority != null and sOut.typeApplicationAuthority != ''">
             AND FIND_IN_SET(sp.TYPE_APPLICATION, #{sOut.typeApplicationAuthority})
@@ -113,9 +113,11 @@
         SELECT
         sp.ID,
         sp.NUM,
-        sp.MONEY
+        sp.MONEY,
+        d1.DEPT_NAME AS toDeptName
         FROM
         cy_storeroom_put_out AS sp
+        LEFT JOIN t_dept AS d1 ON (d1.DEPT_ID = sp.TO_DEPT_ID)
         WHERE sp.IS_PUT = '2' AND sp.TYPE_APPLICATION = '5'
         <if test="sOut.num != null and sOut.num != ''">
             AND sp.NUM LIKE CONCAT('%',#{sOut.num},'%')

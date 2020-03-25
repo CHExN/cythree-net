@@ -7,12 +7,15 @@
         cfe.ID,
         cfe.ASSET_NAME,
         cfe.BRAND_MODEL,
-        cfe.ALLOTMENT_DATE,
+        cfe.ALLOTMENT_DATE1,
+        cfe.ALLOTMENT_DATE2,
         cfe.USER,
-        cfe.TEST_DATE,
+        cfe.TEST_DATE1,
+        cfe.TEST_DATE2,
         cw.WC_NAME,
         cw.WC_NUM,
-        cfe.SPECIFICATION,
+        cfe.SPECIFICATION1,
+        cfe.SPECIFICATION2,
         cfe.PLACE,
         cfe.REMARK,
         cfe.CREATE_TIME,
@@ -37,14 +40,33 @@
         <if test="fireExtinguisher.wcNum != null and fireExtinguisher.wcNum !=''">
             AND cw.WC_NUM LIKE CONCAT('%',#{fireExtinguisher.wcNum},'%')
         </if>
-        <if test="fireExtinguisher.specification != null and fireExtinguisher.specification !=''">
-            AND cfe.SPECIFICATION LIKE CONCAT('%',#{fireExtinguisher.specification},'%')
+        <if test="fireExtinguisher.specification1 != null and fireExtinguisher.specification1 !=''">
+            AND cfe.SPECIFICATION1 LIKE CONCAT('%',#{fireExtinguisher.specification1},'%')
+        </if>
+        <if test="fireExtinguisher.specification2 != null and fireExtinguisher.specification2 !=''">
+            AND cfe.SPECIFICATION2 LIKE CONCAT('%',#{fireExtinguisher.specification2},'%')
         </if>
         <if test="fireExtinguisher.place != null and fireExtinguisher.place !=''">
             AND cfe.PLACE LIKE CONCAT('%',#{fireExtinguisher.place},'%')
         </if>
         <if test="fireExtinguisher.remark != null and fireExtinguisher.remark !=''">
             AND cfe.REMARK LIKE CONCAT('%',#{fireExtinguisher.remark},'%')
+        </if>
+        <if test="fireExtinguisher.allotmentDate1From != null and fireExtinguisher.allotmentDate1From != '' and fireExtinguisher.allotmentDate1To != null and fireExtinguisher.allotmentDate1To != ''">
+            AND cfe.ALLOTMENT_DATE1 &gt;= #{fireExtinguisher.allotmentDate1From}
+            AND cfe.ALLOTMENT_DATE1 &lt;= #{fireExtinguisher.allotmentDate1To}
+        </if>
+        <if test="fireExtinguisher.allotmentDate2From != null and fireExtinguisher.allotmentDate2From != '' and fireExtinguisher.allotmentDate2To != null and fireExtinguisher.allotmentDate2To != ''">
+            AND cfe.ALLOTMENT_DATE2 &gt;= #{fireExtinguisher.allotmentDate2From}
+            AND cfe.ALLOTMENT_DATE2 &lt;= #{fireExtinguisher.allotmentDate2To}
+        </if>
+        <if test="fireExtinguisher.testDate1From != null and fireExtinguisher.testDate1From != '' and fireExtinguisher.testDate1To != null and fireExtinguisher.testDate1To != ''">
+            AND cfe.TEST_DATE1 &gt;= #{fireExtinguisher.testDate1From}
+            AND cfe.TEST_DATE1 &lt;= #{fireExtinguisher.testDate1To}
+        </if>
+        <if test="fireExtinguisher.testDate2From != null and fireExtinguisher.testDate2From != '' and fireExtinguisher.testDate2To != null and fireExtinguisher.testDate2To != ''">
+            AND cfe.TEST_DATE2 &gt;= #{fireExtinguisher.testDate2From}
+            AND cfe.TEST_DATE2 &lt;= #{fireExtinguisher.testDate2To}
         </if>
     </select>
 </mapper>

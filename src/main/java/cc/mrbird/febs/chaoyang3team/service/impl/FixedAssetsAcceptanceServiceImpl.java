@@ -28,27 +28,6 @@ public class FixedAssetsAcceptanceServiceImpl extends ServiceImpl<FixedAssetsAcc
     @Override
     public IPage<FixedAssetsAcceptance> findFixedAssetsAcceptance(QueryRequest request, FixedAssetsAcceptance fixedAssetsAcceptance) {
         try {
-            /*LambdaQueryWrapper<FixedAssetsAcceptance> queryWrapper = new LambdaQueryWrapper<>();
-
-            if (StringUtils.isNotBlank(fixedAssetsAcceptance.getName())) {
-                queryWrapper.like(FixedAssetsAcceptance::getName, fixedAssetsAcceptance.getName());
-            }
-            if (StringUtils.isNotBlank(fixedAssetsAcceptance.getNum())) {
-                queryWrapper.like(FixedAssetsAcceptance::getNum, fixedAssetsAcceptance.getNum());
-            }
-            if (StringUtils.isNotBlank(fixedAssetsAcceptance.getRemark())) {
-                queryWrapper.like(FixedAssetsAcceptance::getRemark, fixedAssetsAcceptance.getRemark());
-            }
-            if (StringUtils.isNotBlank(fixedAssetsAcceptance.getCreateTimeFrom()) &&
-                StringUtils.isNotBlank(fixedAssetsAcceptance.getCreateTimeTo())) {
-                queryWrapper
-                        .ge(Job::getAcceptanceDate, fixedAssetsAcceptance.getCreateTimeFrom())
-                        .le(Job::getAcceptanceDate, fixedAssetsAcceptance.getCreateTimeTo());
-            }
-
-            Page<FixedAssetsAcceptance> page = new Page<>();
-            SortUtil.handlePageSort(request, page, true);
-            return this.page(page, queryWrapper);*/
             Page<FixedAssetsAcceptance> page = new Page<>();
             SortUtil.handlePageSort(request, page, "id", FebsConstant.ORDER_DESC, false);
             return this.baseMapper.findFixedAssetsAcceptanceDetail(page, fixedAssetsAcceptance);

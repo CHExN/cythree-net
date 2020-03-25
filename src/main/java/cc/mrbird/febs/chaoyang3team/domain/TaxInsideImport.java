@@ -16,6 +16,9 @@ public class TaxInsideImport implements Serializable {
 
     private static final long serialVersionUID = 3391613183231011926L;
 
+    @ExcelField(value = "姓名", comment = "此项不用必须填写，只是作为参照使用")
+    private String name;
+
     @ExcelField(value = "证照类型", required = true, readConverterExp = "居民身份证=1,港澳居民来往内地通行证=2,港澳居民居住证=3,台湾居民来往大陆通行证=4,台湾居民居住证=5,中国护照=6,外国护照=7,外国人永久居留身份证=8,外国人工作许可证（A类）=9,外国人工作许可证（B类）=10,外国人工作许可证（C类）=11,其他个人证件=12")
     private String idCardType;
 

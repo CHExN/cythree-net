@@ -1,6 +1,6 @@
 package cc.mrbird.febs.chaoyang3team.dao;
 
-import cc.mrbird.febs.chaoyang3team.domain.Application;
+import cc.mrbird.febs.chaoyang3team.domain.Application1;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -9,9 +9,9 @@ import org.apache.ibatis.annotations.Param;
 /**
  * @author CHExN
  */
-public interface ApplicationMapper extends BaseMapper<Application> {
+public interface ApplicationMapper extends BaseMapper<Application1> {
 
-    IPage<Application> findApplicationDetail(Page page, @Param("application") Application application,
+    IPage<Application1> findApplicationDetail(Page page, @Param("application") Application1 application,
                                              @Param("is35") boolean is35,
                                              @Param("isLogistics") boolean isLogistics);
 

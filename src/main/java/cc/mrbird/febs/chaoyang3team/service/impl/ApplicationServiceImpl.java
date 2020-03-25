@@ -38,7 +38,7 @@ import java.util.Set;
 @Slf4j
 @Service("applicationService")
 @Transactional(propagation = Propagation.SUPPORTS, readOnly = true, rollbackFor = Exception.class)
-public class ApplicationServiceImpl extends ServiceImpl<ApplicationMapper, Application> implements ApplicationService {
+public class ApplicationServiceImpl extends ServiceImpl<ApplicationMapper, Application1> implements ApplicationService {
 
     @Autowired
     private FileService fileService;
@@ -54,7 +54,7 @@ public class ApplicationServiceImpl extends ServiceImpl<ApplicationMapper, Appli
     private MessageService messageService;
 
     @Override
-    public IPage<Application> findApplicationDetail(QueryRequest request, Application application, ServletRequest servletRequest) {
+    public IPage<Application1> findApplicationDetail(QueryRequest request, Application1 application, ServletRequest servletRequest) {
         try {
             HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
             String username = JWTUtil.getUsername(FebsUtil.decryptToken(httpServletRequest.getHeader("Authentication")));
@@ -106,7 +106,7 @@ public class ApplicationServiceImpl extends ServiceImpl<ApplicationMapper, Appli
             if (application.getTypeApplication() != null) {
                 is35 = application.getTypeApplication().equals("3") || application.getTypeApplication().equals("5");
             }
-            Page<Application> page = new Page<>();
+            Page<Application1> page = new Page<>();
             SortUtil.handlePageSort(request, page, "id", FebsConstant.ORDER_DESC, false);
             return this.baseMapper.findApplicationDetail(page, application, is35, isLogistics || isLbbjkg || isWxclkg || isXzhqbm);
         } catch (Exception e) {
@@ -117,18 +117,14 @@ public class ApplicationServiceImpl extends ServiceImpl<ApplicationMapper, Appli
 
     @Override
     @Transactional
-    public void createApplication(Application application, ServletRequest request) {
+    public void createApplication(Application1 application, ServletRequest request) {
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
         application.setUsername(JWTUtil.getUsername(FebsUtil.decryptToken(httpServletRequest.getHeader("Authentication"))));
         application.setCreateDate(LocalDate.now());
-//        if (application.getTypeApplication().equals("5")) { // 如果为固定资产
-//            application.setReview("caiwu,fuzhi,zhengzhi");
-//        } else {
-//            application.setReview("xzhisoft");
-//        }
-        // 这里注释的是真的，上面是测试用的
         if (application.getTypeApplication().equals("3")) { // 如果为办公室用品
             application.setReview("logistics"); // 后勤 审核
+        } else if (application.getIsFixedAssets() != null && application.getIsFixedAssets().equals("1") && application.getTypeApplication().equals("5")) { // 如果为固定资产,并且标识为固定资产申请页面提交的
+            application.setReview("xzhqbm,finance,vice,captain"); // 行政后勤库管，财务，副队长，队长 依次审核
         } else {
             application.setReview("logistics,finance,vice,captain"); // 后勤，财务，副队长，队长 依次审核
         }
@@ -147,7 +143,7 @@ public class ApplicationServiceImpl extends ServiceImpl<ApplicationMapper, Appli
 
     @Override
     @Transactional
-    public void updateApplication(Application application) {
+    public void updateApplication(Application1 application) {
         this.baseMapper.updateById(application);
         if (application.getPlanList() != null) {
             // 将JSON字符串转换为List<Plan>格式
@@ -179,18 +175,22 @@ public class ApplicationServiceImpl extends ServiceImpl<ApplicationMapper, Appli
                 }
             } else if (application.getTypeApplication().equals("5")) {
                 if (application.getProcess() == 1) {
-                    message.append("申请日期为 ").append(application.getCreateDate()).append(" 的固定资产申请通过了");
-                    messageService.oneToOne(new Message(
-                            null,
-                            null,
-                            message.toString(),
-                            "bot",
-                            "系统",
-                            "logistics",
-                            null)
-                    );
-                    message.delete(0, message.length());
-                    message.append("申请日期为 ").append(application.getCreateDate()).append(" 的固定资产申请已审核成功，等待入库");
+                    if (application.getIsFixedAssets() != null && application.getIsFixedAssets().equals("1")) {
+                        message.append("申请日期为 ").append(application.getCreateDate()).append(" 的固定资产申请已审核成功");
+                    } else {
+                        message.append("申请日期为 ").append(application.getCreateDate()).append(" 的固定资产申请通过了");
+                        messageService.oneToOne(new Message(
+                                null,
+                                null,
+                                message.toString(),
+                                "bot",
+                                "系统",
+                                "logistics",
+                                null)
+                        );
+                        message.delete(0, message.length());
+                        message.append("申请日期为 ").append(application.getCreateDate()).append(" 的固定资产申请已审核成功，等待入库");
+                    }
                 } else if (application.getProcess() == -1) {
                     message.append("申请日期为 ").append(application.getCreateDate()).append(" 的固定资产申请审核失败");
                 } else if (application.getProcess() == 2) {

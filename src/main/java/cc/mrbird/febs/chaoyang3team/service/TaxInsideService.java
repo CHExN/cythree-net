@@ -24,5 +24,6 @@ public interface TaxInsideService extends IService<TaxInside> {
 
     void deleteTaxInside(String[] taxInsideIds);
 
+    // 废弃
     List<TaxInside> getTaxInsideReport(TaxInside taxInside);
 }

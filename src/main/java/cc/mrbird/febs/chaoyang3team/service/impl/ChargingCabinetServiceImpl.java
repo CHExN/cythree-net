@@ -1,7 +1,7 @@
 package cc.mrbird.febs.chaoyang3team.service.impl;
 
-import cc.mrbird.febs.chaoyang3team.domain.ChargingCabinet;
 import cc.mrbird.febs.chaoyang3team.dao.ChargingCabinetMapper;
+import cc.mrbird.febs.chaoyang3team.domain.ChargingCabinet;
 import cc.mrbird.febs.chaoyang3team.service.ChargingCabinetService;
 import cc.mrbird.febs.common.domain.FebsConstant;
 import cc.mrbird.febs.common.domain.QueryRequest;
@@ -30,8 +30,10 @@ public class ChargingCabinetServiceImpl extends ServiceImpl<ChargingCabinetMappe
     public IPage<ChargingCabinet> findChargingCabinetDetail(QueryRequest request, ChargingCabinet chargingCabinet) {
         try {
             Page<ChargingCabinet> page = new Page<>();
-            SortUtil.handlePageSort(request, page, "id", FebsConstant.ORDER_DESC, false);
-            return this.baseMapper.findChargingCabinetDetail(page, chargingCabinet);
+            page.setSearchCount(false);
+            SortUtil.handlePageSort(request, page,"id", FebsConstant.ORDER_ASC, false);
+            Integer total = this.baseMapper.findChargingCabinetDetailCount(chargingCabinet);
+            return total > 0 ? this.baseMapper.findChargingCabinetDetail(page, chargingCabinet).setTotal(total) : null;
         } catch (Exception e) {
             log.error("查询充电柜信息异常", e);
             return null;
@@ -57,5 +59,10 @@ public class ChargingCabinetServiceImpl extends ServiceImpl<ChargingCabinetMappe
     public void deleteChargingCabinet(String[] chargingCabinetIds) {
         List<String> list = Arrays.asList(chargingCabinetIds);
         this.baseMapper.deleteBatchIds(list);
+    }
+
+    @Override
+    public void batchInsertChargingCabinet(List<ChargingCabinet> chargingCabinetList) {
+        this.saveBatch(chargingCabinetList);
     }
 }

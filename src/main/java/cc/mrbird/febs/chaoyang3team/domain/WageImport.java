@@ -2,13 +2,11 @@ package cc.mrbird.febs.chaoyang3team.domain;
 
 
 import cc.mrbird.febs.common.validator.NumericValidator;
-import com.baomidou.mybatisplus.annotation.TableField;
 import com.wuwenze.poi.annotation.Excel;
 import com.wuwenze.poi.annotation.ExcelField;
 import lombok.Data;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
 
 /**
  * @author CHExN
@@ -19,8 +17,8 @@ public class WageImport implements Serializable {
 
     private static final long serialVersionUID = 3526020032109213405L;
 
-    @ExcelField(value = "编制类别", required = true, readConverterExp = "编内=0,编外=1", writeConverterExp = "0=编内,1=编外")
-    private Integer insideOrOutside;
+    @ExcelField(value = "姓名", comment = "此项不用必须填写，只是作为参照使用")
+    private String staffName;
 
     @ExcelField(value = "证照号码", required = true, comment = "请填写正确的员工身份证号，否则必定导入失败")
     private String staffIdCard;

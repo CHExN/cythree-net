@@ -40,14 +40,12 @@ public class SupplierController extends BaseController {
     }
 
     @GetMapping("all")
-    @RequiresPermissions("supplier:view")
     public List<Supplier> allSupplier() {
         return this.supplierService.allSupplier();
     }
 
     @Log("新增供应商信息")
     @PostMapping
-//    @RequiresPermissions("supplier:add")
     public Long addSupplier(@Valid Supplier supplier) throws FebsException {
         try {
             return this.supplierService.createSupplier(supplier);

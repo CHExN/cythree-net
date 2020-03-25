@@ -129,6 +129,7 @@ public class TaxInsideController extends BaseController {
         List<TaxInsideImport> list = new ArrayList<>();
         IntStream.range(0, 20).forEach(i -> {
             TaxInsideImport taxInside = new TaxInsideImport();
+            taxInside.setName("此项不用必须填写，只是作为参照使用");
             taxInside.setIdCardType("居民身份证");
             taxInside.setStaffIdCard("证照号码" + (i + 1));
             taxInside.setCurrentIncome("0");
@@ -188,7 +189,7 @@ public class TaxInsideController extends BaseController {
                                 0,
                                 entity.getStaffIdCard().trim(),
                                 "证照号码",
-                                "查询不到此编内人员的信息"));
+                                "查询不到 [" + entity.getName() + "] 这个编内人员的信息"));
                         onError(sheetIndex, rowIndex, errorFields);
                     } else {
                         TaxInside taxInside = new TaxInside();
@@ -233,7 +234,9 @@ public class TaxInsideController extends BaseController {
                                 .subtract(taxInside.getTaxExtensionPensionInsurance())
                                 .subtract(taxInside.getOther())
                                 .subtract(taxInside.getAllowanceForDeduction())
-                                .subtract(taxInside.getTaxDeduction()));
+                                .subtract(taxInside.getTaxDeduction())
+                                .subtract(BigDecimal.valueOf(5000))
+                        );
                         data.add(taxInside);
                     }
                 }

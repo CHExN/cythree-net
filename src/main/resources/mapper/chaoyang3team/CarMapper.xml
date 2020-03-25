@@ -45,7 +45,8 @@
         c.CAR_ID,
         c.CAR_NUM,
         c.CARD_NUM,
-        c.COLOR
+        c.COLOR,
+        c.STATUS
         FROM cy_car AS c
     </select>
 

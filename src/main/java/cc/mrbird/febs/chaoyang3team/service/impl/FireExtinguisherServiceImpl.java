@@ -33,7 +33,7 @@ public class FireExtinguisherServiceImpl extends ServiceImpl<FireExtinguisherMap
             SortUtil.handlePageSort(request, page, "id", FebsConstant.ORDER_DESC, false);
             return this.baseMapper.findFireExtinguisherDetail(page, fireExtinguisher);
         } catch (Exception e) {
-            log.error("查询充电柜信息异常", e);
+            log.error("查询灭火器信息异常", e);
             return null;
         }
     }
@@ -57,5 +57,10 @@ public class FireExtinguisherServiceImpl extends ServiceImpl<FireExtinguisherMap
     public void deleteFireExtinguisher(String[] fireExtinguisherIds) {
         List<String> list = Arrays.asList(fireExtinguisherIds);
         this.baseMapper.deleteBatchIds(list);
+    }
+
+    @Override
+    public void batchInsertFireExtinguisher(List<FireExtinguisher> fireExtinguisherList) {
+        this.saveBatch(fireExtinguisherList);
     }
 }

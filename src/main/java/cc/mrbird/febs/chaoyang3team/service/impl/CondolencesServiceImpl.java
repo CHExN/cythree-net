@@ -75,24 +75,24 @@ public class CondolencesServiceImpl extends ServiceImpl<CondolencesMapper, Condo
     @Override
     @Transactional
     public void updateCondolences(Condolences condolences) {
-        String name = condolences.getName();
-        condolences.setName(null);
         this.baseMapper.updateById(condolences);
-        StringBuilder message = new StringBuilder();
-        if (condolences.getStatus().equals("2")) {
-            message.append("职工姓名为 ").append(name).append(" 的职工慰问登记已通过");
-        } else if (condolences.getStatus().equals("3")) {
-            message.append("职工姓名为 ").append(name).append(" 的职工慰问登记未通过");
+        if (condolences.getStatus() != null ) {
+            String name = condolences.getName();
+            StringBuilder message = new StringBuilder();if (condolences.getStatus().equals("2")) {
+                message.append("职工姓名为 ").append(name).append(" 的职工慰问登记已通过");
+            } else if (condolences.getStatus().equals("3")) {
+                message.append("职工姓名为 ").append(name).append(" 的职工慰问登记未通过");
+            }
+            this.messageService.oneToOne(new Message(
+                    null,
+                    null,
+                    message.toString(),
+                    "bot",
+                    "系统",
+                    condolences.getUsername(),
+                    null)
+            );
         }
-        this.messageService.oneToOne(new Message(
-                null,
-                null,
-                message.toString(),
-                "bot",
-                "系统",
-                condolences.getUsername(),
-                null)
-        );
     }
 
     @Override

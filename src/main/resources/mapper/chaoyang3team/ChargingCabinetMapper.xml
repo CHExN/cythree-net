@@ -2,35 +2,27 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cc.mrbird.febs.chaoyang3team.dao.ChargingCabinetMapper">
 
-    <select id="findChargingCabinetDetail" resultType="cc.mrbird.febs.chaoyang3team.domain.ChargingCabinet">
-        SELECT
+    <sql id="chargingCabinetResult">
         ccc.ID,
         ccc.ASSET_NAME,
         ccc.BRAND_MODEL,
         ccc.ALLOTMENT_DATE,
-        ccc.USER,
-        ccc.USE_DEPT_NAME,
+        ccc.INSIDE_OR_OUTSIDE,
+        ccc.ID_NUM,
         ccc.CHARGING_SECTIONS_NUMBER,
         ccc.IF_CHARGE,
         ccc.PLACE,
         ccc.REMARK,
         ccc.CREATE_TIME,
-        ccc.MODIFY_TIME,
-        ccc.DELETED
-        FROM
-        cy_charging_cabinet AS ccc
-        WHERE ccc.DELETED=0
+        ccc.MODIFY_TIME
+    </sql>
+
+    <sql id="chargingCabinetParam">
         <if test="chargingCabinet.assetName != null and chargingCabinet.assetName !=''">
             AND ccc.ASSET_NAME LIKE CONCAT('%',#{chargingCabinet.assetName},'%')
         </if>
         <if test="chargingCabinet.brandModel != null and chargingCabinet.brandModel !=''">
             AND ccc.BRAND_MODEL LIKE CONCAT('%',#{chargingCabinet.brandModel},'%')
-        </if>
-        <if test="chargingCabinet.user != null and chargingCabinet.user !=''">
-            AND ccc.USER LIKE CONCAT('%',#{chargingCabinet.user},'%')
-        </if>
-        <if test="chargingCabinet.useDeptName != null and chargingCabinet.useDeptName !=''">
-            AND ccc.USE_DEPT_NAME LIKE CONCAT('%',#{chargingCabinet.useDeptName},'%')
         </if>
         <if test="chargingCabinet.ifCharge != null and chargingCabinet.ifCharge !=''">
             AND ccc.IF_CHARGE = #{chargingCabinet.ifCharge}
@@ -41,6 +33,122 @@
         <if test="chargingCabinet.remark != null and chargingCabinet.remark !=''">
             AND ccc.REMARK LIKE CONCAT('%',#{chargingCabinet.remark},'%')
         </if>
+        <if test="chargingCabinet.allotmentDateFrom != null and chargingCabinet.allotmentDateFrom != '' and chargingCabinet.allotmentDateTo != null and chargingCabinet.allotmentDateTo != ''">
+            AND ccc.ALLOTMENT_DATE &gt;= #{chargingCabinet.allotmentDateFrom}
+            AND ccc.ALLOTMENT_DATE &lt;= #{chargingCabinet.allotmentDateTo}
+        </if>
+    </sql>
+
+    <select id="findChargingCabinetDetail" resultType="cc.mrbird.febs.chaoyang3team.domain.ChargingCabinet">
+        SELECT
+        cs.NAME AS `USER`,
+        td.DEPT_NAME AS `USE_DEPT_NAME`,
+        cs.IS_LEAVE AS `IS_LEAVE`,
+        <include refid="chargingCabinetResult"/>
+        FROM
+        cy_charging_cabinet AS ccc
+        LEFT JOIN cy_staff_inside AS cs ON ( cs.ID_NUM = ccc.ID_NUM )
+        LEFT JOIN t_dept AS td ON ( td.DEPT_ID = cs.DEPT_ID )
+        WHERE ccc.DELETED=0 AND ccc.INSIDE_OR_OUTSIDE='0'
+        <if test="chargingCabinet.user != null and chargingCabinet.user !=''">
+            AND cs.NAME LIKE CONCAT('%',#{chargingCabinet.user},'%')
+        </if>
+        <if test="chargingCabinet.useDeptName != null and chargingCabinet.useDeptName !=''">
+            AND td.DEPT_NAME LIKE CONCAT('%',#{chargingCabinet.useDeptName},'%')
+        </if>
+        <if test="chargingCabinet.isLeave != null and chargingCabinet.isLeave !=''">
+            AND cs.IS_LEAVE = #{chargingCabinet.isLeave}
+        </if>
+        <include refid="chargingCabinetParam"/>
+        UNION ALL
+        SELECT
+        cs.NAME AS `USER`,
+        cs.TEAM AS `USE_DEPT_NAME`,
+        cs.IS_LEAVE AS `IS_LEAVE`,
+        <include refid="chargingCabinetResult"/>
+        FROM
+        cy_charging_cabinet AS ccc
+        LEFT JOIN cy_staff_outside AS cs ON ( cs.ID_NUM = ccc.ID_NUM )
+        WHERE ccc.DELETED=0 AND ccc.INSIDE_OR_OUTSIDE='1'
+        <if test="chargingCabinet.user != null and chargingCabinet.user !=''">
+            AND cs.NAME LIKE CONCAT('%',#{chargingCabinet.user},'%')
+        </if>
+        <if test="chargingCabinet.useDeptName != null and chargingCabinet.useDeptName !=''">
+            AND cs.TEAM LIKE CONCAT('%',#{chargingCabinet.useDeptName},'%')
+        </if>
+        <if test="chargingCabinet.isLeave != null and chargingCabinet.isLeave !=''">
+            AND cs.IS_LEAVE = #{chargingCabinet.isLeave}
+        </if>
+        <include refid="chargingCabinetParam"/>
+        UNION ALL
+        SELECT
+        '' AS `USER`,
+        '' AS `USE_DEPT_NAME`,
+        '' AS `IS_LEAVE`,
+        <include refid="chargingCabinetResult"/>
+        FROM cy_charging_cabinet AS ccc
+        WHERE ccc.DELETED=0 AND NOT FIND_IN_SET(ccc.INSIDE_OR_OUTSIDE, '0,1')
+        <if test="chargingCabinet.user != null and chargingCabinet.user !=''">
+            AND 1=0
+        </if>
+        <if test="chargingCabinet.useDeptName != null and chargingCabinet.useDeptName !=''">
+            AND 1=0
+        </if>
+        <if test="chargingCabinet.isLeave != null and chargingCabinet.isLeave !=''">
+            AND 1=0
+        </if>
+        <include refid="chargingCabinetParam"/>
+    </select>
+
+    <select id="findChargingCabinetDetailCount" resultType="java.lang.Integer">
+        SELECT SUM(t.count) FROM (
+        SELECT COUNT(1) AS count
+        FROM
+        cy_charging_cabinet AS ccc
+        LEFT JOIN cy_staff_inside AS cs ON ( cs.ID_NUM = ccc.ID_NUM )
+        LEFT JOIN t_dept AS td ON ( td.DEPT_ID = cs.DEPT_ID )
+        WHERE ccc.DELETED=0 AND ccc.INSIDE_OR_OUTSIDE='0'
+        <if test="chargingCabinet.user != null and chargingCabinet.user !=''">
+            AND cs.NAME LIKE CONCAT('%',#{chargingCabinet.user},'%')
+        </if>
+        <if test="chargingCabinet.useDeptName != null and chargingCabinet.useDeptName !=''">
+            AND td.DEPT_NAME LIKE CONCAT('%',#{chargingCabinet.useDeptName},'%')
+        </if>
+        <if test="chargingCabinet.isLeave != null and chargingCabinet.isLeave !=''">
+            AND cs.IS_LEAVE = #{chargingCabinet.isLeave}
+        </if>
+        <include refid="chargingCabinetParam"/>
+        UNION ALL
+        SELECT COUNT(1) AS count
+        FROM
+        cy_charging_cabinet AS ccc
+        LEFT JOIN cy_staff_outside AS cs ON ( cs.ID_NUM = ccc.ID_NUM )
+        WHERE ccc.DELETED=0 AND ccc.INSIDE_OR_OUTSIDE='1'
+        <if test="chargingCabinet.user != null and chargingCabinet.user !=''">
+            AND cs.NAME LIKE CONCAT('%',#{chargingCabinet.user},'%')
+        </if>
+        <if test="chargingCabinet.useDeptName != null and chargingCabinet.useDeptName !=''">
+            AND cs.TEAM LIKE CONCAT('%',#{chargingCabinet.useDeptName},'%')
+        </if>
+        <if test="chargingCabinet.isLeave != null and chargingCabinet.isLeave !=''">
+            AND cs.IS_LEAVE = #{chargingCabinet.isLeave}
+        </if>
+        <include refid="chargingCabinetParam"/>
+        UNION ALL
+        SELECT COUNT(1) AS count
+        FROM cy_charging_cabinet AS ccc
+        WHERE ccc.DELETED=0 AND NOT FIND_IN_SET(ccc.INSIDE_OR_OUTSIDE, '0,1')
+        <if test="chargingCabinet.user != null and chargingCabinet.user !=''">
+            AND 1=0
+        </if>
+        <if test="chargingCabinet.useDeptName != null and chargingCabinet.useDeptName !=''">
+            AND 1=0
+        </if>
+        <if test="chargingCabinet.isLeave != null and chargingCabinet.isLeave !=''">
+            AND 1=0
+        </if>
+        <include refid="chargingCabinetParam"/>
+        ) AS t
     </select>
 
 </mapper>

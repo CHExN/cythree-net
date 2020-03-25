@@ -13,4 +13,6 @@ public interface CarElectricMapper extends BaseMapper<CarElectric> {
 
     IPage<CarElectric> findCarElectricDetail(Page page, @Param("carElectric") CarElectric carElectric);
 
+    Integer findCarElectricDetailCount(@Param("carElectric") CarElectric carElectric);
+
 }

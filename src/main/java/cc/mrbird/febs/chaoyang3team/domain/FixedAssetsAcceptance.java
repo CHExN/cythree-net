@@ -130,10 +130,9 @@ public class FixedAssetsAcceptance implements Serializable {
      * 出库单id
      */
     @TableField("STOREROOM_OUT_ID")
-    private Long storeroomOutId;
+    private String storeroomOutId;
 
     private transient String createTimeFrom;
     private transient String createTimeTo;
     private transient String storeroomOutNum;
-    private transient String storeroomOutMoney;
 }

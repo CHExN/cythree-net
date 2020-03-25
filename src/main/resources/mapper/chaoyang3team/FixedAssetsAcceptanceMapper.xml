@@ -24,10 +24,8 @@
         faa.ACCEPTANCE_DATE,
         faa.ACCEPTANCE_RESULT,
         faa.STOREROOM_OUT_ID,
-        spo.NUM AS storeroomOutNum,
-        spo.MONEY AS storeroomOutMoney
+        (SELECT GROUP_CONCAT(cspo.NUM) FROM cy_storeroom_put_out AS cspo WHERE FIND_IN_SET(cspo.ID, faa.STOREROOM_OUT_ID)) AS storeroomOutNum
         FROM cy_fixed_assets_acceptance AS faa
-        LEFT JOIN cy_storeroom_put_out AS spo ON(spo.IS_PUT='2' AND spo.ID=faa.STOREROOM_OUT_ID)
         WHERE 1=1
         <if test="faa.name != null and faa.name != ''">
             AND faa.`NAME` LIKE CONCAT('%',#{faa.name},'%')

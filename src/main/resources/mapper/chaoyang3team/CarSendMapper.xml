@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.mrbird.febs.chaoyang3team.dao.CarSendMapper">
+
+    <select id="findCarSendDetail" resultType="cc.mrbird.febs.chaoyang3team.domain.CarSend">
+        SELECT
+        ccs.ID,
+        ccs.CAR_ID,
+        ccs.DRIVER,
+        ccs.DEPT_ID,
+        ccs.STATUS,
+        ccs.REMARK,
+        ccs.CREATE_TIME,
+        ccs.MODIFY_TIME,
+        cc.CAR_NUM,
+        cc.COLOR,
+        td.DEPT_NAME
+        FROM cy_car_send AS ccs
+        LEFT JOIN cy_car AS cc ON(cc.CAR_ID=ccs.CAR_ID)
+        LEFT JOIN t_dept AS td ON(td.DEPT_ID=ccs.DEPT_ID)
+        WHERE ccs.DELETED=0
+        <if test="carSend.driver != null and carSend.driver != ''">
+            AND ccs.DRIVER LIKE CONCAT('%',#{carSend.driver},'%')
+        </if>
+        <if test="carSend.carNum != null and carSend.carNum != ''">
+            AND cc.CAR_NUM LIKE CONCAT('%',#{carSend.carNum},'%')
+        </if>
+        <if test="carSend.deptId != null and carSend.deptId != ''">
+            AND ccs.DEPT_ID = #{carSend.deptId}
+        </if>
+        <if test="carSend.status != null and carSend.status != ''">
+            AND FIND_IN_SET(ccs.STATUS, #{carSend.status})
+        </if>
+        <if test="carSend.remark != null and carSend.remark != ''">
+            AND ccs.REMARK LIKE CONCAT('%',#{carSend.remark},'%')
+        </if>
+    </select>
+</mapper>

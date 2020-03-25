@@ -9,6 +9,7 @@ import cc.mrbird.febs.common.utils.DateUtil;
 import cc.mrbird.febs.common.utils.FebsUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import io.micrometer.core.instrument.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -49,12 +50,14 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message> impl
     public void oneToOne(Message message) {
         message.setDatetime(DateUtil.formatFullTime(LocalDateTime.now(), DateUtil.FULL_TIME_SPLIT_PATTERN));
         message.setStatus("1");// 默认未读
-        String[] userNames = message.getAddressee().split(",");
-        Arrays.stream(userNames).forEach(username -> {
-            message.setAddressee(username);
-            this.save(message);
-            this.template.convertAndSendToUser(username, "/oneToOne/greetings", message);
-        });
+        if (StringUtils.isNotBlank(message.getAddressee())) {
+            String[] userNames = message.getAddressee().split(",");
+            Arrays.stream(userNames).forEach(username -> {
+                message.setAddressee(username);
+                this.save(message);
+                this.template.convertAndSendToUser(username, "/oneToOne/greetings", message);
+            });
+        }
     }
 
     @Override

@@ -1,6 +1,6 @@
 package cc.mrbird.febs.chaoyang3team.service;
 
-import cc.mrbird.febs.chaoyang3team.domain.Application;
+import cc.mrbird.febs.chaoyang3team.domain.Application1;
 import cc.mrbird.febs.common.domain.FebsResponse;
 import cc.mrbird.febs.common.domain.QueryRequest;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -12,13 +12,13 @@ import javax.servlet.ServletRequest;
 /**
  * @author CHExN
  */
-public interface ApplicationService extends IService<Application> {
+public interface ApplicationService extends IService<Application1> {
 
-    IPage<Application> findApplicationDetail(QueryRequest request, Application application, ServletRequest servletRequest);
+    IPage<Application1> findApplicationDetail(QueryRequest request, Application1 application, ServletRequest servletRequest);
 
-    void createApplication(Application application, ServletRequest request);
+    void createApplication(Application1 application, ServletRequest request);
 
-    void updateApplication(Application application);
+    void updateApplication(Application1 application);
 
     void deleteApplications(String[] applicationIds);
 

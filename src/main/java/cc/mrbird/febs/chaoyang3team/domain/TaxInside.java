@@ -152,8 +152,12 @@ public class TaxInside implements Serializable {
 
     @TableField("FINAL_WAGE")
     private BigDecimal finalWage;
-    @ExcelField(value = "最终工资")
+    @ExcelField(value = "应扣税额")
     private transient BigDecimal finalWageSum;
+    private transient String finalWageList;
+
+    @ExcelField(value = "月缴税数")
+    private transient BigDecimal monthTaxPaid;
 
     @TableField("REMARK")
     @ExcelField(value = "备注")

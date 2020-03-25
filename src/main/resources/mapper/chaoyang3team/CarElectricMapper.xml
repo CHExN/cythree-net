@@ -2,17 +2,16 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cc.mrbird.febs.chaoyang3team.dao.CarElectricMapper">
 
-    <select id="findCarElectricDetail" resultType="cc.mrbird.febs.chaoyang3team.domain.CarElectric">
-        SELECT
-        cce.ID,
+    <sql id="carElectricResult">
+		cce.ID,
         cce.CAR_TYPE,
         cce.CAR_BRANDS,
         cce.STEEL_FRAME_NUMBER,
         cce.MOTOR_NUMBER,
         cce.CAR_NUMBER,
-        cce.USER,
-        cce.USE_DEPT_NAME,
-        cce.CAR_ALLOTMENT_DATE,
+        cce.INSIDE_OR_OUTSIDE,
+        cce.ID_NUM,
+	    cce.CAR_ALLOTMENT_DATE,
         cce.BATTERY_NUMBER,
         cce.BATTERY_REPLACEMENT_DATE1,
         cce.BATTERY_REPLACEMENT_DATE2,
@@ -22,23 +21,17 @@
         cce.IF_THREE,
         cce.CREATE_TIME,
         cce.MODIFY_TIME
-        FROM
-        cy_car_electric AS cce
-        WHERE cce.DELETED=0
+    </sql>
+
+    <sql id="carElectricParam">
         <if test="carElectric.ifThree != null and carElectric.ifThree !=''">
             AND cce.IF_THREE = #{carElectric.ifThree}
-        </if>
-        <if test="carElectric.useDeptName != null and carElectric.useDeptName !=''">
-            AND cce.USE_DEPT_NAME LIKE CONCAT('%',#{carElectric.useDeptName},'%')
         </if>
         <if test="carElectric.status != null and carElectric.status !=''">
             AND FIND_IN_SET(cce.STATUS, #{carElectric.status})
         </if>
         <if test="carElectric.ifLicense != null and carElectric.ifLicense !=''">
             AND cce.IF_LICENSE = #{carElectric.ifLicense}
-        </if>
-        <if test="carElectric.user != null and carElectric.user !=''">
-            AND cce.USER LIKE CONCAT('%',#{carElectric.user},'%')
         </if>
         <if test="carElectric.carNumber != null and carElectric.carNumber !=''">
             AND cce.CAR_NUMBER LIKE CONCAT('%',#{carElectric.carNumber},'%')
@@ -49,6 +42,126 @@
         <if test="carElectric.carType != null and carElectric.carType !=''">
             AND cce.CAR_TYPE LIKE CONCAT('%',#{carElectric.carType},'%')
         </if>
+        <if test="carElectric.carAllotmentDateFrom != null and carElectric.carAllotmentDateFrom != '' and carElectric.carAllotmentDateTo != null and carElectric.carAllotmentDateTo != ''">
+            AND cce.CAR_ALLOTMENT_DATE &gt;= #{carElectric.carAllotmentDateFrom}
+            AND cce.CAR_ALLOTMENT_DATE &lt;= #{carElectric.carAllotmentDateTo}
+        </if>
+        <if test="carElectric.batteryReplacementDate1From != null and carElectric.batteryReplacementDate1From != '' and carElectric.batteryReplacementDate1To != null and carElectric.batteryReplacementDate1To != ''">
+            AND cce.BATTERY_REPLACEMENT_DATE1 &gt;= #{carElectric.batteryReplacementDate1From}
+            AND cce.BATTERY_REPLACEMENT_DATE1 &lt;= #{carElectric.batteryReplacementDate1To}
+        </if>
+        <if test="carElectric.batteryReplacementDate2From != null and carElectric.batteryReplacementDate2From != '' and carElectric.batteryReplacementDate2To != null and carElectric.batteryReplacementDate2To != ''">
+            AND cce.BATTERY_REPLACEMENT_DATE2 &gt;= #{carElectric.batteryReplacementDate2From}
+            AND cce.BATTERY_REPLACEMENT_DATE2 &lt;= #{carElectric.batteryReplacementDate2To}
+        </if>
+    </sql>
+
+    <select id="findCarElectricDetail" resultType="cc.mrbird.febs.chaoyang3team.domain.CarElectric">
+        SELECT
+        cs.NAME AS `USER`,
+        td.DEPT_NAME AS `USE_DEPT_NAME`,
+        cs.IS_LEAVE AS `IS_LEAVE`,
+        <include refid="carElectricResult"/>
+        FROM cy_car_electric AS cce
+        LEFT JOIN cy_staff_inside AS cs ON ( cs.ID_NUM = cce.ID_NUM )
+        LEFT JOIN t_dept AS td ON ( td.DEPT_ID = cs.DEPT_ID )
+        WHERE cce.DELETED=0 AND cce.INSIDE_OR_OUTSIDE='0'
+        <if test="carElectric.user != null and carElectric.user !=''">
+            AND cs.NAME LIKE CONCAT('%',#{carElectric.user},'%')
+        </if>
+        <if test="carElectric.useDeptName != null and carElectric.useDeptName !=''">
+            AND td.DEPT_NAME LIKE CONCAT('%',#{carElectric.useDeptName},'%')
+        </if>
+        <if test="carElectric.isLeave != null and carElectric.isLeave !=''">
+            AND cs.IS_LEAVE = #{carElectric.isLeave}
+        </if>
+        <include refid="carElectricParam"/>
+        UNION ALL
+        SELECT
+        cs.NAME AS `USER`,
+        cs.TEAM AS `USE_DEPT_NAME`,
+        cs.IS_LEAVE AS `IS_LEAVE`,
+        <include refid="carElectricResult"/>
+        FROM cy_car_electric AS cce
+        LEFT JOIN cy_staff_outside AS cs ON ( cs.ID_NUM = cce.ID_NUM )
+        WHERE cce.DELETED=0 AND cce.INSIDE_OR_OUTSIDE='1'
+        <if test="carElectric.user != null and carElectric.user !=''">
+            AND cs.NAME LIKE CONCAT('%',#{carElectric.user},'%')
+        </if>
+        <if test="carElectric.useDeptName != null and carElectric.useDeptName !=''">
+            AND cs.TEAM LIKE CONCAT('%',#{carElectric.useDeptName},'%')
+        </if>
+        <if test="carElectric.isLeave != null and carElectric.isLeave !=''">
+            AND cs.IS_LEAVE = #{carElectric.isLeave}
+        </if>
+        <include refid="carElectricParam"/>
+        UNION ALL
+        SELECT
+        '' AS `USER`,
+        '' AS `USE_DEPT_NAME`,
+        '' AS `IS_LEAVE`,
+        <include refid="carElectricResult"/>
+        FROM cy_car_electric AS cce
+        WHERE cce.DELETED=0 AND NOT FIND_IN_SET(cce.INSIDE_OR_OUTSIDE, '0,1')
+        <if test="carElectric.user != null and carElectric.user !=''">
+            AND 1=0
+        </if>
+        <if test="carElectric.useDeptName != null and carElectric.useDeptName !=''">
+            AND 1=0
+        </if>
+        <if test="carElectric.isLeave != null and carElectric.isLeave !=''">
+            AND 1=0
+        </if>
+        <include refid="carElectricParam"/>
+    </select>
+
+    <select id="findCarElectricDetailCount" resultType="java.lang.Integer">
+        SELECT SUM(t.count) FROM (
+        SELECT COUNT(1) AS count
+        FROM cy_car_electric AS cce
+        LEFT JOIN cy_staff_inside AS cs ON ( cs.ID_NUM = cce.ID_NUM )
+        LEFT JOIN t_dept AS td ON ( td.DEPT_ID = cs.DEPT_ID )
+        WHERE cce.DELETED=0 AND cce.INSIDE_OR_OUTSIDE='0'
+        <if test="carElectric.user != null and carElectric.user !=''">
+            AND cs.NAME LIKE CONCAT('%',#{carElectric.user},'%')
+        </if>
+        <if test="carElectric.useDeptName != null and carElectric.useDeptName !=''">
+            AND td.DEPT_NAME LIKE CONCAT('%',#{carElectric.useDeptName},'%')
+        </if>
+        <if test="carElectric.isLeave != null and carElectric.isLeave !=''">
+            AND cs.IS_LEAVE = #{carElectric.isLeave}
+        </if>
+        <include refid="carElectricParam"/>
+        UNION ALL
+        SELECT COUNT(1) AS count
+        FROM cy_car_electric AS cce
+        LEFT JOIN cy_staff_outside AS cs ON ( cs.ID_NUM = cce.ID_NUM )
+        WHERE cce.DELETED=0 AND cce.INSIDE_OR_OUTSIDE='1'
+        <if test="carElectric.user != null and carElectric.user !=''">
+            AND cs.NAME LIKE CONCAT('%',#{carElectric.user},'%')
+        </if>
+        <if test="carElectric.useDeptName != null and carElectric.useDeptName !=''">
+            AND cs.TEAM LIKE CONCAT('%',#{carElectric.useDeptName},'%')
+        </if>
+        <if test="carElectric.isLeave != null and carElectric.isLeave !=''">
+            AND cs.IS_LEAVE = #{carElectric.isLeave}
+        </if>
+        <include refid="carElectricParam"/>
+        UNION ALL
+        SELECT COUNT(1) AS count
+        FROM cy_car_electric AS cce
+        WHERE cce.DELETED=0 AND NOT FIND_IN_SET(cce.INSIDE_OR_OUTSIDE, '0,1')
+        <if test="carElectric.user != null and carElectric.user !=''">
+            AND 1=0
+        </if>
+        <if test="carElectric.useDeptName != null and carElectric.useDeptName !=''">
+            AND 1=0
+        </if>
+        <if test="carElectric.isLeave != null and carElectric.isLeave !=''">
+            AND 1=0
+        </if>
+        <include refid="carElectricParam"/>
+        ) AS t
     </select>
 
 </mapper>

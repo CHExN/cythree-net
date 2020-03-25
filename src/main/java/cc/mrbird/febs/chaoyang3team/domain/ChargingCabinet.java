@@ -1,84 +1,72 @@
 package cc.mrbird.febs.chaoyang3team.domain;
 
 import com.baomidou.mybatisplus.annotation.*;
-
-import java.time.LocalDate;
-
-import java.time.LocalDateTime;
-
-import java.io.Serializable;
-
+import com.wuwenze.poi.annotation.Excel;
+import com.wuwenze.poi.annotation.ExcelField;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
+
+import java.io.Serializable;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 /**
  * @author CHExN
  */
 @Data
 @TableName("cy_charging_cabinet")
+@Excel("充电柜明细表")
 public class ChargingCabinet implements Serializable {
 
     private static final long serialVersionUID = 8113995834508726634L;
 
-    /**
-     * 充电柜主键
-     */
     @TableId(value = "ID", type = IdType.AUTO)
     private Long id;
 
-    /**
-     * 资产名称
-     */
     @TableField("ASSET_NAME")
+    @ExcelField(value = "资产名称")
     private String assetName;
 
-    /**
-     * 品牌型号
-     */
     @TableField("BRAND_MODEL")
+    @ExcelField(value = "品牌型号")
     private String brandModel;
 
-    /**
-     * 配发日期
-     */
     @TableField("ALLOTMENT_DATE")
+    @ExcelField(value = "配发日期")
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate allotmentDate;
 
-    /**
-     * 责任人
-     */
-    @TableField("USER")
-    private String user;
+    @TableField("INSIDE_OR_OUTSIDE")
+    @ExcelField(value = "编制类别", readConverterExp = "编内=0,编外=1", writeConverterExp = "0=编内,1=编外", comment = "只可填写以下各项:[1、编内; 2、编外]")
+    private String insideOrOutside;
 
-    /**
-     * 使用部门
-     */
-    @TableField("USE_DEPT_NAME")
-    private String useDeptName;
+    @TableField("ID_NUM")
+    @ExcelField(value = "身份证号", comment = "请填写正确的员工身份证号，否则必定导入失败")
+    private String idNum;
 
-    /**
-     * 充电端口数
-     */
+    @ExcelField(value = "是否在职", readConverterExp = "在职=0,非在职=1", writeConverterExp = "0=在职,1=非在职", comment = "只可填写以下各项:[1、在职; 2、非在职]")
+    private transient String isLeave;
+
+    @ExcelField(value = "责任人")
+    private transient String user;
+
+    @ExcelField(value = "使用部门")
+    private transient String useDeptName;
+
     @TableField("CHARGING_SECTIONS_NUMBER")
+    @ExcelField(value = "充电端口数")
     private String chargingSectionsNumber;
 
-    /**
-     * 能否充电 1能 2否
-     */
     @TableField("IF_CHARGE")
+    @ExcelField(value = "能否充电", readConverterExp = "能=1,否=2", writeConverterExp = "1=能,2=否", comment = "只可填写以下各项:[1、能; 2、否]")
     private String ifCharge;
 
-    /**
-     * 摆放地点
-     */
     @TableField("PLACE")
+    @ExcelField(value = "摆放地点")
     private String place;
 
-    /**
-     * 备注
-     */
     @TableField("REMARK")
+    @ExcelField(value = "备注")
     private String remark;
 
     /**
@@ -99,5 +87,10 @@ public class ChargingCabinet implements Serializable {
     @TableLogic
     @TableField("DELETED")
     private Integer deleted;
+
+    // 配发日期开始日期
+    private transient String allotmentDateFrom;
+    // 配发日期结束日期
+    private transient String allotmentDateTo;
 
 }

@@ -72,6 +72,7 @@
         (SELECT SUM(t.ALLOWANCE_FOR_DEDUCTION) FROM cy_tax_outside AS t WHERE s.STAFF_ID=t.STAFF_ID AND `YEAR`=#{taxOutside.year} AND FIND_IN_SET(`MONTH`,#{taxOutside.monthArr}) GROUP BY t.STAFF_ID) AS allowanceForDeductionSum,
         (SELECT SUM(t.TAX_DEDUCTION) FROM cy_tax_outside AS t WHERE s.STAFF_ID=t.STAFF_ID AND `YEAR`=#{taxOutside.year} AND FIND_IN_SET(`MONTH`,#{taxOutside.monthArr}) GROUP BY t.STAFF_ID) AS taxDeductionSum,
         (SELECT SUM(t.FINAL_WAGE) FROM cy_tax_outside AS t WHERE s.STAFF_ID=t.STAFF_ID AND `YEAR`=#{taxOutside.year} AND FIND_IN_SET(`MONTH`,#{taxOutside.monthArr}) GROUP BY t.STAFF_ID) AS finalWageSum,
+        (SELECT GROUP_CONCAT(t.FINAL_WAGE) FROM cy_tax_outside AS t WHERE s.STAFF_ID=t.STAFF_ID AND `YEAR`=#{taxOutside.year} AND FIND_IN_SET(`MONTH`,#{taxOutside.monthArr}) GROUP BY t.STAFF_ID) AS finalWageList,
         t.REMARK,
         t.CREATE_TIME,
         t.MODIFY_TIME,

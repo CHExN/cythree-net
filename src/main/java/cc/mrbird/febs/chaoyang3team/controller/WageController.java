@@ -7,6 +7,7 @@ import cc.mrbird.febs.chaoyang3team.domain.Wage;
 import cc.mrbird.febs.chaoyang3team.domain.WageImport;
 import cc.mrbird.febs.chaoyang3team.service.StaffInsideService;
 import cc.mrbird.febs.chaoyang3team.service.StaffOutsideService;
+import cc.mrbird.febs.chaoyang3team.service.WageRemarkService;
 import cc.mrbird.febs.chaoyang3team.service.WageService;
 import cc.mrbird.febs.common.annotation.Log;
 import cc.mrbird.febs.common.controller.BaseController;
@@ -55,6 +56,8 @@ public class WageController extends BaseController {
     private StaffInsideService staffInsideService;
     @Autowired
     private StaffOutsideService staffOutsideService;
+    @Autowired
+    private WageRemarkService wageRemarkService;
 
     @GetMapping("oneInfo")
     @RequiresPermissions("wage:view")
@@ -111,8 +114,38 @@ public class WageController extends BaseController {
     @PostMapping("excel")
     @RequiresPermissions("wage:export")
     public void export(QueryRequest request, Wage wage, HttpServletResponse response) throws FebsException {
-        IPage<Wage> wageDetail = this.wageService.findWageDetail(request, wage);
         try {
+            // 本来是想在导出的时候，列名也跟着备注来，但是最后发现没法改注解，所以就不做了。。。
+            /*WageRemark wageRemark = wageRemarkService.getOneWageRemark(
+                    new WageRemark(null, wage.getInsideOrOutside(), wage.getYear(), wage.getMonth(), null, null));
+
+            if (wageRemark != null && StringUtils.isNotBlank(wageRemark.getRemark())) {
+                String[] remarkSplit = wageRemark.getRemark().split(",");
+                for (int i = 0; i < remarkSplit.length; ++i) {
+                    // 如果是空就跳过
+                    if (remarkSplit[i].equals("") || remarkSplit[i] == null) continue;
+                    Class<? extends Wage> clazz = wage.getClass();
+                    // 获取要修改的字段
+                    Field field = clazz.getDeclaredField("emptyColumn0" + (i + 1) + "Sum");
+                    field.setAccessible(true);
+                    // 获取要修改字段上的ExcelField注解实例
+                    ExcelField excelField = field.getAnnotation(ExcelField.class);
+                    // 获取 excelField 这个代理实例所持有的 InvocationHandler
+                    InvocationHandler invocationHandler = Proxy.getInvocationHandler(excelField);
+                    // 获取 AnnotationInvocationHandler 的 memberValues 字段
+                    Field declaredField = invocationHandler.getClass().getDeclaredField("memberValues");
+                    // 因为这个字段事 private final 修饰，所以要打开权限
+                    declaredField.setAccessible(true);
+                    // 获取 memberValues
+                    Map<String, Object> memberValues = (Map<String, Object>) declaredField.get(invocationHandler);
+                    // 修改 value 属性值
+                    memberValues.put("value", remarkSplit[i]);
+                    ExcelField excelField2 = field.getAnnotation(ExcelField.class);
+                    System.out.println(excelField2);
+                }
+            }*/
+
+            IPage<Wage> wageDetail = this.wageService.findWageDetail(request, wage);
             if (wageDetail != null) {
                 List<Wage> wages = wageDetail.getRecords();
                 ExcelKit.$Export(Wage.class, response).downXlsx(wages, false);
@@ -133,7 +166,7 @@ public class WageController extends BaseController {
         List<WageImport> list = new ArrayList<>();
         IntStream.range(0, 20).forEach(i -> {
             WageImport wage = new WageImport();
-            wage.setInsideOrOutside(0);
+            wage.setStaffName("此项不用必须填写，只是作为参照使用");
             wage.setStaffIdCard("证照号码" + (i + 1));
             wage.setCurrentIncome("0");
             wage.setReissueSalaryScale("0");
@@ -158,6 +191,11 @@ public class WageController extends BaseController {
             wage.setCorporateAnnuity("0");
             wage.setTaxDeduction("0");
             wage.setRealWage("0");
+            wage.setEmptyColumn01("0");
+            wage.setEmptyColumn02("0");
+            wage.setEmptyColumn03("0");
+            wage.setEmptyColumn04("0");
+            wage.setEmptyColumn05("0");
             list.add(wage);
         });
         // 构建模板
@@ -170,7 +208,7 @@ public class WageController extends BaseController {
     @Log("导入工资信息Excel数据，并批量插入")
     @PostMapping("import")
     @RequiresPermissions("wage:add")
-    public FebsResponse importExcels(@RequestParam("file") MultipartFile file, String date) throws FebsException {
+    public FebsResponse importExcels(@RequestParam("file") MultipartFile file, String insideOrOutside, String date) throws FebsException {
         try {
             if (file.isEmpty()) {
                 throw new FebsException("导入数据为空");
@@ -193,7 +231,7 @@ public class WageController extends BaseController {
                     // 数据校验成功时，加入集合
                     StaffOutside staffOutside = null;
                     StaffInside staffInside = null;
-                    if (entity.getInsideOrOutside() == 0) {
+                    if (insideOrOutside.equals("0")) {
                         staffInside = staffInsideService.getStaffIdByIdNum(entity.getStaffIdCard().trim());
                     } else {
                         staffOutside = staffOutsideService.getStaffIdByIdNum(entity.getStaffIdCard().trim());
@@ -204,11 +242,11 @@ public class WageController extends BaseController {
                                 0,
                                 entity.getStaffIdCard().trim(),
                                 "证照号码",
-                                "查询不到此编" + (entity.getInsideOrOutside() == 1 ? "外" : "内") + "人员的信息"));
+                                "查询不到 [" + entity.getStaffName() + "] 这个编" + (insideOrOutside.equals("0") ? "内" : "外") + "人员的信息"));
                         onError(sheetIndex, rowIndex, errorFields);
                     } else {
                         Wage wage = new Wage();
-                        wage.setInsideOrOutside(entity.getInsideOrOutside() + "");
+                        wage.setInsideOrOutside(insideOrOutside.equals("0") + "");
                         wage.setStaffId(staffInside == null ? staffOutside.getStaffId() : staffInside.getStaffId());
                         wage.setStaffName(staffInside == null ? staffOutside.getName() : staffInside.getName());
                         wage.setStaffIdCard(entity.getStaffIdCard().trim());

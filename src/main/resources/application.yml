@@ -27,7 +27,7 @@ spring:
 #          password: mysql_2014
           driver-class-name: com.mysql.cj.jdbc.Driver
           url: jdbc:mysql://114.116.126.4:8635/cythree?useUnicode=true&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=Asia/Shanghai
-#          url: jdbc:mysql://101.200.150.3:3306/cythree?useUnicode=true&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=Asia/Shanghai
+#          url: jdbc:mysql://114.116.126.4:8635/asdf?useUnicode=true&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=Asia/Shanghai
         # 数据源-2，名称为 test
 #        test:
 #          username: root

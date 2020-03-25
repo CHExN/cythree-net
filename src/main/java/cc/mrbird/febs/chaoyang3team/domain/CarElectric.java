@@ -1,119 +1,94 @@
 package cc.mrbird.febs.chaoyang3team.domain;
 
 import com.baomidou.mybatisplus.annotation.*;
-import com.baomidou.mybatisplus.extension.activerecord.Model;
-
-import java.time.LocalDate;
-
-import java.time.LocalDateTime;
+import com.wuwenze.poi.annotation.Excel;
+import com.wuwenze.poi.annotation.ExcelField;
+import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serializable;
-
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.experimental.Accessors;
-import org.springframework.format.annotation.DateTimeFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 /**
  * @author CHExN
  */
 @Data
 @TableName("cy_car_electric")
+@Excel("电动车明细表")
 public class CarElectric implements Serializable {
 
     private static final long serialVersionUID = -4204973126784141200L;
 
-    /**
-     * 电动车主键
-     */
     @TableId(value = "ID", type = IdType.AUTO)
     private Long id;
 
-    /**
-     * 车辆类型
-     */
     @TableField("CAR_TYPE")
+    @ExcelField(value = "车辆类型")
     private String carType;
 
-    /**
-     * 车辆品牌
-     */
     @TableField("CAR_BRANDS")
+    @ExcelField(value = "车辆品牌")
     private String carBrands;
 
-    /**
-     * 钢架号
-     */
     @TableField("STEEL_FRAME_NUMBER")
+    @ExcelField(value = "钢架号")
     private String steelFrameNumber;
 
-    /**
-     * 电机号
-     */
     @TableField("MOTOR_NUMBER")
+    @ExcelField(value = "电机号")
     private String motorNumber;
 
-    /**
-     * 车牌号
-     */
     @TableField("CAR_NUMBER")
+    @ExcelField(value = "车牌号")
     private String carNumber;
 
-    /**
-     * 使用人
-     */
-    @TableField("USER")
-    private String user;
+    @TableField("INSIDE_OR_OUTSIDE")
+    @ExcelField(value = "编制类别", readConverterExp = "编内=0,编外=1", writeConverterExp = "0=编内,1=编外", comment = "只可填写以下各项:[1、编内; 2、编外]")
+    private String insideOrOutside;
 
-    /**
-     * 使用部门
-     */
-    @TableField("USE_DEPT_NAME")
-    private String useDeptName;
+    @TableField("ID_NUM")
+    @ExcelField(value = "身份证号", comment = "请填写正确的员工身份证号，否则必定导入失败")
+    private String idNum;
 
-    /**
-     * 车辆配发日期
-     */
+    @ExcelField(value = "是否在职", readConverterExp = "在职=0,非在职=1", writeConverterExp = "0=在职,1=非在职", comment = "只可填写以下各项:[1、在职; 2、非在职]")
+    private transient String isLeave;
+
+    @ExcelField(value = "使用人")
+    private transient String user;
+
+    @ExcelField(value = "使用部门")
+    private transient String useDeptName;
+
     @TableField("CAR_ALLOTMENT_DATE")
+    @ExcelField(value = "车辆配发日期")
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate carAllotmentDate;
 
-    /**
-     * 电池数量
-     */
     @TableField("BATTERY_NUMBER")
+    @ExcelField(value = "电池数量")
     private String batteryNumber;
 
-    /**
-     * 电池一更换日期
-     */
     @TableField("BATTERY_REPLACEMENT_DATE1")
+    @ExcelField(value = "电池一更换日期")
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate batteryReplacementDate1;
 
-    /**
-     * 电池二更换日期
-     */
     @TableField("BATTERY_REPLACEMENT_DATE2")
+    @ExcelField(value = "电池二更换日期")
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate batteryReplacementDate2;
 
-    /**
-     * 是否临牌 1是 2否
-     */
     @TableField("IF_LICENSE")
+    @ExcelField(value = "是否临牌", readConverterExp = "是=1,否=2", writeConverterExp = "1=是,2=否", comment = "只可填写以下各项:[1、是; 2、否]")
     private String ifLicense;
 
-    /**
-     * 存储地点
-     */
     @TableField("STORAGE_LOCATION")
+    @ExcelField(value = "存储地点")
     private String storageLocation;
 
-    /**
-     * 状态 1正常 2损坏
-     */
     @TableField("STATUS")
+    @ExcelField(value = "状态", required = true, readConverterExp = "正常=1,损坏=2", writeConverterExp = "1=正常,2=损坏", comment = "只可填写以下各项:[1、正常; 2、损坏]")
     private String status;
 
     /**
@@ -140,5 +115,19 @@ public class CarElectric implements Serializable {
     @TableLogic
     @TableField("DELETED")
     private Integer deleted;
+
+
+    // 车辆配发日期开始日期
+    private transient String carAllotmentDateFrom;
+    // 车辆配发日期结束日期
+    private transient String carAllotmentDateTo;
+    // 电池1更换日期开始日期
+    private transient String batteryReplacementDate1From;
+    // 电池1更换日期结束日期
+    private transient String batteryReplacementDate1To;
+    // 电池2更换日期开始日期
+    private transient String batteryReplacementDate2From;
+    // 电池2更换日期结束日期
+    private transient String batteryReplacementDate2To;
 
 }

@@ -121,5 +121,6 @@ public class Storeroom implements Serializable {
     private transient String createTimeTo;
     private transient BigDecimal storeroomCount;
     private transient String putNum;
+    private transient String outNum;
 
 }

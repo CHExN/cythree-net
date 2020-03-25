@@ -135,6 +135,7 @@
         SELECT
         csi.STAFF_ID,
         csi.`NAME`,
+        csi.CAUSE,
         csi.ID_NUM,
         csi.SORT_NUM AS sortNum
         FROM cy_staff_inside AS csi
@@ -267,14 +268,20 @@
         csi.GENDER,
         csi.ID_NUM,
         csi.TECHNICAL_TYPE,
-        '编内' AS type
+        '编内' AS type,
+        <if test="staffInside.isLeave == 0">
+            csi.TRANSFER_DATE AS leaveDate
+        </if>
+        <if test="staffInside.isLeave == 1">
+            csi.LEAVE_DATE AS leaveDate
+        </if>
         FROM cy_staff_inside AS csi
         WHERE csi.IS_LEAVE=#{staffInside.isLeave}
         <if test="staffInside.isLeave == 0">
-            AND csi.TRANSFER_DATE, LIKE CONCAT(#{staffInside.birthDate},'%')
+            AND csi.TRANSFER_DATE &gt;= #{staffInside.createTimeFrom} AND csi.TRANSFER_DATE &lt;= #{staffInside.createTimeTo}
         </if>
         <if test="staffInside.isLeave == 1">
-            AND csi.LEAVE_DATE LIKE CONCAT(#{staffInside.birthDate},'%')
+            AND csi.LEAVE_DATE &gt;= #{staffInside.createTimeFrom} AND csi.LEAVE_DATE &lt;= #{staffInside.createTimeTo}
         </if>
         UNION ALL
         SELECT
@@ -283,14 +290,20 @@
         cso.GENDER,
         cso.ID_NUM,
         cso.TECHNICAL_TYPE,
-        '编外' AS type
+        '编外' AS type,
+        <if test="staffInside.isLeave == 0">
+            cso.TRANSFER_DATE AS leaveDate
+        </if>
+        <if test="staffInside.isLeave == 1">
+            cso.LEAVE_DATE AS leaveDate
+        </if>
         FROM cy_staff_outside AS cso
         WHERE cso.IS_LEAVE=#{staffInside.isLeave}
         <if test="staffInside.isLeave == 0">
-            AND cso.TRANSFER_DATE LIKE CONCAT(#{staffInside.birthDate},'%')
+            AND cso.TRANSFER_DATE &gt;= #{staffInside.createTimeFrom} AND cso.TRANSFER_DATE &lt;= #{staffInside.createTimeTo}
         </if>
         <if test="staffInside.isLeave == 1">
-            AND cso.LEAVE_DATE LIKE CONCAT(#{staffInside.birthDate},'%')
+            AND cso.LEAVE_DATE &gt;= #{staffInside.createTimeFrom} AND cso.LEAVE_DATE &lt;= #{staffInside.createTimeTo}
         </if>
     </select>
 

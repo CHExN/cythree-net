@@ -5,6 +5,8 @@ import cc.mrbird.febs.common.domain.QueryRequest;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 
+import java.util.List;
+
 /**
  * @author CHExN
  */
@@ -17,4 +19,6 @@ public interface ChargingCabinetService extends IService<ChargingCabinet> {
     void updateChargingCabinet(ChargingCabinet chargingCabinet);
 
     void deleteChargingCabinet(String[] chargingCabinetIds);
+
+    void batchInsertChargingCabinet(List<ChargingCabinet> chargingCabinetList);
 }

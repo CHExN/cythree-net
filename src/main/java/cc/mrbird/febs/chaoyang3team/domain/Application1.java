@@ -16,7 +16,7 @@ import java.time.LocalDate;
  */
 @Data
 @TableName("cy_application")
-public class Application implements Serializable {
+public class Application1 implements Serializable {
 
     private static final long serialVersionUID = 865442155653309926L;
 
@@ -112,6 +112,12 @@ public class Application implements Serializable {
     @TableField("CREATE_DATE")
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate createDate;
+
+    /**
+     * 是否是固定资产申请 0不是 1是
+     */
+    @TableField("IS_FIXED_ASSETS")
+    private String isFixedAssets;
 
 
     private transient String planList;

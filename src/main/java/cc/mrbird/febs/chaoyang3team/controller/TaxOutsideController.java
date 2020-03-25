@@ -129,6 +129,7 @@ public class TaxOutsideController extends BaseController {
         List<TaxOutsideImport> list = new ArrayList<>();
         IntStream.range(0, 20).forEach(i -> {
             TaxOutsideImport taxOutside = new TaxOutsideImport();
+            taxOutside.setName("此项不用必须填写，只是作为参照使用");
             taxOutside.setIdCardType("居民身份证");
             taxOutside.setStaffIdCard("证照号码" + (i + 1));
             taxOutside.setCurrentIncome("0");
@@ -188,7 +189,7 @@ public class TaxOutsideController extends BaseController {
                                 0,
                                 entity.getStaffIdCard().trim(),
                                 "证照号码",
-                                "查询不到此编外人员的信息"));
+                                "查询不到 [" + entity.getName() + "] 这个编外人员的信息"));
                         onError(sheetIndex, rowIndex, errorFields);
                     } else {
                         TaxOutside taxOutside = new TaxOutside();
@@ -233,7 +234,9 @@ public class TaxOutsideController extends BaseController {
                                 .subtract(taxOutside.getTaxExtensionPensionInsurance())
                                 .subtract(taxOutside.getOther())
                                 .subtract(taxOutside.getAllowanceForDeduction())
-                                .subtract(taxOutside.getTaxDeduction()));
+                                .subtract(taxOutside.getTaxDeduction())
+                                .subtract(BigDecimal.valueOf(5000))
+                        );
                         data.add(taxOutside);
                     }
                 }

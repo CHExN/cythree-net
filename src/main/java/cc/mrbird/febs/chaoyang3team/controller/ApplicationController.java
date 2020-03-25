@@ -1,7 +1,7 @@
 package cc.mrbird.febs.chaoyang3team.controller;
 
 
-import cc.mrbird.febs.chaoyang3team.domain.Application;
+import cc.mrbird.febs.chaoyang3team.domain.Application1;
 import cc.mrbird.febs.chaoyang3team.domain.Plan;
 import cc.mrbird.febs.chaoyang3team.service.ApplicationFileService;
 import cc.mrbird.febs.chaoyang3team.service.ApplicationPlanService;
@@ -62,7 +62,7 @@ public class ApplicationController extends BaseController {
 
     @GetMapping
     @RequiresPermissions("application:view")
-    public Map<String, Object> ApplicationList(QueryRequest request, Application application, ServletRequest servletRequest) {
+    public Map<String, Object> ApplicationList(QueryRequest request, Application1 application, ServletRequest servletRequest) {
         return getDataTable(this.applicationService.findApplicationDetail(request, application, servletRequest));
     }
 
@@ -75,7 +75,7 @@ public class ApplicationController extends BaseController {
     @Log("新增采购申请单")
     @PostMapping
     @RequiresPermissions("application:add")
-    public void addApplication(@Valid Application application, ServletRequest request) throws FebsException {
+    public void addApplication(@Valid Application1 application, ServletRequest request) throws FebsException {
         try {
             this.applicationService.createApplication(application, request);
         } catch (Exception e) {
@@ -88,7 +88,7 @@ public class ApplicationController extends BaseController {
     @Log("修改采购申请单")
     @PutMapping
     @RequiresPermissions("application:update")
-    public void updateApplication(@Valid Application application) throws FebsException {
+    public void updateApplication(@Valid Application1 application) throws FebsException {
         try {
             this.applicationService.updateApplication(application);
         } catch (Exception e) {

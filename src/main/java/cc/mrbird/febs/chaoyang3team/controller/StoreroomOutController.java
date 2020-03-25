@@ -53,7 +53,6 @@ public class StoreroomOutController extends BaseController {
 
     @GetMapping("storeroomByOutId")
     @RequiresPermissions("storeroomOut:view")
-
     public List<Storeroom> getStoreroomsByOutId(String outId) {
         return this.storeroomOutService.getStoreroomsByOutId(outId);
     }
