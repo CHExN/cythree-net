@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.mrbird.febs.chaoyang3team.dao.WcStatusMapper">
+
+    <select id="findWcStatusDetail" resultType="cc.mrbird.febs.chaoyang3team.domain.WcStatus">
+        SELECT
+        cws.ID,
+        cws.WC_ID,
+        cws.CREATE_TIME,
+        cws.MODIFY_TIME,
+        cws.START_DATE AS startDate,
+        cws.END_DATE AS endDate,
+        cws.STATUS,
+        wc.WC_NAME,
+        wc.WC_NUM
+        FROM cy_wc_status AS cws
+        LEFT JOIN cy_wc AS wc ON(wc.WC_ID = cws.WC_ID)
+        WHERE 1=1
+        <if test="wcStatus.wcName != null and wcStatus.wcName != ''">
+            AND wc.WC_NAME LIKE CONCAT('%',#{wcStatus.wcName},'%')
+        </if>
+        <if test="wcStatus.wcNum != null and wcStatus.wcNum != ''">
+            AND wc.WC_NUM LIKE CONCAT('%',#{wcStatus.wcNum},'%')
+        </if>
+        <if test="wcStatus.status != null and wcStatus.status != ''">
+            AND cws.STATUS LIKE CONCAT('%',#{wcStatus.status},'%')
+        </if>
+        <if test="wcStatus.startDateFrom != null and wcStatus.startDateFrom !=''">
+            AND cws.START_DATE &gt;= #{wcStatus.startDateFrom}
+        </if>
+        <if test="wcStatus.startDateTo!= null and wcStatus.startDateTo !=''">
+            AND cws.START_DATE &lt;= #{wcStatus.startDateTo}
+        </if>
+        <if test="wcStatus.endDateFrom != null and wcStatus.endDateFrom !=''">
+            AND cws.END_DATE &gt;= #{wcStatus.endDateFrom}
+        </if>
+        <if test="wcStatus.endDateTo!= null and wcStatus.endDateTo !=''">
+            AND cws.END_DATE &lt;= #{wcStatus.endDateTo}
+        </if>
+    </select>
+
+</mapper>

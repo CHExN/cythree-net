@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.mrbird.febs.chaoyang3team.dao.UnitConversionMapper">
+
+    <insert id="saveOrUpdate">
+        INSERT INTO cy_unit_conversion(STOREROOM_ID, UNIT, AMOUNT_CONVERSION, AMOUNT, AMOUNT_DIST)
+        VALUES (#{storeroomId}, #{unit}, #{amountConversion}, #{amount}, #{amountDist})
+        ON DUPLICATE KEY
+        UPDATE UNIT = #{unit}, AMOUNT_CONVERSION = #{amountConversion}, AMOUNT = #{amount}, AMOUNT_DIST = #{amountDist}
+    </insert>
+    <update id="amountIsChange">
+        UPDATE cy_unit_conversion SET AMOUNT_DIST = AMOUNT WHERE STOREROOM_ID = #{storeroomId} AND AMOUNT_CONVERSION != #{amountConversion}
+    </update>
+
+</mapper>
