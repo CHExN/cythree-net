@@ -84,6 +84,6 @@ febs:
         num: 1000
   shiro:
     # 后端免认证接口 url
-    anonUrl: /login,/logout/**,/regist,/user/check/**
+    anonUrl: /login,/logout/**,/regist,/user/check/**,/wc/weChat/**,/file/uploadFile,/wcEvaluate/weChat/add
     # token有效期，单位秒
     jwtTimeOut: 43200

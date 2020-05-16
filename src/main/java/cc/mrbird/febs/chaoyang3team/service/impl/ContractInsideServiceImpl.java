@@ -35,7 +35,7 @@ public class ContractInsideServiceImpl extends ServiceImpl<ContractInsideMapper,
     public IPage<ContractInside> findContractInsideDetail(QueryRequest request, ContractInside contractInside) {
         try {
             Page<ContractInside> page = new Page<>();
-            SortUtil.handlePageSort(request, page, "id", FebsConstant.ORDER_ASC, false);
+            SortUtil.handlePageSort(request, page, "sortNum", FebsConstant.ORDER_ASC, false);
             return this.baseMapper.findContractInsideDetail(page, contractInside);
         } catch (Exception e) {
             log.error("查询编内合同信息异常", e);
@@ -62,22 +62,44 @@ public class ContractInsideServiceImpl extends ServiceImpl<ContractInsideMapper,
 
     @Override
     @Transactional
-    public void deleteContractInside(String[] contractInsideIds) {
-        List<String> list = Arrays.asList(contractInsideIds);
-        this.baseMapper.deleteBatchIds(list);
+    public void deleteContractInside(String[] contractInsideIds, Integer deleted) {
+        if (deleted == 0) {
+            List<String> list = Arrays.asList(contractInsideIds);
+            this.baseMapper.deleteBatchIds(list);
+        } else if (deleted == 1) {
+            this.baseMapper.deleteContractInsideTrue(StringUtils.join(contractInsideIds, ","));
+        }
     }
 
     @Override
     @Transactional
-    public void deleteContractInsideAndStaffInside(String[] contractInsideIds) {
-        List<String> contractInsideIdsList = Arrays.asList(contractInsideIds);
-
+    public void deleteContractInsideAndStaffInside(String[] contractInsideIds, Integer deleted) {
         // 逗号合并记录有contractInsideId的数组
-        String contractInsideIdsStr = StringUtils.join(contractInsideIdsList, ',');
+        String contractInsideIdsStr = StringUtils.join(contractInsideIds, ',');
         // 查找StaffInsideIds
         List<String> staffInsideIdList = this.baseMapper.getStaffInsideIds(contractInsideIdsStr);
-        // 删除
-        this.baseMapper.deleteBatchIds(contractInsideIdsList);
-        this.staffInsideService.deleteStaffInside((String[]) staffInsideIdList.toArray());
+        // 删除合同
+        this.deleteContractInside(contractInsideIds, deleted);
+        // 删除人员
+        if (!staffInsideIdList.isEmpty()) {
+            this.staffInsideService.deleteStaffInside(staffInsideIdList.toArray(new String[0]), deleted);
+        }
+    }
+
+    @Override
+    public void restoreContractInside(String contractInsideIds) {
+        this.baseMapper.restoreContractInside(contractInsideIds);
+    }
+
+    @Override
+    public void togetherRestoreContractInside(String contractInsideIds) {
+        // 查找StaffInsideIds
+        List<String> staffInsideIdList = this.baseMapper.getStaffInsideIds(contractInsideIds);
+        // 恢复合同
+        this.restoreContractInside(contractInsideIds);
+        // 恢复人员
+        if (!staffInsideIdList.isEmpty()) {
+            this.staffInsideService.restoreStaffInside(StringUtils.join(staffInsideIdList, ","));
+        }
     }
 }

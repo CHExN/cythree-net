@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import javax.servlet.ServletRequest;
+import java.util.Map;
 
 /**
  * @author CHExN
@@ -24,7 +25,7 @@ public interface StoreroomPutOutService extends IService<StoreroomPutOut> {
 
     void updateStoreroom(StoreroomPutOut storeroomPutOut);
 
-    void deleteStoreroomPuts(String[] StoreroomPutIds);
+    Map<String, Object> deleteStoreroomPuts(String[] StoreroomPutIds);
 
     void deleteStoreroomOuts(String[] StoreroomOutIds);
 

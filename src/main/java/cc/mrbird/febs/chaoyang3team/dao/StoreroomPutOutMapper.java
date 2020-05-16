@@ -31,4 +31,24 @@ public interface StoreroomPutOutMapper extends BaseMapper<StoreroomPutOut> {
      */
     IPage<StoreroomPutOut> getStoreroomOutSimplify(Page page, @Param("sOut") StoreroomPutOut storeroomPutOut);
 
+
+    /**
+     * 根据入库单ids查询相应的出库记录信息
+     * @param storeroomPutIdsStr 入库单ids
+     * @return 出库记录信息
+     */
+    List<StoreroomPutOut> whetherThereAreStoreroomOutRecords(String storeroomPutIdsStr);
+
+    /**
+     * 根据入库ids更新相应采购申请单状态为“待入库”
+     * @param storeroomPutIdsStr
+     */
+    void updateApplicationProcessByPutId(String storeroomPutIdsStr);
+
+    /**
+     * 根据出库单里面的物资ids把物资数量返还到库房里
+     * @param storeroomIdsStr 出库单的物资ids
+     */
+    void returnStoreroomAmountByOutIds(String storeroomIdsStr);
+
 }

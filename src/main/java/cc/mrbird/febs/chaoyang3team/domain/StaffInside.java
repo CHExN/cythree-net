@@ -131,13 +131,14 @@ public class StaffInside implements Serializable {
     @ExcelField(value = "出生年月")
     private String birthDate;
 
-//    @TableField("AGE")
-//    @ExcelField(value = "年龄")
-//    private Integer age;
+    @ExcelField(value = "年龄")
+    private transient Integer age;
 
-//    @TableField("RETIREMENT_YEAR")
-//    @ExcelField(value = "退休年份")
-//    private String retirementYear;
+    @ExcelField(value = "退休年龄")
+    private transient Integer retirementAge;
+
+    @ExcelField(value = "退休日期")
+    private transient String retirementDate;
 
     @TableField("WORK_DATE")
     @ExcelField(value = "参加工作日期")
@@ -146,6 +147,13 @@ public class StaffInside implements Serializable {
     @TableField("FARMER_WORK_DATE")
     @ExcelField(value = "农转工转工日期")
     private String farmerWorkDate;
+
+    /**
+     * 增加日期
+     */
+    @TableField("ADD_DATE")
+    @ExcelField(value = "增加日期")
+    private String addDate;
 
     @TableField("TRANSFER_DATE")
     @ExcelField(value = "调入环卫或报到日期")
@@ -181,7 +189,7 @@ public class StaffInside implements Serializable {
      * 岗位 0管理岗 1技工 2工勤岗 3专业技术岗
      */
     @TableField("POST")
-    @ExcelField(value = "岗位")
+    @ExcelField(value = "岗位", writeConverterExp = "0=管理岗,1=技工,2=工勤岗,3=专业技术岗")
     private String post;
 
     @TableField("POST_LEVEL")
@@ -248,11 +256,20 @@ public class StaffInside implements Serializable {
     @ExcelField(value = "部门")
     private transient String deptName;
 
-    private transient String fileNum;
+    /**
+     * 逻辑删除 0未删除 1已删除
+     */
+    @TableLogic
+    @TableField("DELETED")
+    private Integer deleted;
+
+//    private transient String fileNum;
 
     private transient String mini;
     private transient String max;
 
     private transient String createTimeFrom;
     private transient String createTimeTo;
+    private transient String reduceTimeFrom;
+    private transient String reduceTimeTo;
 }

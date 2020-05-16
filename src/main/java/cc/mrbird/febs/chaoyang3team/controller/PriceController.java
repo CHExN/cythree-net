@@ -33,8 +33,8 @@ public class PriceController extends BaseController {
     @Autowired
     private PriceService priceService;
 
-    @GetMapping("/{name}")
-    public List<Price> checkUserName(@NotBlank(message = "{required}") @PathVariable String name) {
+    @GetMapping("name")
+    public List<Price> checkUserName(String name) {
         return this.priceService.findByName(name);
     }
 

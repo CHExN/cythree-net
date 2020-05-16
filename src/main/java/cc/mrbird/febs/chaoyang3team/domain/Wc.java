@@ -188,4 +188,15 @@ public class Wc implements Serializable {
     private transient String o;
     private transient String p;
 
+    // 距离
+    private transient Integer distance;
+    // markerId
+    private transient Long id;
+    // 图片地址
+    private transient String filesAddress;
+    // 星级
+    private transient Integer wholeStar;
+    // 公厕运行状态
+    private transient String status;
+
 }

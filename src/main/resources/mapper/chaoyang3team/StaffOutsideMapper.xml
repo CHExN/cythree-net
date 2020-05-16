@@ -23,17 +23,27 @@
         cso.PHONE_LAND_LINE,
         cso.PHONE_CELL,
         cso.BIRTH_DATE,
+        cso.ADD_DATE,
         cso.TRANSFER_DATE,
-        cso.TO_TEAM_DATE,
+        -- cso.TO_TEAM_DATE,
         cso.POST,
         cso.TECHNICAL_TYPE,
         cso.REMARK,
         cso.IS_LEAVE,
-        cso.LEAVE_DATE,
-        cco.ID
+        cso.LEAVE_DATE
         FROM cy_staff_outside AS cso
-        LEFT JOIN cy_contract_outside AS cco ON(cco.ID_NUM=cso.ID_NUM)
         WHERE FIND_IN_SET(cso.IS_LEAVE, #{staffOutside.isLeave})
+        <choose>
+            <when test="staffOutside.deleted !=null and staffOutside.deleted != ''">
+                AND cso.DELETED = #{staffOutside.deleted}
+            </when>
+            <otherwise>
+                AND cso.DELETED=0
+            </otherwise>
+        </choose>
+        <if test="staffOutside.type != null and staffOutside.type != ''">
+            AND FIND_IN_SET(cso.TYPE, #{staffOutside.type})
+        </if>
         <if test="staffOutside.team != null and staffOutside.team != ''">
             AND FIND_IN_SET(cso.TEAM, #{staffOutside.team})
         </if>
@@ -88,11 +98,15 @@
         <if test="staffOutside.max != null and staffOutside.max != ''">
             AND cso.BIRTH_DATE &gt;= DATE_SUB(CURDATE(),INTERVAL #{staffOutside.max} YEAR)
         </if>
-        <if test="staffOutside.createTimeFrom != null and staffOutside.createTimeFrom !=''">
-            AND cso.LEAVE_DATE &gt;= #{staffOutside.createTimeFrom}
+        <if test="staffOutside.createTimeFrom != null and staffOutside.createTimeFrom !=''
+        and staffOutside.createTimeTo!= null and staffOutside.createTimeTo !=''">
+            AND cso.ADD_DATE &gt;= #{staffOutside.createTimeFrom}
+            AND cso.ADD_DATE &lt;= #{staffOutside.createTimeTo}
         </if>
-        <if test="staffOutside.createTimeTo!= null and staffOutside.createTimeTo !=''">
-            AND cso.LEAVE_DATE &lt;= #{staffOutside.createTimeTo}
+        <if test="staffOutside.reduceTimeFrom != null and staffOutside.reduceTimeFrom !=''
+        and staffOutside.reduceTimeTo!= null and staffOutside.reduceTimeTo !=''">
+            AND cso.LEAVE_DATE &gt;= #{staffOutside.reduceTimeFrom}
+            AND cso.LEAVE_DATE &lt;= #{staffOutside.reduceTimeTo}
         </if>
         ORDER BY SORT_NUM_1 ASC, SORT_NUM_2 ASC
     </select>
@@ -104,7 +118,7 @@
         cso.GENDER,
         cso.ID_NUM
         FROM cy_staff_outside AS cso
-        WHERE FIND_IN_SET(cso.IS_LEAVE, #{staffOutside.isLeave})
+        WHERE cso.DELETED=0 AND FIND_IN_SET(cso.IS_LEAVE, #{staffOutside.isLeave})
         <if test="staffOutside.temporary != null and staffOutside.temporary != ''">
             AND (SELECT COUNT(1) FROM cy_contract_outside AS cco WHERE cco.ID_NUM=cso.ID_NUM) = 0
         </if>
@@ -150,8 +164,9 @@
         cso.PHONE_LAND_LINE,
         cso.PHONE_CELL,
         cso.BIRTH_DATE,
+        cso.ADD_DATE,
         cso.TRANSFER_DATE,
-        cso.TO_TEAM_DATE,
+--         cso.TO_TEAM_DATE,
         cso.POST,
         cso.TECHNICAL_TYPE,
         cso.REMARK,
@@ -181,8 +196,9 @@
         cso.PHONE_LAND_LINE,
         cso.PHONE_CELL,
         cso.BIRTH_DATE,
+        cso.ADD_DATE,
         cso.TRANSFER_DATE,
-        cso.TO_TEAM_DATE,
+--         cso.TO_TEAM_DATE,
         cso.POST,
         cso.TECHNICAL_TYPE,
         cso.REMARK,
@@ -194,7 +210,9 @@
 
 
     <select id="getContractOutsideIds" resultType="java.lang.String">
-        SELECT ID FROM cy_contract_outside WHERE FIND_IN_SET(STAFF_ID, #{staffOutsideIdsStr})
+        SELECT cco.ID FROM cy_contract_outside AS cco
+        LEFT JOIN cy_staff_outside AS cso ON(cso.ID_NUM=cco.ID_NUM)
+        WHERE FIND_IN_SET(cso.STAFF_ID, #{staffOutsideIdsStr})
     </select>
 
     <select id="getTechnicalType" resultType="java.lang.String">
@@ -219,7 +237,7 @@
         SUM(if(cso.TYPE = 1,1,0)) AS '1',
         SUM(if(cso.TYPE = 2,1,0)) AS '2',
         SUM(if(cso.TYPE = 3,1,0)) AS '3'
-        FROM cy_staff_outside AS cso WHERE cso.IS_LEAVE=0
+        FROM cy_staff_outside AS cso WHERE cso.DELETED=0 AND cso.IS_LEAVE=#{isLeave}
     </select>
 
     <update id="updateStaffOutsideSwapSort">
@@ -229,27 +247,81 @@
             c1.SORT_NUM_2=c2.SORT_NUM_2,
             c2.SORT_NUM_1=c1.SORT_NUM_1,
             c2.SORT_NUM_2=c1.SORT_NUM_2
-        WHERE c1.IS_LEAVE=0 AND c2.IS_LEAVE=0
+        WHERE c2.DELETED=0 AND c1.IS_LEAVE=#{isLeave} AND c2.DELETED=0 AND c2.IS_LEAVE=#{isLeave}
     </update>
 
     <update id="updateStaffOutsideSortNum1">
         UPDATE cy_staff_outside AS a INNER JOIN (
-            SELECT cso.STAFF_ID,(@i:=@i+1) AS pm,IF(cso.MODIFY_TIME IS NULL,cso.CREATE_TIME,cso.MODIFY_TIME) AS datetime
-            FROM cy_staff_outside AS cso,(select @i:=0) AS it
-            WHERE cso.IS_LEAVE=0
-            ORDER BY cso.TYPE ASC,cso.SORT_NUM_2 ASC,datetime DESC
+            SELECT cso.STAFF_ID, (@i:=@i+1) AS pm, IF(cso.MODIFY_TIME IS NULL, cso.CREATE_TIME, cso.MODIFY_TIME) AS datetime
+            FROM cy_staff_outside AS cso, (select @i:=0) AS it
+            WHERE cso.DELETED=0 AND cso.IS_LEAVE=0
+            ORDER BY cso.TYPE ASC, cso.SORT_NUM_2 ASC, datetime DESC
         ) AS b ON a.STAFF_ID=b.STAFF_ID
         SET a.SORT_NUM_1=b.pm
     </update>
 
     <update id="updateStaffOutsideSortNum2">
         UPDATE cy_staff_outside AS a INNER JOIN (
-            SELECT cso.STAFF_ID,(@i:=@i+1) AS pm,IF(cso.MODIFY_TIME IS NULL,cso.CREATE_TIME,cso.MODIFY_TIME) AS datetime
-            FROM cy_staff_outside AS cso,(select @i:=0) AS it
-            WHERE cso.IS_LEAVE=0 AND cso.TYPE=#{type}
-            ORDER BY cso.TYPE ASC,cso.SORT_NUM_2 ASC,datetime DESC
+            SELECT cso.STAFF_ID, (@i:=@i+1) AS pm, IF(cso.MODIFY_TIME IS NULL, cso.CREATE_TIME, cso.MODIFY_TIME) AS datetime
+            FROM cy_staff_outside AS cso, (select @i:=0) AS it
+            WHERE cso.DELETED=0 AND cso.IS_LEAVE=0 AND cso.TYPE=#{type}
+            ORDER BY cso.TYPE ASC, cso.SORT_NUM_2 ASC, datetime DESC
         ) AS b ON a.STAFF_ID=b.STAFF_ID
         SET a.SORT_NUM_2=b.pm
+    </update>
+
+    <update id="updateStaffOutsideLeaveSortNum1">
+        UPDATE cy_staff_outside AS a INNER JOIN (
+            SELECT cso.STAFF_ID, (@i:=@i+1) AS pm, cso.LEAVE_DATE AS datetime
+            FROM cy_staff_outside AS cso, (select @i:=0) AS it
+            WHERE cso.DELETED=0 AND cso.IS_LEAVE=1
+            ORDER BY cso.TYPE ASC, cso.SORT_NUM_2 ASC, datetime DESC
+        ) AS b ON a.STAFF_ID=b.STAFF_ID
+        SET a.SORT_NUM_1=b.pm
+    </update>
+
+    <update id="updateStaffOutsideLeaveSortNum2">
+        UPDATE cy_staff_outside AS a INNER JOIN (
+            SELECT cso.STAFF_ID, (@i:=@i+1) AS pm, cso.LEAVE_DATE AS datetime
+            FROM cy_staff_outside AS cso, (select @i:=0) AS it
+            WHERE cso.DELETED=0 AND cso.IS_LEAVE=1 AND cso.TYPE=#{type}
+            ORDER BY cso.TYPE ASC, cso.SORT_NUM_2 ASC, datetime DESC
+        ) AS b ON a.STAFF_ID=b.STAFF_ID
+        SET a.SORT_NUM_2=b.pm
+    </update>
+
+    <select id="getIncreaseOrDecreaseStaffOutside" resultType="cc.mrbird.febs.chaoyang3team.domain.StaffOutside">
+        SELECT
+        cso.STAFF_ID,
+        cso.`NAME`,
+        cso.GENDER,
+        cso.ID_NUM,
+        cso.TECHNICAL_TYPE,
+        '编外' AS type,
+        <if test="staffOutside.isLeave == 0">
+            cso.ADD_DATE AS leaveDate
+        </if>
+        <if test="staffOutside.isLeave == 1">
+            cso.LEAVE_DATE AS leaveDate
+        </if>
+        FROM cy_staff_outside AS cso
+        WHERE cso.DELETED=0 AND cso.IS_LEAVE=#{staffOutside.isLeave}
+        <if test="staffOutside.isLeave == 0">
+            AND cso.ADD_DATE &gt;= #{staffOutside.createTimeFrom}
+            AND cso.ADD_DATE &lt;= #{staffOutside.createTimeTo}
+        </if>
+        <if test="staffOutside.isLeave == 1">
+            AND cso.LEAVE_DATE &gt;= #{staffOutside.createTimeFrom}
+            AND cso.LEAVE_DATE &lt;= #{staffOutside.createTimeTo}
+        </if>
+    </select>
+
+    <delete id="deleteStaffOutsideTrue">
+        DELETE FROM cy_staff_outside WHERE FIND_IN_SET(STAFF_ID, #{staffOutsideIdsStr})
+    </delete>
+
+    <update id="restoreStaffOutside">
+        UPDATE cy_staff_outside SET DELETED=0 WHERE FIND_IN_SET(STAFF_ID, #{staffOutsideIds})
     </update>
 
 </mapper>

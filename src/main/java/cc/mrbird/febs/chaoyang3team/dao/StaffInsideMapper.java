@@ -31,6 +31,25 @@ public interface StaffInsideMapper extends BaseMapper<StaffInside> {
 
     StaffInside getStaffIdByIdNum(String idNum);
 
+    /**
+     * 更新编内在职人员序号
+     */
+    void updateStaffInsideSortNum();
+
+    /**
+     * 更新编内非在职人员序号
+     */
+    void updateStaffInsideLeaveSortNum();
+
+    /**
+     * 编内人员增加减少报表信息查询
+     * @param staffInside 查询参数
+     * @return 报表信息
+     */
     List<StaffInside> getIncreaseOrDecreaseStaffInside(@Param("staffInside") StaffInside staffInside);
+
+    void deleteStaffInsideTrue(String staffInsideIdsStr);
+
+    void restoreStaffInside(String staffInsideIds);
 
 }

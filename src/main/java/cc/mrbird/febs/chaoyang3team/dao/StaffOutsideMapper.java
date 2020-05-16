@@ -37,22 +37,45 @@ public interface StaffOutsideMapper extends BaseMapper<StaffOutside> {
      *
      * @return 各分队人数集合
      */
-    Map<String, String> getStaffOutsideTypeCount();
+    Map<String, String> getStaffOutsideTypeCount(String isLeave);
 
     void updateStaffOutsideSwapSort(
             @Param("sortNum1") Long sortNum1,
             @Param("sortNum2") Long sortNum2,
             @Param("beSortNum1") Long beSortNum1,
-            @Param("beSortNum2") Long beSortNum2);
+            @Param("beSortNum2") Long beSortNum2,
+            @Param("isLeave") String isLeave);
 
     /**
-     * 更新编外人员总序号
+     * 更新编外在职人员总序号
      */
     void updateStaffOutsideSortNum1();
 
     /**
-     * 更新编外人员分队序号
+     * 更新编外在职人员分队序号
      */
     void updateStaffOutsideSortNum2(String type);
 
+
+    /**
+     * 更新编外非在职人员总序号
+     */
+    void updateStaffOutsideLeaveSortNum1();
+
+    /**
+     * 更新编外非在职人员分队序号
+     */
+    void updateStaffOutsideLeaveSortNum2(String type);
+
+    /**
+     * 编外人员增加减少报表信息查询
+     *
+     * @param staffOutside 查询参数
+     * @return 报表信息
+     */
+    List<StaffOutside> getIncreaseOrDecreaseStaffOutside(@Param("staffOutside") StaffOutside staffOutside);
+
+    void deleteStaffOutsideTrue(String staffOutsideIdsStr);
+
+    void restoreStaffOutside(String staffOutsideIds);
 }

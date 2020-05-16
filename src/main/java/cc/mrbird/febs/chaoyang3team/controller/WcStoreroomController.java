@@ -31,8 +31,7 @@ public class WcStoreroomController extends BaseController {
     @GetMapping
     @RequiresPermissions("wcStoreroom:view")
     public Map<String, Object> WcList(QueryRequest request, WcStoreroom wcStoreroom, ServletRequest servletRequest) {
-//        return getDataTable(this.wcStoreroomService.findWcStoreroomDetail(request, wcStoreroom, servletRequest));
-        return getDataTable(this.wcStoreroomService.findWcStoreroomDetail(request, wcStoreroom));
+        return getDataTable(this.wcStoreroomService.findWcStoreroomDetail(request, wcStoreroom, servletRequest));
     }
 
 }

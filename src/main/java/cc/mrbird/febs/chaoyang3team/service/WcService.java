@@ -40,6 +40,8 @@ public interface WcService extends IService<Wc> {
 
     List<Wc> findWcCostAccountByYear(String year, Integer up);
 
+    Wc getWcByWcNum(String wcNum);
+
     Long getWcIdByWcNum(String wcNum);
 
     Long getWcIdByWaterNum(String waterNum);
@@ -51,5 +53,9 @@ public interface WcService extends IService<Wc> {
     List<Map<String, Object>> findAllMonthWcConsumptionByYear(String year);
 
     List<Map<String, Object>> findAllOwnWcConsumptionByYear(String year);
+
+    List<Wc> findWcListByPosition(String longitude, String latitude, Integer radius, Integer length);
+
+    Wc getWcAndFilesById(Long wcId);
 
 }

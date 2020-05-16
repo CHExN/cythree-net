@@ -51,12 +51,20 @@ public class WcController extends BaseController {
 
     @Autowired
     private WcService wcService;
-
     @Autowired
     private WcFileService wcFileService;
-
     @Autowired
     private WcStoreroomService storeroomService;
+
+    @GetMapping("weChat/wcList")
+    public List<Wc> findWcListByPosition(String longitude, String latitude, Integer radius, Integer length) {
+        return wcService.findWcListByPosition(longitude, latitude, radius, length);
+    }
+
+    @GetMapping("weChat/wcInfo")
+    public Wc getWcInfo(Long wcId) {
+        return this.wcService.getWcAndFilesById(wcId);
+    }
 
     @GetMapping("index/{year}")
     public FebsResponse index(@NotBlank(message = "{required}") @PathVariable String year) {
@@ -135,9 +143,9 @@ public class WcController extends BaseController {
 
     @PostMapping("addWcStoreroom")
     @RequiresPermissions("wcStoreroom:add")
-    public void addWcStoreroom(@Valid String wcStoreroomStr, BigDecimal amountDist) throws FebsException {
+    public void addWcStoreroom(@Valid String wcStoreroomStr, BigDecimal amountDist, ServletRequest servletRequest) throws FebsException {
         try {
-            this.storeroomService.createWcStoreroom(wcStoreroomStr, amountDist);
+            this.storeroomService.createWcStoreroom(wcStoreroomStr, amountDist, servletRequest);
         } catch (Exception e) {
             message = "新增公厕与出库记录关系失败";
             log.error(message, e);

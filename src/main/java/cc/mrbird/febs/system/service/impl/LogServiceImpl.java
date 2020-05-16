@@ -42,6 +42,9 @@ public class LogServiceImpl extends ServiceImpl<LogMapper, SysLog> implements Lo
         try {
             QueryWrapper<SysLog> queryWrapper = new QueryWrapper<>();
 
+            if (StringUtils.isNotBlank(sysLog.getParams())) {
+                queryWrapper.lambda().like(SysLog::getParams, sysLog.getParams());
+            }
             if (StringUtils.isNotBlank(sysLog.getUsername())) {
                 queryWrapper.lambda().eq(SysLog::getUsername, sysLog.getUsername().toLowerCase());
             }

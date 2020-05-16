@@ -1,9 +1,11 @@
 package cc.mrbird.febs.chaoyang3team.service;
 
 import cc.mrbird.febs.chaoyang3team.domain.StaffOutside;
+import cc.mrbird.febs.common.domain.FebsResponse;
 import cc.mrbird.febs.common.domain.QueryRequest;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.ServletRequest;
 import java.util.List;
@@ -26,9 +28,9 @@ public interface StaffOutsideService extends IService<StaffOutside> {
 
     void updateStaffOutside(StaffOutside staffOutside);
 
-    void deleteStaffOutside(String[] staffOutsideIds);
+    void deleteStaffOutside(String[] staffOutsideIds, Integer deleted);
 
-    void deleteStaffOutsideAndContractOutside(String[] staffOutsideIds);
+    void deleteStaffOutsideAndContractOutside(String[] staffOutsideIds, Integer deleted);
 
     /**
      * 获取岗位类别（技术专业类别）
@@ -58,5 +60,13 @@ public interface StaffOutsideService extends IService<StaffOutside> {
      */
     Map<String, Object> updateSortStaffOutside(StaffOutside staffOutside, String isUp);
 
+    List<StaffOutside> getIncreaseOrDecreaseStaffOutside(StaffOutside staffOutside);
 
+    void restoreStaffOutside(String staffOutsideIds);
+
+    void togetherRestoreStaffOutside(String staffOutsideIds);
+
+    void deleteStaffOutsidesFile(String[] fileIds);
+
+    FebsResponse uploadStaffOutsidePhoto(MultipartFile file, String id) throws Exception;
 }

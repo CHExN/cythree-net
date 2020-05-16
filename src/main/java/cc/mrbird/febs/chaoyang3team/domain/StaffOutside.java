@@ -1,9 +1,6 @@
 package cc.mrbird.febs.chaoyang3team.domain;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
 import com.wuwenze.poi.annotation.Excel;
 import com.wuwenze.poi.annotation.ExcelField;
 import lombok.Data;
@@ -146,13 +143,21 @@ public class StaffOutside implements Serializable {
     @ExcelField(value = "出生年月")
     private String birthDate;
 
-//    @TableField("AGE")
-//    @ExcelField(value = "年龄")
-//    private Integer age;
+    @ExcelField(value = "年龄")
+    private transient Integer age;
 
-//    @TableField("RETIREMENT_YEAR")
-//    @ExcelField(value = "退休年份")
-//    private String retirementYear;
+    @ExcelField(value = "退休年龄")
+    private transient Integer retirementAge;
+
+    @ExcelField(value = "退休日期")
+    private transient String retirementDate;
+
+    /**
+     * 增加日期
+     */
+    @TableField("ADD_DATE")
+    @ExcelField(value = "增加日期")
+    private String addDate;
 
     /**
      * 调入环卫或报到日期
@@ -161,12 +166,12 @@ public class StaffOutside implements Serializable {
     @ExcelField(value = "调入环卫或报到日期")
     private String transferDate;
 
-    /**
-     * 到本场队日期
-     */
-    @TableField("TO_TEAM_DATE")
-    @ExcelField(value = "到本场队日期")
-    private String toTeamDate;
+//    /**
+//     * 到本场队日期
+//     */
+//    @TableField("TO_TEAM_DATE")
+//    @ExcelField(value = "到本场队日期")
+//    private String toTeamDate;
 
     /**
      * 岗位（技术专业类别） 获取所有选项
@@ -213,10 +218,20 @@ public class StaffOutside implements Serializable {
     @TableField("LEAVE_DATE")
     private String leaveDate;
 
+    /**
+     * 逻辑删除 0未删除 1已删除
+     */
+    @TableLogic
+    @TableField("DELETED")
+    private Integer deleted;
+
     private transient String mini;
     private transient String max;
 
     private transient String createTimeFrom;
     private transient String createTimeTo;
+    private transient String reduceTimeFrom;
+    private transient String reduceTimeTo;
+
 
 }

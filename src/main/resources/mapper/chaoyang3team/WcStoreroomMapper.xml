@@ -1,18 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cc.mrbird.febs.chaoyang3team.dao.WcStoreroomMapper">
-    <!--<update id="updateAmount">-->
-        <!--UPDATE p_wc_storeroom-->
-        <!--SET-->
-        <!--AMOUNT=AMOUNT+#{wcStoreroom.amount}-->
-        <!--`DAY`=#{wcStoreroom.day}-->
-        <!--WHERE-->
-        <!--WC_ID=#{wcStoreroom.wcId}-->
-        <!--STOREROOM_ID=#{wcStoreroom.storeroomId}-->
-        <!--STOREROOM_ID=#{wcStoreroom.storeroomId}-->
-        <!--`YEAR`=#{wcStoreroom.year}-->
-        <!--`MONTH`=#{wcStoreroom.month}-->
-    <!--</update>-->
 
     <select id="findWcStoreroomDetail" resultType="cc.mrbird.febs.chaoyang3team.domain.WcStoreroom">
         SELECT
@@ -26,46 +14,16 @@
         ws.`MONTH`,
         ws.`DAY`,
         ws.WC_ID AS wcId,
-        ws.STOREROOM_ID
-        FROM p_wc_storeroom AS ws
-        LEFT JOIN cy_wc AS w ON(w.WC_ID=ws.WC_ID)
-        LEFT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID)
-        WHERE w.WC_OWN=#{wcStoreroom.wcOwn} AND (ws.`YEAR`=#{wcStoreroom.yearForm} AND FIND_IN_SET(ws.`MONTH`,#{wcStoreroom.monthForm}))
-        <if test="wcStoreroom.yearTo != null and wcStoreroom.yearTo != ''">
-            OR (ws.`YEAR`=#{wcStoreroom.yearTo} AND FIND_IN_SET(ws.`MONTH`,#{wcStoreroom.monthTo}))
-        </if>
-        <if test="wcStoreroom.wcName != null and wcStoreroom.wcName != ''">
-            AND w.WC_NAME LIKE CONCAT('%',#{wcStoreroom.wcName},'%')
-        </if>
-        <if test="wcStoreroom.wcNum != null and wcStoreroom.wcNum != ''">
-            AND w.WC_NUM LIKE CONCAT('%',#{wcStoreroom.wcNum},'%')
-        </if>
-        <if test="wcStoreroom.typeApplication != null and wcStoreroom.typeApplication != ''">
-            AND FIND_IN_SET(s.TYPE_APPLICATION, #{wcStoreroom.typeApplication})
-        </if>
-        <if test="wcStoreroom.name != null and wcStoreroom.name != ''">
-            AND s.NAME LIKE CONCAT('%',#{wcStoreroom.name},'%')
-        </if>
-        GROUP BY ws.WC_ID,ws.STOREROOM_id,ws.`YEAR`,ws.`MONTH` DESC
-    </select>
-
-    <select id="findWcStoreroomDetail2" resultType="cc.mrbird.febs.chaoyang3team.domain.WcStoreroom">
-        SELECT
-        w.WC_NAME,
-        w.WC_NUM,
-        s.`NAME`,
-        s.TYPE_APPLICATION,
-        s.MONEY,
-        SUM(ws.AMOUNT) AS amount,
-        ws.`YEAR`,
-        ws.`MONTH`,
-        ws.`DAY`,
-        ws.WC_ID AS wcId,
-        ws.STOREROOM_ID
+        ws.STOREROOM_ID,
+        ws.USERNAME,
+        ws.WC_OWN
         FROM p_wc_storeroom AS ws
         LEFT JOIN cy_wc AS w ON(w.WC_ID=ws.WC_ID)
         LEFT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID)
         WHERE (ws.`YEAR`=#{wcStoreroom.yearForm} AND FIND_IN_SET(ws.`MONTH`,#{wcStoreroom.monthForm}))
+        <if test="wcStoreroom.username != null and wcStoreroom.username != ''">
+            AND ws.USERNAME LIKE CONCAT('%',#{wcStoreroom.username},'%')
+        </if>
         <if test="wcStoreroom.yearTo != null and wcStoreroom.yearTo != ''">
             OR (ws.`YEAR`=#{wcStoreroom.yearTo} AND FIND_IN_SET(ws.`MONTH`,#{wcStoreroom.monthTo}))
         </if>
@@ -81,7 +39,8 @@
         <if test="wcStoreroom.name != null and wcStoreroom.name != ''">
             AND s.NAME LIKE CONCAT('%',#{wcStoreroom.name},'%')
         </if>
-        GROUP BY ws.WC_ID,ws.STOREROOM_id,ws.`YEAR`,ws.`MONTH` DESC
+        GROUP BY ws.STOREROOM_ID,ws.WC_ID,ws.`YEAR`,ws.`MONTH`,ws.`DAY` DESC
     </select>
+
 
 </mapper>

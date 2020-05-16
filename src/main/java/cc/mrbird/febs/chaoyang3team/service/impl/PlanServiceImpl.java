@@ -50,4 +50,9 @@ public class PlanServiceImpl extends ServiceImpl<PlanMapper, Plan> implements Pl
         this.baseMapper.deleteBatchIds(ids);
         this.applicationPlanService.deleteByPlanId(planIds);
     }
+
+    @Override
+    public void updatePlanStatus(String planIds) {
+        this.baseMapper.updatePlanStatus(planIds);
+    }
 }

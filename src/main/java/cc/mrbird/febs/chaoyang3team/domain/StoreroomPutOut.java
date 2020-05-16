@@ -106,8 +106,16 @@ public class StoreroomPutOut implements Serializable {
     @TableField("SUPPLIER")
     private String supplier;
 
+    /**
+     * 采购申请id
+     */
+    @TableField("APPLICATION_ID")
+    private Long applicationId;
+
     private transient String createTimeFrom;
     private transient String createTimeTo;
     private transient String StoreroomList;
+
+    private transient Long count;
 
 }

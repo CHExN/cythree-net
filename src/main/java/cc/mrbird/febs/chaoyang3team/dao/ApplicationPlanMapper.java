@@ -40,6 +40,6 @@ public interface ApplicationPlanMapper extends BaseMapper<ApplicationPlan> {
      *
      * @return 计划单详情
      */
-    List<Plan> findPlansByApplicationId(@Param("applicationId") String applicationId);
+    List<Plan> findPlansByApplicationId(@Param("applicationId") String applicationId, @Param("status") Boolean status);
 
 }

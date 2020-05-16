@@ -17,6 +17,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,10 +27,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
+import java.math.BigDecimal;
+import java.util.*;
 
 /**
  * @author CHExN
@@ -140,14 +139,54 @@ public class StoreroomServiceImpl extends ServiceImpl<StoreroomMapper, Storeroom
 
 
     @Override
-    public IPage<Storeroom> getStoreroomsDist(QueryRequest request, Storeroom storeroom) {
-//        HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
-//        User user = userManager.getUser(JWTUtil.getUsername(FebsUtil.decryptToken(httpServletRequest.getHeader("Authentication"))));
-//        storeroom.setToDeptId(user.getDeptId());
-
-//        storeroom.setToDeptIds("26,27,28,29"); // 南分队，北分队，保洁分队，维修分队
-
+    public IPage<Storeroom> getStoreroomsDist(QueryRequest request, Storeroom storeroom, ServletRequest servletRequest) {
         try {
+            HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
+            String username = JWTUtil.getUsername(FebsUtil.decryptToken(httpServletRequest.getHeader("Authentication")));
+            // 通过用户名获取用户权限集合
+            Set<String> userPermissions = this.userManager.getUserPermissions(username);
+
+            // 如果拥有以下一个权限，就表示只能看到这一个分队的物资信息
+            if (userPermissions.contains("staffOutside:viewClean")) {
+                storeroom.setToDeptIds("28"); // 保洁分队
+            } else if (userPermissions.contains("staffOutside:viewSouth")) {
+                storeroom.setToDeptIds("26"); // 南分队
+            } else if (userPermissions.contains("staffOutside:viewNorth")) {
+                storeroom.setToDeptIds("27"); // 北分队
+            } else if (userPermissions.contains("staffOutside:viewService")) {
+                storeroom.setToDeptIds("29"); // 维修分队
+            }
+
+            // 如果拥有以下任意一个或复数权限，就代表只能看到这些物品的权限
+            List<String> typeApplicationAuthorityList = new ArrayList<>();
+            if (userPermissions.contains("storeroom:view1")) {
+                typeApplicationAuthorityList.add("1");
+            }
+            if (userPermissions.contains("storeroom:view2")) {
+                typeApplicationAuthorityList.add("2");
+            }
+            if (userPermissions.contains("storeroom:view3")) {
+                typeApplicationAuthorityList.add("3");
+            }
+            if (userPermissions.contains("storeroom:view4")) {
+                typeApplicationAuthorityList.add("4");
+            }
+            if (userPermissions.contains("storeroom:view5")) {
+                typeApplicationAuthorityList.add("5");
+            }
+            if (userPermissions.contains("storeroom:view6")) {
+                typeApplicationAuthorityList.add("6");
+            }
+            if (userPermissions.contains("storeroom:view7")) {
+                typeApplicationAuthorityList.add("7");
+            }
+            if (userPermissions.contains("storeroom:view8")) {
+                typeApplicationAuthorityList.add("8");
+            }
+            if (userPermissions.contains("storeroom:view9")) {
+                typeApplicationAuthorityList.add("9");
+            }
+            storeroom.setTypeApplicationAuthority(String.join(",", typeApplicationAuthorityList));
             Page<StoreroomPutOut> page = new Page<>();
             SortUtil.handlePageSort(request, page, "id", FebsConstant.ORDER_DESC, true);
             return this.baseMapper.getStoreroomsDist(page, storeroom);
@@ -272,6 +311,7 @@ public class StoreroomServiceImpl extends ServiceImpl<StoreroomMapper, Storeroom
     public void deleteOutStorerooms(String[] storeroomIds) {
         List<String> list = Arrays.asList(storeroomIds);
         this.baseMapper.deleteBatchIds(list);
+        // 删除关系
         this.storeroomOutService.deleteStoreroomOutsByStoreroomId(storeroomIds);
     }
 
@@ -281,13 +321,62 @@ public class StoreroomServiceImpl extends ServiceImpl<StoreroomMapper, Storeroom
     }
 
     @Override
-    public List<Storeroom> getCanteenByDate(String date) {
-        return this.baseMapper.getCanteenByDate(date);
+    public List<Storeroom> getCanteenByDate(String date, String dateRangeFrom, String dateRangeTo) {
+        return this.baseMapper.getCanteenByDate(date, dateRangeFrom, dateRangeTo);
+    }
+
+    @Override
+    public Map<String, List<Storeroom>> getCanteenBySupplierClassification(String dateRangeFrom, String dateRangeTo, String day) {
+        List<Storeroom> canteenBySupplierClassification = this.baseMapper.getCanteenBySupplierClassification(dateRangeFrom, dateRangeTo, 1);
+        Map<String, BigDecimal> canteenBySupplierClassificationCount = new HashMap<>();
+        this.baseMapper.getCanteenBySupplierClassification(dateRangeFrom, dateRangeTo, null)
+                .forEach(i -> canteenBySupplierClassificationCount.put(i.getName(), i.getMoney()));
+        // List<String> date = this.baseMapper.getDateRange(dateRangeFrom, day);
+        Map<String, List<Storeroom>> canteenMap = new HashMap<>();
+        canteenBySupplierClassification.forEach(i -> {
+            if (canteenMap.containsKey(i.getName())) {
+                canteenMap.get(i.getName()).add(i);
+            } else {
+                ArrayList<Storeroom> objects = Lists.newArrayList();
+                objects.add(i);
+                canteenMap.put(i.getName(), objects);
+            }
+        });
+        for (List<Storeroom> storeroomList : canteenMap.values()) {
+            Storeroom storeroom = new Storeroom();
+            storeroom.setDate("合计");
+            storeroom.setMoney(canteenBySupplierClassificationCount.get(storeroomList.get(0).getName()));
+            storeroomList.add(storeroom);
+        }
+        /*for (List<Storeroom> storeroomList : canteenMap.values()) {
+            String key = storeroomList.get(0).getName();
+            List<String> storeroomDate = storeroomList.stream().map(Storeroom::getDate).collect(Collectors.toList());
+            for (int i = 0; i < date.size(); i++) {
+                if (!storeroomDate.contains(date.get(i))) {
+                    Storeroom storeroom = new Storeroom();
+                    storeroom.setDate(date.get(i));
+                    storeroom.setMoney(BigDecimal.ZERO);
+                    storeroomList.add(i, storeroom);
+                }
+                if ((i + 1) == date.size()) {
+                    Storeroom storeroom = new Storeroom();
+                    storeroom.setDate("合计");
+                    storeroom.setMoney(canteenBySupplierClassificationCount.get(key));
+                    storeroomList.add(storeroom);
+                }
+            }
+        }*/
+        return canteenMap;
     }
 
     @Override
     public List<Storeroom> getStoreroomOutItemByParentIdAndId(Storeroom storeroom) {
         return this.baseMapper.getStoreroomOutItemByParentIdAndId(storeroom);
+    }
+
+    @Override
+    public Storeroom getStoreroomById(String storeroomId) {
+        return this.baseMapper.selectById(storeroomId);
     }
 
 }

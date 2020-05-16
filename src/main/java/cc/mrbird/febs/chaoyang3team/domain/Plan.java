@@ -54,6 +54,12 @@ public class Plan implements Serializable {
     @TableField("REMARK")
     private String remark;
 
+    /**
+     * 计划单物品状态 1未入库 2已入库
+     */
+    @TableField("STATUS")
+    private String status;
+
     private transient String deptName;
 
 }

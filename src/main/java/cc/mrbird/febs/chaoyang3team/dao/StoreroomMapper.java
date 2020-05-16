@@ -19,7 +19,8 @@ public interface StoreroomMapper extends BaseMapper<Storeroom> {
 
     /**
      * 物资分配的查询
-     * @param page 分页信息
+     *
+     * @param page      分页信息
      * @param storeroom 查询条件
      * @return 查询数据
      */
@@ -43,10 +44,21 @@ public interface StoreroomMapper extends BaseMapper<Storeroom> {
      * @param date 年月
      * @return 食堂用品
      */
-    List<Storeroom> getCanteenByDate(String date);
+    List<Storeroom> getCanteenByDate(@Param("date") String date, @Param("dateRangeFrom") String dateRangeFrom, @Param("dateRangeTo") String dateRangeTo);
 
     /**
+     * 根据日期范围查询按供应商分类已出库的食堂用品
+     *
+     * @param dateRangeFrom 开始时间
+     * @param dateRangeTo   结束时间
+     * @return 食堂用品
+     */
+    List<Storeroom> getCanteenBySupplierClassification(@Param("dateRangeFrom") String dateRangeFrom, @Param("dateRangeTo") String dateRangeTo, @Param("is") Integer is);
+
+    List<String> getDateRange(@Param("dateRangeFrom") String dateRangeFrom, @Param("day") String day);
+    /**
      * 根据库房id(ParentId) 与入库物品id(Id) 查询出库的物品信息
+     *
      * @param storeroom 查询条件
      * @return 出库物品信息
      */

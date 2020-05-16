@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 
 import javax.servlet.ServletRequest;
 import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * @author CHExN
@@ -15,12 +16,12 @@ public interface WcStoreroomService extends IService<WcStoreroom> {
 
     IPage<WcStoreroom> findWcStoreroomDetail(QueryRequest request, WcStoreroom wcStoreroom, ServletRequest servletRequest);
 
-    IPage<WcStoreroom> findWcStoreroomDetail(QueryRequest request, WcStoreroom wcStoreroom);
-
     void deleteWcStoreroomsByWcId(String[] wcIds);
 
     void deleteWcStoreroomsByStoreroomId(String[] storeroomIds);
 
-    void createWcStoreroom(String wcStoreroomStr, BigDecimal amountDist);
+    void createWcStoreroom(String wcStoreroomStr, BigDecimal amountDist, ServletRequest servletRequest);
+
+    void batchInsertWcStoreroom(List<WcStoreroom> wcStoreroomList);
 
 }

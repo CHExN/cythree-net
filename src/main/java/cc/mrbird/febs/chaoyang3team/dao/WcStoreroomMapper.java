@@ -12,8 +12,5 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 public interface WcStoreroomMapper extends BaseMapper<WcStoreroom> {
 
     IPage<WcStoreroom> findWcStoreroomDetail(Page page, @Param("wcStoreroom") WcStoreroom wcStoreroom);
-    IPage<WcStoreroom> findWcStoreroomDetail2(Page page, @Param("wcStoreroom") WcStoreroom wcStoreroom);
-
-//    void updateAmount(@Param("wcStoreroom") WcStoreroom wcStoreroom);
 
 }

@@ -60,6 +60,7 @@ public interface WcMapper extends BaseMapper<Wc> {
      * @param wcNum 公厕编号
      * @return 公厕信息
      */
+    Wc getWcByWcNum(String wcNum);
     Long getWcIdByWcNum(String wcNum);
     Long getWcIdByWaterNum(String waterNum);
     Long getWcIdByElectricityNum(String electricityNum);
@@ -77,5 +78,22 @@ public interface WcMapper extends BaseMapper<Wc> {
      * @return 所有分队前7消耗量排名
      */
     List<Map<String, Object>> findAllOwnWcConsumptionByYear(String year);
+
+    /**
+     * 根据经纬度来查询半径内的所有公厕列表，并根据length添加序号
+     * @param longitude 经度
+     * @param latitude 纬度
+     * @param radius 半径(米)
+     * @param length 原有长度
+     * @return 公厕列表
+     */
+    List<Wc> findWcListByPosition(String longitude, String latitude, Integer radius, Integer length);
+
+    /**
+     * 根据公厕主键查询公厕详细信息与对应文件信息
+     * @param wcId 公厕主键
+     * @return 公厕信息与文件信息
+     */
+    Wc getWcAndFilesById(Long wcId);
 
 }

@@ -67,7 +67,7 @@ public class WcServiceImpl extends ServiceImpl<WcMapper, Wc> implements WcServic
                 "uid", fileInfo.getFileId(),
                 "url", urlResult,
                 "status", "done",
-                "name", urlResult.substring(7)
+                "name", urlResult.substring(25)
         );
         return new FebsResponse().data(result);
     }
@@ -185,6 +185,11 @@ public class WcServiceImpl extends ServiceImpl<WcMapper, Wc> implements WcServic
     }
 
     @Override
+    public Wc getWcByWcNum(String wcNum) {
+        return baseMapper.getWcByWcNum(wcNum);
+    }
+
+    @Override
     public Long getWcIdByWcNum(String wcNum) {
         return baseMapper.getWcIdByWcNum(wcNum);
     }
@@ -212,6 +217,16 @@ public class WcServiceImpl extends ServiceImpl<WcMapper, Wc> implements WcServic
     @Override
     public List<Map<String, Object>> findAllOwnWcConsumptionByYear(String year) {
         return baseMapper.findAllOwnWcConsumptionByYear(year);
+    }
+
+    @Override
+    public List<Wc> findWcListByPosition(String longitude, String latitude, Integer radius, Integer length) {
+        return baseMapper.findWcListByPosition(longitude, latitude, radius, length);
+    }
+
+    @Override
+    public Wc getWcAndFilesById(Long wcId) {
+        return baseMapper.getWcAndFilesById(wcId);
     }
 
 }

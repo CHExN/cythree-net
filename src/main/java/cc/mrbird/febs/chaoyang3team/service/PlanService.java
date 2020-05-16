@@ -16,4 +16,6 @@ public interface PlanService extends IService<Plan> {
 
     void deletePlans(String[] planIds);
 
+    void updatePlanStatus(String planIds);
+
 }

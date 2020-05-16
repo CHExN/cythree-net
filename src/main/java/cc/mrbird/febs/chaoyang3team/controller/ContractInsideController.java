@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
 import java.util.List;
 import java.util.Map;
 
@@ -34,6 +33,33 @@ public class ContractInsideController extends BaseController {
 
     @Autowired
     private ContractInsideService contractInsideService;
+
+    // 不提供单恢复合同信息 不恢复人员信息
+    /*@Log("恢复回收站内编内合同信息")
+    @PutMapping("restore")
+    @RequiresPermissions("contractInside:restore")
+    public void restoreContractInside(@Valid String contractInsideIds) throws FebsException {
+        try {
+            this.contractInsideService.restoreContractInside(contractInsideIds);
+        } catch (Exception e) {
+            message = "恢复回收站内编内合同信息失败";
+            log.error(message, e);
+            throw new FebsException(message);
+        }
+    }*/
+
+    @Log("恢复回收站内编内合同信息与对应人员信息")
+    @PutMapping("togetherRestore")
+    @RequiresPermissions("contractInside:restore")
+    public void togetherRestoreContractInside(@Valid String contractInsideIds) throws FebsException {
+        try {
+            this.contractInsideService.togetherRestoreContractInside(contractInsideIds);
+        } catch (Exception e) {
+            message = "恢复回收站内编内合同信息与对应人员信息失败";
+            log.error(message, e);
+            throw new FebsException(message);
+        }
+    }
 
     @GetMapping("getContractInside")
     @RequiresPermissions("contractInside:view")
@@ -74,12 +100,12 @@ public class ContractInsideController extends BaseController {
     }
 
     @Log("删除编内合同信息")
-    @DeleteMapping("/{contractInsideIds}")
+    @DeleteMapping
     @RequiresPermissions("contractInside:delete")
-    public void deleteContractInsides(@NotBlank(message = "{required}") @PathVariable String contractInsideIds) throws FebsException {
+    public void deleteContractInsides(@Valid String contractInsideIds, Integer deleted) throws FebsException {
         try {
             String[] ids = contractInsideIds.split(StringPool.COMMA);
-            this.contractInsideService.deleteContractInside(ids);
+            this.contractInsideService.deleteContractInside(ids, deleted);
         } catch (Exception e) {
             message = "删除编内合同信息失败";
             log.error(message, e);
@@ -88,12 +114,12 @@ public class ContractInsideController extends BaseController {
     }
 
     @Log("删除编内合同信息与对应人员信息")
-    @DeleteMapping("/together/{contractInsideIds}")
+    @DeleteMapping("together")
     @RequiresPermissions("contractInside:delete")
-    public void deleteContractInsideAndStaffInside(@NotBlank(message = "{required}") @PathVariable String contractInsideIds) throws FebsException {
+    public void deleteContractInsideAndStaffInside(@Valid String contractInsideIds, Integer deleted) throws FebsException {
         try {
             String[] ids = contractInsideIds.split(StringPool.COMMA);
-            this.contractInsideService.deleteContractInsideAndStaffInside(ids);
+            this.contractInsideService.deleteContractInsideAndStaffInside(ids, deleted);
         } catch (Exception e) {
             message = "删除编内合同信息与对应人员信息失败";
             log.error(message, e);

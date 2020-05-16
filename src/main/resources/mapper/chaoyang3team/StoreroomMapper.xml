@@ -63,20 +63,34 @@
         s.ID,
         s.`NAME`,
         s.TYPE,
-        s.AMOUNT,
-        s.AMOUNT_DIST,
-        s.AMOUNT_DIST AS storeroomCount,
-        s.UNIT,
+        IFNULL( cuc.AMOUNT, s.AMOUNT ) AS AMOUNT,
+        IFNULL( cuc.AMOUNT_DIST, s.AMOUNT_DIST ) AS AMOUNT_DIST,
+        IFNULL( cuc.AMOUNT_DIST, s.AMOUNT_DIST ) AS storeroomCount,
+        IFNULL( cuc.UNIT, s.UNIT ) AS UNIT,
+        s.MONEY / IFNULL(cuc.AMOUNT_CONVERSION, 1) AS MONEY,
+        s.UNIT AS unitOriginal,
+        s.AMOUNT AS amountOriginal,
+        s.MONEY AS moneyOriginal,
         s.REMARK,
-        s.MONEY,
         s.RECEIPT,
         s.TYPE_APPLICATION,
+        (SELECT td.VALUEE FROM t_dict td WHERE td.TABLE_NAME='cy_storeroom' AND td.FIELD_NAME='TYPE_APPLICATION' AND
+        td.KEYY=s.TYPE_APPLICATION LIMIT 1) AS TYPE_APPLICATION_TO_DICT,
         s.SUPPLIER,
-        spo.TO_DEPT_ID
+        spo.TO_DEPT_ID,
+        td.DEPT_NAME AS toDeptName
         FROM cy_storeroom AS s
         LEFT JOIN p_storeroom_out AS so ON(so.STOREROOM_ID=s.ID)
-        LEFT JOIN cy_storeroom_put_out AS spo ON(spo.ID=so.OUT_ID AND (spo.TYPE_APPLICATION='1' OR spo.TYPE_APPLICATION='4'))
-        WHERE s.IS_IN='2' AND s.STATUS='0' AND FIND_IN_SET(spo.TO_DEPT_ID, #{storeroom.toDeptIds}) AND FIND_IN_SET(s.TYPE_APPLICATION, #{storeroom.typeApplication})
+        LEFT JOIN cy_storeroom_put_out AS spo ON(spo.ID=so.OUT_ID)
+        LEFT JOIN t_dept AS td ON(td.DEPT_ID=spo.TO_DEPT_ID)
+        LEFT JOIN cy_unit_conversion AS cuc ON ( cuc.STOREROOM_ID = s.ID )
+        WHERE s.IS_IN='2'
+        AND s.STATUS = #{storeroom.status}
+        AND FIND_IN_SET(spo.TO_DEPT_ID, #{storeroom.toDeptIds})
+        <if test="storeroom.typeApplicationAuthority != null and storeroom.typeApplicationAuthority != ''">
+            AND FIND_IN_SET(s.TYPE_APPLICATION, #{storeroom.typeApplicationAuthority})
+        </if>
+        AND FIND_IN_SET(s.TYPE_APPLICATION, #{storeroom.typeApplication})
         <if test="storeroom.name != null and storeroom.name != ''">
             AND s.NAME LIKE CONCAT('%',#{storeroom.name},'%')
         </if>
@@ -129,9 +143,45 @@
         LEFT JOIN cy_storeroom_put_out AS spo ON(spo.ID=so.OUT_ID)
         LEFT JOIN cy_canteen AS c ON(c.`NAME`=s.TYPE)
         WHERE spo.TYPE_APPLICATION=8 AND spo.IS_PUT=2
-        AND spo.DATE LIKE CONCAT(#{date},'%')
+        <if test="date != null and date != ''">
+            AND spo.DATE LIKE CONCAT(#{date},'%')
+        </if>
+        <if test="dateRangeFrom != null and dateRangeFrom != '' and dateRangeTo != null and dateRangeTo != ''">
+            AND spo.DATE &gt;= #{dateRangeFrom} AND spo.DATE &lt;= #{dateRangeTo}
+        </if>
         GROUP BY c.ID
         ORDER BY c.ID
+    </select>
+
+    <select id="getCanteenBySupplierClassification" resultType="cc.mrbird.febs.chaoyang3team.domain.Storeroom">
+        SELECT
+        a.NAME,
+        <if test="is == 1">
+            spo.`DATE`,
+        </if>
+        SUM( spo.MONEY ) AS money
+        FROM cy_storeroom_put_out AS spo
+        LEFT JOIN cy_supplier AS a ON ( a.ID = spo.SUPPLIER )
+        WHERE spo.TYPE_APPLICATION = 8 AND spo.IS_PUT = 2
+        <if test="dateRangeFrom != null and dateRangeFrom != '' and dateRangeTo != null and dateRangeTo != ''">
+            AND spo.DATE &gt;= #{dateRangeFrom} AND spo.DATE &lt;= #{dateRangeTo}
+        </if>
+        GROUP BY a.ID
+        <if test="is == 1">
+            , spo.`DATE`
+        </if>
+        ORDER BY a.ID
+    </select>
+
+    <select id="getDateRange" resultType="java.lang.String">
+        SELECT
+        date_add( #{dateRangeFrom}, INTERVAL ( cast( help_topic_id AS signed INTEGER ) ) DAY ) AS `day`
+        FROM
+        mysql.help_topic
+        WHERE
+        help_topic_id &lt; #{day}
+        ORDER BY
+        help_topic_id
     </select>
 
     <select id="findStoreroomByIdAndParentId" resultType="cc.mrbird.febs.chaoyang3team.domain.Storeroom">
@@ -222,11 +272,13 @@
         cs.SUPPLIER,
         cs.IS_IN,
         cs.PARENT_ID,
-        td.DEPT_NAME AS toDeptName
+        td.DEPT_NAME AS toDeptName,
+        cspo.NUM AS outNum
         FROM cy_storeroom  AS cs
         LEFT JOIN p_storeroom_out AS pso ON(pso.STOREROOM_ID=cs.ID)
         LEFT JOIN cy_storeroom_put_out AS cspo ON(cspo.ID=pso.OUT_ID)
         LEFT JOIN t_dept AS td ON td.DEPT_ID = cspo.TO_DEPT_ID
         WHERE cs.PARENT_ID=#{parentId} AND (cs.ID=#{id})=0
     </select>
+
 </mapper>

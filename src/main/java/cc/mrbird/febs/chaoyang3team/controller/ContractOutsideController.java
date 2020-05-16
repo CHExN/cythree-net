@@ -15,9 +15,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
 import java.util.List;
 import java.util.Map;
 
@@ -35,6 +35,33 @@ public class ContractOutsideController extends BaseController {
     @Autowired
     private ContractOutsideService contractOutsideService;
 
+    // 不提供单恢复合同信息 不恢复人员信息
+    /*@Log("恢复回收站内编外合同信息")
+    @PutMapping("restore")
+    @RequiresPermissions("contractOutside:restore")
+    public void restoreContractOutside(@Valid String contractOutsideIds) throws FebsException {
+        try {
+            this.contractOutsideService.restoreContractOutside(contractOutsideIds);
+        } catch (Exception e) {
+            message = "恢复回收站内编外合同信息失败";
+            log.error(message, e);
+            throw new FebsException(message);
+        }
+    }*/
+
+    @Log("恢复回收站内编外合同信息与对应人员信息")
+    @PutMapping("togetherRestore")
+    @RequiresPermissions("contractOutside:restore")
+    public void togetherRestoreContractOutside(@Valid String contractOutsideIds) throws FebsException {
+        try {
+            this.contractOutsideService.togetherRestoreContractOutside(contractOutsideIds);
+        } catch (Exception e) {
+            message = "恢复回收站内编外合同信息与对应人员信息失败";
+            log.error(message, e);
+            throw new FebsException(message);
+        }
+    }
+
     @GetMapping("getContractOutside")
     @RequiresPermissions("contractOutside:view")
     public ContractOutside getContractOutside(String idNum) {
@@ -43,8 +70,8 @@ public class ContractOutsideController extends BaseController {
 
     @GetMapping
     @RequiresPermissions("contractOutside:view")
-    public Map<String, Object> ContractOutsideList(QueryRequest request, ContractOutside contractOutside) {
-        return getDataTable(this.contractOutsideService.findContractOutsideDetail(request, contractOutside));
+    public Map<String, Object> ContractOutsideList(QueryRequest request, ContractOutside contractOutside, ServletRequest servletRequest) {
+        return getDataTable(this.contractOutsideService.findContractOutsideDetail(request, contractOutside, servletRequest));
     }
 
     @Log("新增编外合同信息")
@@ -74,12 +101,12 @@ public class ContractOutsideController extends BaseController {
     }
 
     @Log("删除编外合同信息")
-    @DeleteMapping("/{contractOutsideIds}")
+    @DeleteMapping
     @RequiresPermissions("contractOutside:delete")
-    public void deleteContractOutsides(@NotBlank(message = "{required}") @PathVariable String contractOutsideIds) throws FebsException {
+    public void deleteContractOutsides(@Valid String contractOutsideIds, Integer deleted) throws FebsException {
         try {
             String[] ids = contractOutsideIds.split(StringPool.COMMA);
-            this.contractOutsideService.deleteContractOutside(ids);
+            this.contractOutsideService.deleteContractOutside(ids, deleted);
         } catch (Exception e) {
             message = "删除编外合同信息失败";
             log.error(message, e);
@@ -88,12 +115,12 @@ public class ContractOutsideController extends BaseController {
     }
 
     @Log("删除编外合同信息与对应人员信息")
-    @DeleteMapping("/together/{contractOutsideIds}")
+    @DeleteMapping("together")
     @RequiresPermissions("contractOutside:delete")
-    public void deleteContractOutsideAndStaffOutside(@NotBlank(message = "{required}") @PathVariable String contractOutsideIds) throws FebsException {
+    public void deleteContractOutsideAndStaffOutside(@Valid String contractOutsideIds, Integer deleted) throws FebsException {
         try {
             String[] ids = contractOutsideIds.split(StringPool.COMMA);
-            this.contractOutsideService.deleteContractOutsideAndStaffOutside(ids);
+            this.contractOutsideService.deleteContractOutsideAndStaffOutside(ids, deleted);
         } catch (Exception e) {
             message = "删除编外合同信息与对应人员信息失败";
             log.error(message, e);
@@ -103,9 +130,9 @@ public class ContractOutsideController extends BaseController {
 
     @PostMapping("excel")
     @RequiresPermissions("contractOutside:export")
-    public void export(QueryRequest request, ContractOutside contractOutside, HttpServletResponse response) throws FebsException {
+    public void export(QueryRequest request, ContractOutside contractOutside, HttpServletResponse response, ServletRequest servletRequest) throws FebsException {
         try {
-            List<ContractOutside> contractOutsides = this.contractOutsideService.findContractOutsideDetail(request, contractOutside).getRecords();
+            List<ContractOutside> contractOutsides = this.contractOutsideService.findContractOutsideDetail(request, contractOutside, servletRequest).getRecords();
             ExcelKit.$Export(ContractOutside.class, response).downXlsx(contractOutsides, false);
         } catch (Exception e) {
             message = "导出Excel失败";

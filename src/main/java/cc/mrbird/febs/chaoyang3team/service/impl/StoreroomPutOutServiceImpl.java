@@ -15,8 +15,10 @@ import cc.mrbird.febs.system.manager.UserManager;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.json.JSONArray;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -46,6 +48,8 @@ public class StoreroomPutOutServiceImpl extends ServiceImpl<StoreroomPutOutMappe
     private WcStoreroomService wcStoreroomService;
     @Autowired
     private UserManager userManager;
+    @Autowired
+    private PlanService planService;
 
     @Override
     public IPage<StoreroomPutOut> findStoreroomPutDetail(QueryRequest request, StoreroomPutOut storeroomPutOut, ServletRequest servletRequest) {
@@ -163,10 +167,14 @@ public class StoreroomPutOutServiceImpl extends ServiceImpl<StoreroomPutOutMappe
         storeroomPutOut.setUsername(username);
         // 计算总额
         BigDecimal countMoney = BigDecimal.valueOf(0);
+        List<Long> planIds = Lists.newArrayList();
 
         JSONArray jsonArray = JSONArray.fromObject(storeroomPutOut.getStoreroomList());
         List<Storeroom> storeroomList = (List<Storeroom>) JSONArray.toCollection(jsonArray, Storeroom.class);
         for (Storeroom storeroom : storeroomList) {
+            if (storeroom.getId() != null) {
+                planIds.add(storeroom.getId());
+            }
             countMoney = countMoney.add((storeroom.getAmount().multiply(storeroom.getMoney())).setScale(2, BigDecimal.ROUND_HALF_UP));
 
             storeroom.setDate(storeroomPutOut.getDate());
@@ -179,6 +187,7 @@ public class StoreroomPutOutServiceImpl extends ServiceImpl<StoreroomPutOutMappe
             storeroom.setIsIn("1"); // 入库数据
         }
         this.storeroomService.batchInsertStoreroom(storeroomList);
+        this.planService.updatePlanStatus(StringUtils.join(planIds, ","));
 
         storeroomPutOut.setIsPut("1"); // 入库数据
         storeroomPutOut.setMoney(countMoney);
@@ -313,24 +322,52 @@ public class StoreroomPutOutServiceImpl extends ServiceImpl<StoreroomPutOutMappe
 
     @Override
     @Transactional
-    public void deleteStoreroomPuts(String[] StoreroomPutIds) {
-        List<String> list = Arrays.asList(StoreroomPutIds);
+    public Map<String, Object> deleteStoreroomPuts(String[] storeroomPutIds) {
+        Map<String, Object> data = new HashMap<>();
+        String storeroomPutIdsStr = StringUtils.join(storeroomPutIds, ",");
+        // 这里先根据入库单ids查询物资有没有被出库，只要有被出库的物资，那这条入库单就不能被删除，
+        // 因为还存留着这条入库单的库房物资的出库记录，如果入库单被删，那出库单里的物资和库房里的物资是查询不到来源的，不符合规范
+        List<StoreroomPutOut> outRecords = this.baseMapper.whetherThereAreStoreroomOutRecords(storeroomPutIdsStr);
+        if (!outRecords.isEmpty()) {
+            data.put("status", 0);
+            data.put("message", "删除失败");
+            data.put("outRecords", outRecords);
+            return data;
+        }
+
+        // 2020-03-31号开始，入库单开始绑定采购申请单（除了食堂用品），删除入库单后，采购申请单的流程自动变为“待入库状态”（除了食堂用品），在31号之前的入库单则没法
+        // 根据入库单ids更新相应采购申请单状态为“待入库”
+        this.baseMapper.updateApplicationProcessByPutId(storeroomPutIdsStr);
+
+        List<String> list = Arrays.asList(storeroomPutIds);
+        // 删除入库单
         this.baseMapper.deleteBatchIds(list);
-        List<String> storeroomIdList = this.storeroomPutService.getStoreroomIdsByPutIds(StoreroomPutIds);
+        // 根据入库单ids获取物资信息
+        List<String> storeroomIdList = this.storeroomPutService.getStoreroomIdsByPutIds(storeroomPutIds);
         if (!storeroomIdList.isEmpty()) {
+            // 删除物资和关系
             this.storeroomService.deletePutStorerooms(storeroomIdList.toArray(new String[0]));
         }
+        data.put("status", 1);
+        data.put("message", "删除成功");
+        return data;
     }
 
     @Override
     @Transactional
-    public void deleteStoreroomOuts(String[] StoreroomOutIds) {
-        List<String> list = Arrays.asList(StoreroomOutIds);
+    public void deleteStoreroomOuts(String[] storeroomOutIds) {
+        List<String> list = Arrays.asList(storeroomOutIds);
         this.baseMapper.deleteBatchIds(list);
-        List<String> storeroomIdList = this.storeroomOutService.getStoreroomIdsByOutIds(StoreroomOutIds);
+        List<String> storeroomIdList = this.storeroomOutService.getStoreroomIdsByOutIds(storeroomOutIds);
+        // 这里根据获取到的出库单物资id 获取里面的物资信息，把相应要删除的出库物资的数量返还给库房物资
+        String[] storeroomIds = storeroomIdList.toArray(new String[0]);
         if (!storeroomIdList.isEmpty()) {
-            this.storeroomService.deleteOutStorerooms(storeroomIdList.toArray(new String[0]));
-            this.wcStoreroomService.deleteWcStoreroomsByStoreroomId(storeroomIdList.toArray(new String[0]));
+            // 返还物资数量到库房里
+            this.baseMapper.returnStoreroomAmountByOutIds(StringUtils.join(storeroomIds, ","));
+            // 删除出库单物资和关系
+            this.storeroomService.deleteOutStorerooms(storeroomIds);
+            // 删除出库物资与公厕绑定的关系
+            this.wcStoreroomService.deleteWcStoreroomsByStoreroomId(storeroomIds);
         }
     }
 
@@ -344,6 +381,7 @@ public class StoreroomPutOutServiceImpl extends ServiceImpl<StoreroomPutOutMappe
         storeroomPutOut.setUsername(username);
         // 计算总额
         BigDecimal countMoney = BigDecimal.valueOf(0);
+        List<Long> planIds = Lists.newArrayList();
 
         JSONArray jsonArray = JSONArray.fromObject(storeroomPutOut.getStoreroomList());
         List<Storeroom> storeroomList = (List<Storeroom>) JSONArray.toCollection(jsonArray, Storeroom.class);
@@ -352,6 +390,9 @@ public class StoreroomPutOutServiceImpl extends ServiceImpl<StoreroomPutOutMappe
 
         // 先弄库房
         storeroomList.forEach(storeroom -> { // 入库房
+            if (storeroom.getId() != null) {
+                planIds.add(storeroom.getId());
+            }
             storeroom.setAmount(BigDecimal.valueOf(0));
             storeroom.setDate(storeroomPutOut.getDate());
             storeroom.setTypeApplication(storeroomPutOut.getTypeApplication());
@@ -359,6 +400,8 @@ public class StoreroomPutOutServiceImpl extends ServiceImpl<StoreroomPutOutMappe
             storeroom.setIsIn("0"); // 库房数据
         });
         this.storeroomService.batchInsertStoreroom(storeroomList);
+        this.planService.updatePlanStatus(StringUtils.join(planIds, ","));
+
         for (int i = 0; i < putStoreroomList.size(); i++) { // 入库
             countMoney = countMoney.add((putStoreroomList.get(i).getAmount().multiply(putStoreroomList.get(i).getMoney())).setScale(2, BigDecimal.ROUND_HALF_UP));
 

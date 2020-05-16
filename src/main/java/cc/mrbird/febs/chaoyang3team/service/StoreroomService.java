@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 
 import javax.servlet.ServletRequest;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author CHExN
@@ -31,7 +32,7 @@ public interface StoreroomService extends IService<Storeroom> {
      */
     IPage<Storeroom> findStoreroomsItemDetails(QueryRequest request, Storeroom storeroom, ServletRequest servletRequest);
 
-    IPage<Storeroom> getStoreroomsDist(QueryRequest request, Storeroom storeroom);
+    IPage<Storeroom> getStoreroomsDist(QueryRequest request, Storeroom storeroom, ServletRequest servletRequest);
 
     IPage<Storeroom> findStorerooms(QueryRequest request, Storeroom storeroom);
 
@@ -57,8 +58,12 @@ public interface StoreroomService extends IService<Storeroom> {
 
     List<Storeroom> getOfficeSuppliesByDate(String date);
 
-    List<Storeroom> getCanteenByDate(String date);
+    List<Storeroom> getCanteenByDate(String date, String dateRangeFrom, String dateRangeTo);
+
+    Map<String, List<Storeroom>> getCanteenBySupplierClassification(String dateRangeFrom, String dateRangeTo, String day);
 
     List<Storeroom> getStoreroomOutItemByParentIdAndId(Storeroom storeroom);
+
+    Storeroom getStoreroomById(String storeroomId);
 
 }

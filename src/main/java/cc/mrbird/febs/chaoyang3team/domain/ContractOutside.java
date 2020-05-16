@@ -1,9 +1,6 @@
 package cc.mrbird.febs.chaoyang3team.domain;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
 import com.wuwenze.poi.annotation.Excel;
 import com.wuwenze.poi.annotation.ExcelField;
 import lombok.Data;
@@ -39,6 +36,9 @@ public class ContractOutside implements Serializable {
     @ExcelField(value = "身份证号")
     private String idNum;
 
+    @ExcelField(value = "分队")
+    private transient String team;
+
     @TableField("IS_FIXED_PERIOD")
     private String isFixedPeriod;
 
@@ -65,6 +65,17 @@ public class ContractOutside implements Serializable {
     @TableField("JOB_AGREEMENT_DATE")
     @ExcelField(value = "职位协议日期")
     private String jobAgreementDate;
+
+    /**
+     * 逻辑删除 0未删除 1已删除
+     */
+    @TableLogic
+    @TableField("DELETED")
+    private Integer deleted;
+
+    private transient Long staffId;
+    private transient String isLeave;
+    private transient String type;
 
 
     // 合同开始的开始时间

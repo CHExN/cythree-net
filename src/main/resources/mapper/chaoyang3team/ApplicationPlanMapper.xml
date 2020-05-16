@@ -19,6 +19,10 @@
 
     <!--根据申请单ID查找对应计划单详情-->
     <select id="findPlansByApplicationId" resultType="cc.mrbird.febs.chaoyang3team.domain.Plan">
-        SELECT cp.* FROM p_application_plan AS pap LEFT JOIN cy_plan AS cp ON(pap.PLAN_ID = cp.ID) WHERE pap.APPLICATION_ID = #{applicationId}
+        SELECT cp.* FROM p_application_plan AS pap LEFT JOIN cy_plan AS cp ON(pap.PLAN_ID = cp.ID)
+        WHERE pap.APPLICATION_ID = #{applicationId}
+        <if test="status">
+            AND cp.STATUS = '1'
+        </if>
     </select>
 </mapper>

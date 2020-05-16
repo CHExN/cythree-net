@@ -170,13 +170,13 @@
         w.WC_OWN,
         w.WC_NUM,
         w.WC_NAME,
-        (SELECT GROUP_CONCAT(DISTINCT s.NAME) FROM p_wc_storeroom AS ws RIGHT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID AND s.TYPE_APPLICATION=1) WHERE ws.WC_ID=w.WC_ID AND ws.`YEAR`=#{year} AND ws.`MONTH`=#{month} AND FIND_IN_SET(s.`NAME`, '大盘纸,发泡液')) AS a,
-        (SELECT SUM(ws.AMOUNT*s.MONEY) FROM p_wc_storeroom AS ws RIGHT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID AND s.TYPE_APPLICATION=1) WHERE ws.WC_ID=w.WC_ID AND ws.`YEAR`=#{year} AND ws.`MONTH`=#{month} AND NOT FIND_IN_SET(s.`NAME`, '大盘纸,发泡液')) AS b,
-        (SELECT SUM(ws.AMOUNT*s.MONEY) FROM p_wc_storeroom AS ws RIGHT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID AND s.TYPE_APPLICATION=1) WHERE ws.WC_ID=w.WC_ID AND ws.`YEAR`=#{year} AND ws.`MONTH`=#{month} AND s.`NAME`='大盘纸') AS c,
-        (SELECT SUM(ws.AMOUNT*s.MONEY) FROM p_wc_storeroom AS ws RIGHT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID AND s.TYPE_APPLICATION=1) WHERE ws.WC_ID=w.WC_ID AND ws.`YEAR`=#{year} AND ws.`MONTH`=#{month} AND s.`NAME`='发泡液') AS d,
-        (SELECT SUM(ws.AMOUNT*s.MONEY) FROM p_wc_storeroom AS ws RIGHT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID AND s.TYPE_APPLICATION=4) WHERE ws.WC_ID=w.WC_ID AND ws.`YEAR`=#{year} AND ws.`MONTH`=#{month}) AS e,
-        (SELECT SUM(wa.TOTAL_AMOUNT) FROM cy_water AS wa RIGHT JOIN p_wc_water AS ww ON(ww.WATER_ID=wa.WATER_ID) WHERE ww.WC_ID=w.WC_ID AND wa.`YEAR`=#{year} AND wa.`MONTH`=#{month}) AS f,
-        (SELECT SUM(e.TOTAL_AMOUNT) FROM cy_electricity AS e RIGHT JOIN p_wc_electricity AS we ON(we.ELECTRICITY_ID=e.ELECTRICITY_ID) WHERE we.WC_ID=w.WC_ID AND e.`YEAR`=#{year} AND e.`MONTH`=#{month}) AS g
+        (SELECT GROUP_CONCAT(DISTINCT s.NAME) FROM p_wc_storeroom AS ws LEFT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID) WHERE ws.WC_ID=w.WC_ID AND ws.`YEAR`=#{year} AND ws.`MONTH`=#{month} AND FIND_IN_SET(s.`NAME`, '大盘纸,发泡液')) AS a,
+        (SELECT SUM(ws.AMOUNT*IF(cuc.STOREROOM_ID IS NULL,s.MONEY,s.MONEY/cuc.AMOUNT_CONVERSION)) FROM p_wc_storeroom AS ws LEFT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID) LEFT JOIN cy_unit_conversion AS cuc ON(cuc.STOREROOM_ID=ws.STOREROOM_ID) WHERE ws.WC_ID=w.WC_ID AND ws.`YEAR`=#{year} AND ws.`MONTH`=#{month} AND s.TYPE_APPLICATION='1' AND NOT FIND_IN_SET(s.`NAME`, '大盘纸,发泡液')) AS b,
+        (SELECT SUM(ws.AMOUNT*IF(cuc.STOREROOM_ID IS NULL,s.MONEY,s.MONEY/cuc.AMOUNT_CONVERSION)) FROM p_wc_storeroom AS ws LEFT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID) LEFT JOIN cy_unit_conversion AS cuc ON(cuc.STOREROOM_ID=ws.STOREROOM_ID) WHERE ws.WC_ID=w.WC_ID AND ws.`YEAR`=#{year} AND ws.`MONTH`=#{month} AND s.TYPE_APPLICATION='1' AND s.`NAME`='大盘纸') AS c,
+        (SELECT SUM(ws.AMOUNT*IF(cuc.STOREROOM_ID IS NULL,s.MONEY,s.MONEY/cuc.AMOUNT_CONVERSION)) FROM p_wc_storeroom AS ws LEFT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID) LEFT JOIN cy_unit_conversion AS cuc ON(cuc.STOREROOM_ID=ws.STOREROOM_ID) WHERE ws.WC_ID=w.WC_ID AND ws.`YEAR`=#{year} AND ws.`MONTH`=#{month} AND s.TYPE_APPLICATION='1' AND s.`NAME`='发泡液') AS d,
+        (SELECT SUM(ws.AMOUNT*IF(cuc.STOREROOM_ID IS NULL,s.MONEY,s.MONEY/cuc.AMOUNT_CONVERSION)) FROM p_wc_storeroom AS ws LEFT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID) LEFT JOIN cy_unit_conversion AS cuc ON(cuc.STOREROOM_ID=ws.STOREROOM_ID) WHERE ws.WC_ID=w.WC_ID AND ws.`YEAR`=#{year} AND ws.`MONTH`=#{month} AND s.TYPE_APPLICATION='4' ) AS e,
+        (SELECT SUM(wa.TOTAL_AMOUNT) FROM cy_water AS wa LEFT JOIN p_wc_water AS ww ON(ww.WATER_ID=wa.WATER_ID) WHERE ww.WC_ID=w.WC_ID AND wa.`YEAR`=#{year} AND wa.`MONTH`=#{month}) AS f,
+        (SELECT SUM(e.TOTAL_AMOUNT) FROM cy_electricity AS e LEFT JOIN p_wc_electricity AS we ON(we.ELECTRICITY_ID=e.ELECTRICITY_ID) WHERE we.WC_ID=w.WC_ID AND e.`YEAR`=#{year} AND e.`MONTH`=#{month}) AS g
         FROM cy_wc AS w
     </select>
 
@@ -187,22 +187,22 @@
         w.WC_OWN,
         w.WC_NUM,
         w.WC_NAME,
-        (SELECT GROUP_CONCAT(DISTINCT s.NAME) FROM p_wc_storeroom AS ws RIGHT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID AND s.TYPE_APPLICATION=1) WHERE ws.WC_ID=w.WC_ID AND FIND_IN_SET(s.`NAME`, '大盘纸,发泡液')) AS a,
-        (SELECT SUM(ws.AMOUNT*s.MONEY) FROM p_wc_storeroom AS ws RIGHT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID AND s.TYPE_APPLICATION=1) WHERE ws.WC_ID=w.WC_ID AND s.`NAME`='大盘纸') AS b,
-        (SELECT SUM(ws.AMOUNT*s.MONEY) FROM p_wc_storeroom AS ws RIGHT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID AND s.TYPE_APPLICATION=1) WHERE ws.WC_ID=w.WC_ID AND s.`NAME`='发泡液') AS c,
-        (SELECT SUM(ws.AMOUNT*s.MONEY) FROM p_wc_storeroom AS ws RIGHT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID AND s.TYPE_APPLICATION=1) WHERE ws.WC_ID=w.WC_ID AND NOT FIND_IN_SET(s.`NAME`, '大盘纸,发泡液')) AS d,
-        (SELECT SUM(ws.AMOUNT*s.MONEY) FROM p_wc_storeroom AS ws RIGHT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID AND s.TYPE_APPLICATION=4) WHERE ws.WC_ID=w.WC_ID AND ws.`YEAR`=#{year} AND ws.`MONTH`='01') AS e,
-        (SELECT SUM(ws.AMOUNT*s.MONEY) FROM p_wc_storeroom AS ws RIGHT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID AND s.TYPE_APPLICATION=4) WHERE ws.WC_ID=w.WC_ID AND ws.`YEAR`=#{year} AND ws.`MONTH`='02') AS f,
-        (SELECT SUM(ws.AMOUNT*s.MONEY) FROM p_wc_storeroom AS ws RIGHT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID AND s.TYPE_APPLICATION=4) WHERE ws.WC_ID=w.WC_ID AND ws.`YEAR`=#{year} AND ws.`MONTH`='03') AS g,
-        (SELECT SUM(ws.AMOUNT*s.MONEY) FROM p_wc_storeroom AS ws RIGHT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID AND s.TYPE_APPLICATION=4) WHERE ws.WC_ID=w.WC_ID AND ws.`YEAR`=#{year} AND ws.`MONTH`='04') AS h,
-        (SELECT SUM(ws.AMOUNT*s.MONEY) FROM p_wc_storeroom AS ws RIGHT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID AND s.TYPE_APPLICATION=4) WHERE ws.WC_ID=w.WC_ID AND ws.`YEAR`=#{year} AND ws.`MONTH`='05') AS i,
-        (SELECT SUM(ws.AMOUNT*s.MONEY) FROM p_wc_storeroom AS ws RIGHT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID AND s.TYPE_APPLICATION=4) WHERE ws.WC_ID=w.WC_ID AND ws.`YEAR`=#{year} AND ws.`MONTH`='06') AS j,
-        (SELECT IF(e>=300,(SELECT GROUP_CONCAT(DISTINCT CONCAT(s.`NAME`,ws.AMOUNT,s.UNIT)) FROM p_wc_storeroom AS ws RIGHT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID AND s.TYPE_APPLICATION=4) WHERE ws.WC_ID=w.WC_ID AND ws.`YEAR`=#{year} AND ws.`MONTH`='01'),NULL)) AS k,
-        (SELECT IF(f>=300,(SELECT GROUP_CONCAT(DISTINCT CONCAT(s.`NAME`,ws.AMOUNT,s.UNIT)) FROM p_wc_storeroom AS ws RIGHT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID AND s.TYPE_APPLICATION=4) WHERE ws.WC_ID=w.WC_ID AND ws.`YEAR`=#{year} AND ws.`MONTH`='02'),NULL)) AS l,
-        (SELECT IF(g>=300,(SELECT GROUP_CONCAT(DISTINCT CONCAT(s.`NAME`,ws.AMOUNT,s.UNIT)) FROM p_wc_storeroom AS ws RIGHT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID AND s.TYPE_APPLICATION=4) WHERE ws.WC_ID=w.WC_ID AND ws.`YEAR`=#{year} AND ws.`MONTH`='03'),NULL)) AS m,
-        (SELECT IF(h>=300,(SELECT GROUP_CONCAT(DISTINCT CONCAT(s.`NAME`,ws.AMOUNT,s.UNIT)) FROM p_wc_storeroom AS ws RIGHT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID AND s.TYPE_APPLICATION=4) WHERE ws.WC_ID=w.WC_ID AND ws.`YEAR`=#{year} AND ws.`MONTH`='04'),NULL)) AS n,
-        (SELECT IF(i>=300,(SELECT GROUP_CONCAT(DISTINCT CONCAT(s.`NAME`,ws.AMOUNT,s.UNIT)) FROM p_wc_storeroom AS ws RIGHT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID AND s.TYPE_APPLICATION=4) WHERE ws.WC_ID=w.WC_ID AND ws.`YEAR`=#{year} AND ws.`MONTH`='05'),NULL)) AS o,
-        (SELECT IF(j>=300,(SELECT GROUP_CONCAT(DISTINCT CONCAT(s.`NAME`,ws.AMOUNT,s.UNIT)) FROM p_wc_storeroom AS ws RIGHT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID AND s.TYPE_APPLICATION=4) WHERE ws.WC_ID=w.WC_ID AND ws.`YEAR`=#{year} AND ws.`MONTH`='06'),NULL)) AS p
+        (SELECT GROUP_CONCAT(DISTINCT s.NAME) FROM p_wc_storeroom AS ws LEFT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID) WHERE ws.WC_ID=w.WC_ID AND s.TYPE_APPLICATION='1' AND FIND_IN_SET(s.`NAME`, '大盘纸,发泡液')) AS a,
+        (SELECT SUM(ws.AMOUNT*IF(cuc.STOREROOM_ID IS NULL,s.MONEY,s.MONEY/cuc.AMOUNT_CONVERSION)) FROM p_wc_storeroom AS ws LEFT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID) LEFT JOIN cy_unit_conversion AS cuc ON(cuc.STOREROOM_ID=ws.STOREROOM_ID) WHERE ws.WC_ID=w.WC_ID AND s.TYPE_APPLICATION='1' AND s.`NAME`='大盘纸') AS b,
+        (SELECT SUM(ws.AMOUNT*IF(cuc.STOREROOM_ID IS NULL,s.MONEY,s.MONEY/cuc.AMOUNT_CONVERSION)) FROM p_wc_storeroom AS ws LEFT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID) LEFT JOIN cy_unit_conversion AS cuc ON(cuc.STOREROOM_ID=ws.STOREROOM_ID) WHERE ws.WC_ID=w.WC_ID AND s.TYPE_APPLICATION='1' AND s.`NAME`='发泡液') AS c,
+        (SELECT SUM(ws.AMOUNT*IF(cuc.STOREROOM_ID IS NULL,s.MONEY,s.MONEY/cuc.AMOUNT_CONVERSION)) FROM p_wc_storeroom AS ws LEFT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID) LEFT JOIN cy_unit_conversion AS cuc ON(cuc.STOREROOM_ID=ws.STOREROOM_ID) WHERE ws.WC_ID=w.WC_ID AND s.TYPE_APPLICATION='1' AND NOT FIND_IN_SET(s.`NAME`, '大盘纸,发泡液')) AS d,
+        (SELECT SUM(ws.AMOUNT*IF(cuc.STOREROOM_ID IS NULL,s.MONEY,s.MONEY/cuc.AMOUNT_CONVERSION)) FROM p_wc_storeroom AS ws LEFT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID) LEFT JOIN cy_unit_conversion AS cuc ON(cuc.STOREROOM_ID=ws.STOREROOM_ID) WHERE ws.WC_ID=w.WC_ID AND s.TYPE_APPLICATION='4' AND ws.`YEAR`=#{year} AND ws.`MONTH`='01') AS e,
+        (SELECT SUM(ws.AMOUNT*IF(cuc.STOREROOM_ID IS NULL,s.MONEY,s.MONEY/cuc.AMOUNT_CONVERSION)) FROM p_wc_storeroom AS ws LEFT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID) LEFT JOIN cy_unit_conversion AS cuc ON(cuc.STOREROOM_ID=ws.STOREROOM_ID) WHERE ws.WC_ID=w.WC_ID AND s.TYPE_APPLICATION='4' AND ws.`YEAR`=#{year} AND ws.`MONTH`='02') AS f,
+        (SELECT SUM(ws.AMOUNT*IF(cuc.STOREROOM_ID IS NULL,s.MONEY,s.MONEY/cuc.AMOUNT_CONVERSION)) FROM p_wc_storeroom AS ws LEFT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID) LEFT JOIN cy_unit_conversion AS cuc ON(cuc.STOREROOM_ID=ws.STOREROOM_ID) WHERE ws.WC_ID=w.WC_ID AND s.TYPE_APPLICATION='4' AND ws.`YEAR`=#{year} AND ws.`MONTH`='03') AS g,
+        (SELECT SUM(ws.AMOUNT*IF(cuc.STOREROOM_ID IS NULL,s.MONEY,s.MONEY/cuc.AMOUNT_CONVERSION)) FROM p_wc_storeroom AS ws LEFT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID) LEFT JOIN cy_unit_conversion AS cuc ON(cuc.STOREROOM_ID=ws.STOREROOM_ID) WHERE ws.WC_ID=w.WC_ID AND s.TYPE_APPLICATION='4' AND ws.`YEAR`=#{year} AND ws.`MONTH`='04') AS h,
+        (SELECT SUM(ws.AMOUNT*IF(cuc.STOREROOM_ID IS NULL,s.MONEY,s.MONEY/cuc.AMOUNT_CONVERSION)) FROM p_wc_storeroom AS ws LEFT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID) LEFT JOIN cy_unit_conversion AS cuc ON(cuc.STOREROOM_ID=ws.STOREROOM_ID) WHERE ws.WC_ID=w.WC_ID AND s.TYPE_APPLICATION='4' AND ws.`YEAR`=#{year} AND ws.`MONTH`='05') AS i,
+        (SELECT SUM(ws.AMOUNT*IF(cuc.STOREROOM_ID IS NULL,s.MONEY,s.MONEY/cuc.AMOUNT_CONVERSION)) FROM p_wc_storeroom AS ws LEFT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID) LEFT JOIN cy_unit_conversion AS cuc ON(cuc.STOREROOM_ID=ws.STOREROOM_ID) WHERE ws.WC_ID=w.WC_ID AND s.TYPE_APPLICATION='4' AND ws.`YEAR`=#{year} AND ws.`MONTH`='06') AS j,
+        (SELECT IF(e>=300,(SELECT GROUP_CONCAT(DISTINCT CONCAT(s.`NAME`,ws.AMOUNT,IFNULL(cuc.UNIT,s.UNIT))) FROM p_wc_storeroom AS ws LEFT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID) LEFT JOIN cy_unit_conversion AS cuc ON(cuc.STOREROOM_ID=ws.STOREROOM_ID) WHERE ws.WC_ID=w.WC_ID AND s.TYPE_APPLICATION='4' AND ws.`YEAR`=#{year} AND ws.`MONTH`='01'),NULL)) AS k,
+        (SELECT IF(f>=300,(SELECT GROUP_CONCAT(DISTINCT CONCAT(s.`NAME`,ws.AMOUNT,IFNULL(cuc.UNIT,s.UNIT))) FROM p_wc_storeroom AS ws LEFT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID) LEFT JOIN cy_unit_conversion AS cuc ON(cuc.STOREROOM_ID=ws.STOREROOM_ID) WHERE ws.WC_ID=w.WC_ID AND s.TYPE_APPLICATION='4' AND ws.`YEAR`=#{year} AND ws.`MONTH`='02'),NULL)) AS l,
+        (SELECT IF(g>=300,(SELECT GROUP_CONCAT(DISTINCT CONCAT(s.`NAME`,ws.AMOUNT,IFNULL(cuc.UNIT,s.UNIT))) FROM p_wc_storeroom AS ws LEFT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID) LEFT JOIN cy_unit_conversion AS cuc ON(cuc.STOREROOM_ID=ws.STOREROOM_ID) WHERE ws.WC_ID=w.WC_ID AND s.TYPE_APPLICATION='4' AND ws.`YEAR`=#{year} AND ws.`MONTH`='03'),NULL)) AS m,
+        (SELECT IF(h>=300,(SELECT GROUP_CONCAT(DISTINCT CONCAT(s.`NAME`,ws.AMOUNT,IFNULL(cuc.UNIT,s.UNIT))) FROM p_wc_storeroom AS ws LEFT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID) LEFT JOIN cy_unit_conversion AS cuc ON(cuc.STOREROOM_ID=ws.STOREROOM_ID) WHERE ws.WC_ID=w.WC_ID AND s.TYPE_APPLICATION='4' AND ws.`YEAR`=#{year} AND ws.`MONTH`='04'),NULL)) AS n,
+        (SELECT IF(i>=300,(SELECT GROUP_CONCAT(DISTINCT CONCAT(s.`NAME`,ws.AMOUNT,IFNULL(cuc.UNIT,s.UNIT))) FROM p_wc_storeroom AS ws LEFT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID) LEFT JOIN cy_unit_conversion AS cuc ON(cuc.STOREROOM_ID=ws.STOREROOM_ID) WHERE ws.WC_ID=w.WC_ID AND s.TYPE_APPLICATION='4' AND ws.`YEAR`=#{year} AND ws.`MONTH`='05'),NULL)) AS o,
+        (SELECT IF(j>=300,(SELECT GROUP_CONCAT(DISTINCT CONCAT(s.`NAME`,ws.AMOUNT,IFNULL(cuc.UNIT,s.UNIT))) FROM p_wc_storeroom AS ws LEFT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID) LEFT JOIN cy_unit_conversion AS cuc ON(cuc.STOREROOM_ID=ws.STOREROOM_ID) WHERE ws.WC_ID=w.WC_ID AND s.TYPE_APPLICATION='4' AND ws.`YEAR`=#{year} AND ws.`MONTH`='06'),NULL)) AS p
         FROM cy_wc AS w
     </select>
 
@@ -213,33 +213,36 @@
         w.WC_OWN,
         w.WC_NUM,
         w.WC_NAME,
-        (SELECT GROUP_CONCAT(DISTINCT s.NAME) FROM p_wc_storeroom AS ws RIGHT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID AND s.TYPE_APPLICATION=1) WHERE ws.WC_ID=w.WC_ID AND FIND_IN_SET(s.`NAME`, '大盘纸,发泡液')) AS a,
-        (SELECT SUM(ws.AMOUNT*s.MONEY) FROM p_wc_storeroom AS ws RIGHT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID AND s.TYPE_APPLICATION=1) WHERE ws.WC_ID=w.WC_ID AND s.`NAME`='大盘纸') AS b,
-        (SELECT SUM(ws.AMOUNT*s.MONEY) FROM p_wc_storeroom AS ws RIGHT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID AND s.TYPE_APPLICATION=1) WHERE ws.WC_ID=w.WC_ID AND s.`NAME`='发泡液') AS c,
-        (SELECT SUM(ws.AMOUNT*s.MONEY) FROM p_wc_storeroom AS ws RIGHT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID AND s.TYPE_APPLICATION=1) WHERE ws.WC_ID=w.WC_ID AND NOT FIND_IN_SET(s.`NAME`, '大盘纸,发泡液')) AS d,
-        (SELECT SUM(ws.AMOUNT*s.MONEY) FROM p_wc_storeroom AS ws RIGHT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID AND s.TYPE_APPLICATION=4) WHERE ws.WC_ID=w.WC_ID AND ws.`YEAR`=#{year} AND ws.`MONTH`='07') AS e,
-        (SELECT SUM(ws.AMOUNT*s.MONEY) FROM p_wc_storeroom AS ws RIGHT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID AND s.TYPE_APPLICATION=4) WHERE ws.WC_ID=w.WC_ID AND ws.`YEAR`=#{year} AND ws.`MONTH`='08') AS f,
-        (SELECT SUM(ws.AMOUNT*s.MONEY) FROM p_wc_storeroom AS ws RIGHT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID AND s.TYPE_APPLICATION=4) WHERE ws.WC_ID=w.WC_ID AND ws.`YEAR`=#{year} AND ws.`MONTH`='09') AS g,
-        (SELECT SUM(ws.AMOUNT*s.MONEY) FROM p_wc_storeroom AS ws RIGHT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID AND s.TYPE_APPLICATION=4) WHERE ws.WC_ID=w.WC_ID AND ws.`YEAR`=#{year} AND ws.`MONTH`='10') AS h,
-        (SELECT SUM(ws.AMOUNT*s.MONEY) FROM p_wc_storeroom AS ws RIGHT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID AND s.TYPE_APPLICATION=4) WHERE ws.WC_ID=w.WC_ID AND ws.`YEAR`=#{year} AND ws.`MONTH`='11') AS i,
-        (SELECT SUM(ws.AMOUNT*s.MONEY) FROM p_wc_storeroom AS ws RIGHT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID AND s.TYPE_APPLICATION=4) WHERE ws.WC_ID=w.WC_ID AND ws.`YEAR`=#{year} AND ws.`MONTH`='12') AS j,
-        (SELECT IF(e>=300,(SELECT GROUP_CONCAT(DISTINCT CONCAT(s.`NAME`,ws.AMOUNT,s.UNIT)) FROM p_wc_storeroom AS ws RIGHT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID AND s.TYPE_APPLICATION=4) WHERE ws.WC_ID=w.WC_ID AND ws.`YEAR`=#{year} AND ws.`MONTH`='07'),NULL)) AS k,
-        (SELECT IF(f>=300,(SELECT GROUP_CONCAT(DISTINCT CONCAT(s.`NAME`,ws.AMOUNT,s.UNIT)) FROM p_wc_storeroom AS ws RIGHT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID AND s.TYPE_APPLICATION=4) WHERE ws.WC_ID=w.WC_ID AND ws.`YEAR`=#{year} AND ws.`MONTH`='08'),NULL)) AS l,
-        (SELECT IF(g>=300,(SELECT GROUP_CONCAT(DISTINCT CONCAT(s.`NAME`,ws.AMOUNT,s.UNIT)) FROM p_wc_storeroom AS ws RIGHT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID AND s.TYPE_APPLICATION=4) WHERE ws.WC_ID=w.WC_ID AND ws.`YEAR`=#{year} AND ws.`MONTH`='09'),NULL)) AS m,
-        (SELECT IF(h>=300,(SELECT GROUP_CONCAT(DISTINCT CONCAT(s.`NAME`,ws.AMOUNT,s.UNIT)) FROM p_wc_storeroom AS ws RIGHT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID AND s.TYPE_APPLICATION=4) WHERE ws.WC_ID=w.WC_ID AND ws.`YEAR`=#{year} AND ws.`MONTH`='10'),NULL)) AS n,
-        (SELECT IF(i>=300,(SELECT GROUP_CONCAT(DISTINCT CONCAT(s.`NAME`,ws.AMOUNT,s.UNIT)) FROM p_wc_storeroom AS ws RIGHT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID AND s.TYPE_APPLICATION=4) WHERE ws.WC_ID=w.WC_ID AND ws.`YEAR`=#{year} AND ws.`MONTH`='11'),NULL)) AS o,
-        (SELECT IF(j>=300,(SELECT GROUP_CONCAT(DISTINCT CONCAT(s.`NAME`,ws.AMOUNT,s.UNIT)) FROM p_wc_storeroom AS ws RIGHT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID AND s.TYPE_APPLICATION=4) WHERE ws.WC_ID=w.WC_ID AND ws.`YEAR`=#{year} AND ws.`MONTH`='12'),NULL)) AS p
+        (SELECT GROUP_CONCAT(DISTINCT s.NAME) FROM p_wc_storeroom AS ws LEFT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID) WHERE ws.WC_ID=w.WC_ID AND FIND_IN_SET(s.`NAME`, '大盘纸,发泡液')) AS a,
+        (SELECT SUM(ws.AMOUNT*IF(cuc.STOREROOM_ID IS NULL,s.MONEY,s.MONEY/cuc.AMOUNT_CONVERSION)) FROM p_wc_storeroom AS ws LEFT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID) LEFT JOIN cy_unit_conversion AS cuc ON(cuc.STOREROOM_ID=ws.STOREROOM_ID) WHERE ws.WC_ID=w.WC_ID AND s.TYPE_APPLICATION='1' AND s.`NAME`='大盘纸') AS b,
+        (SELECT SUM(ws.AMOUNT*IF(cuc.STOREROOM_ID IS NULL,s.MONEY,s.MONEY/cuc.AMOUNT_CONVERSION)) FROM p_wc_storeroom AS ws LEFT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID) LEFT JOIN cy_unit_conversion AS cuc ON(cuc.STOREROOM_ID=ws.STOREROOM_ID) WHERE ws.WC_ID=w.WC_ID AND s.TYPE_APPLICATION='1' AND s.`NAME`='发泡液') AS c,
+        (SELECT SUM(ws.AMOUNT*IF(cuc.STOREROOM_ID IS NULL,s.MONEY,s.MONEY/cuc.AMOUNT_CONVERSION)) FROM p_wc_storeroom AS ws LEFT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID) LEFT JOIN cy_unit_conversion AS cuc ON(cuc.STOREROOM_ID=ws.STOREROOM_ID) WHERE ws.WC_ID=w.WC_ID AND s.TYPE_APPLICATION='1' AND NOT FIND_IN_SET(s.`NAME`, '大盘纸,发泡液')) AS d,
+        (SELECT SUM(ws.AMOUNT*IF(cuc.STOREROOM_ID IS NULL,s.MONEY,s.MONEY/cuc.AMOUNT_CONVERSION)) FROM p_wc_storeroom AS ws LEFT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID) LEFT JOIN cy_unit_conversion AS cuc ON(cuc.STOREROOM_ID=ws.STOREROOM_ID) WHERE ws.WC_ID=w.WC_ID AND s.TYPE_APPLICATION='4' AND ws.`YEAR`=#{year} AND ws.`MONTH`='07') AS e,
+        (SELECT SUM(ws.AMOUNT*IF(cuc.STOREROOM_ID IS NULL,s.MONEY,s.MONEY/cuc.AMOUNT_CONVERSION)) FROM p_wc_storeroom AS ws LEFT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID) LEFT JOIN cy_unit_conversion AS cuc ON(cuc.STOREROOM_ID=ws.STOREROOM_ID) WHERE ws.WC_ID=w.WC_ID AND s.TYPE_APPLICATION='4' AND ws.`YEAR`=#{year} AND ws.`MONTH`='08') AS f,
+        (SELECT SUM(ws.AMOUNT*IF(cuc.STOREROOM_ID IS NULL,s.MONEY,s.MONEY/cuc.AMOUNT_CONVERSION)) FROM p_wc_storeroom AS ws LEFT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID) LEFT JOIN cy_unit_conversion AS cuc ON(cuc.STOREROOM_ID=ws.STOREROOM_ID) WHERE ws.WC_ID=w.WC_ID AND s.TYPE_APPLICATION='4' AND ws.`YEAR`=#{year} AND ws.`MONTH`='09') AS g,
+        (SELECT SUM(ws.AMOUNT*IF(cuc.STOREROOM_ID IS NULL,s.MONEY,s.MONEY/cuc.AMOUNT_CONVERSION)) FROM p_wc_storeroom AS ws LEFT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID) LEFT JOIN cy_unit_conversion AS cuc ON(cuc.STOREROOM_ID=ws.STOREROOM_ID) WHERE ws.WC_ID=w.WC_ID AND s.TYPE_APPLICATION='4' AND ws.`YEAR`=#{year} AND ws.`MONTH`='10') AS h,
+        (SELECT SUM(ws.AMOUNT*IF(cuc.STOREROOM_ID IS NULL,s.MONEY,s.MONEY/cuc.AMOUNT_CONVERSION)) FROM p_wc_storeroom AS ws LEFT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID) LEFT JOIN cy_unit_conversion AS cuc ON(cuc.STOREROOM_ID=ws.STOREROOM_ID) WHERE ws.WC_ID=w.WC_ID AND s.TYPE_APPLICATION='4' AND ws.`YEAR`=#{year} AND ws.`MONTH`='11') AS i,
+        (SELECT SUM(ws.AMOUNT*IF(cuc.STOREROOM_ID IS NULL,s.MONEY,s.MONEY/cuc.AMOUNT_CONVERSION)) FROM p_wc_storeroom AS ws LEFT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID) LEFT JOIN cy_unit_conversion AS cuc ON(cuc.STOREROOM_ID=ws.STOREROOM_ID) WHERE ws.WC_ID=w.WC_ID AND s.TYPE_APPLICATION='4' AND ws.`YEAR`=#{year} AND ws.`MONTH`='12') AS j,
+        (SELECT IF(e>=300,(SELECT GROUP_CONCAT(DISTINCT CONCAT(s.`NAME`,ws.AMOUNT,IFNULL(cuc.UNIT,s.UNIT))) FROM p_wc_storeroom AS ws LEFT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID) LEFT JOIN cy_unit_conversion AS cuc ON(cuc.STOREROOM_ID=ws.STOREROOM_ID) WHERE ws.WC_ID=w.WC_ID AND s.TYPE_APPLICATION='4' AND ws.`YEAR`=#{year} AND ws.`MONTH`='07'),NULL)) AS k,
+        (SELECT IF(f>=300,(SELECT GROUP_CONCAT(DISTINCT CONCAT(s.`NAME`,ws.AMOUNT,IFNULL(cuc.UNIT,s.UNIT))) FROM p_wc_storeroom AS ws LEFT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID) LEFT JOIN cy_unit_conversion AS cuc ON(cuc.STOREROOM_ID=ws.STOREROOM_ID) WHERE ws.WC_ID=w.WC_ID AND s.TYPE_APPLICATION='4' AND ws.`YEAR`=#{year} AND ws.`MONTH`='08'),NULL)) AS l,
+        (SELECT IF(g>=300,(SELECT GROUP_CONCAT(DISTINCT CONCAT(s.`NAME`,ws.AMOUNT,IFNULL(cuc.UNIT,s.UNIT))) FROM p_wc_storeroom AS ws LEFT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID) LEFT JOIN cy_unit_conversion AS cuc ON(cuc.STOREROOM_ID=ws.STOREROOM_ID) WHERE ws.WC_ID=w.WC_ID AND s.TYPE_APPLICATION='4' AND ws.`YEAR`=#{year} AND ws.`MONTH`='09'),NULL)) AS m,
+        (SELECT IF(h>=300,(SELECT GROUP_CONCAT(DISTINCT CONCAT(s.`NAME`,ws.AMOUNT,IFNULL(cuc.UNIT,s.UNIT))) FROM p_wc_storeroom AS ws LEFT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID) LEFT JOIN cy_unit_conversion AS cuc ON(cuc.STOREROOM_ID=ws.STOREROOM_ID) WHERE ws.WC_ID=w.WC_ID AND s.TYPE_APPLICATION='4' AND ws.`YEAR`=#{year} AND ws.`MONTH`='10'),NULL)) AS n,
+        (SELECT IF(i>=300,(SELECT GROUP_CONCAT(DISTINCT CONCAT(s.`NAME`,ws.AMOUNT,IFNULL(cuc.UNIT,s.UNIT))) FROM p_wc_storeroom AS ws LEFT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID) LEFT JOIN cy_unit_conversion AS cuc ON(cuc.STOREROOM_ID=ws.STOREROOM_ID) WHERE ws.WC_ID=w.WC_ID AND s.TYPE_APPLICATION='4' AND ws.`YEAR`=#{year} AND ws.`MONTH`='11'),NULL)) AS o,
+        (SELECT IF(j>=300,(SELECT GROUP_CONCAT(DISTINCT CONCAT(s.`NAME`,ws.AMOUNT,IFNULL(cuc.UNIT,s.UNIT))) FROM p_wc_storeroom AS ws LEFT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID) LEFT JOIN cy_unit_conversion AS cuc ON(cuc.STOREROOM_ID=ws.STOREROOM_ID) WHERE ws.WC_ID=w.WC_ID AND s.TYPE_APPLICATION='4' AND ws.`YEAR`=#{year} AND ws.`MONTH`='12'),NULL)) AS p
         FROM cy_wc AS w
     </select>
 
+    <select id="getWcByWcNum" resultType="cc.mrbird.febs.chaoyang3team.domain.Wc">
+        SELECT WC_ID, WC_OWN FROM cy_wc WHERE WC_NUM = #{wcNum} LIMIT 1
+    </select>
     <select id="getWcIdByWcNum" resultType="java.lang.Long">
-         SELECT WC_ID FROM cy_wc WHERE WC_NUM = #{wcNum} LIMIT 1
+        SELECT WC_ID FROM cy_wc WHERE WC_NUM = #{wcNum} LIMIT 1
     </select>
     <select id="getWcIdByWaterNum" resultType="java.lang.Long">
-         SELECT WC_ID FROM cy_wc WHERE WATER_NUM = #{waterNum} LIMIT 1
+        SELECT WC_ID FROM cy_wc WHERE WATER_NUM = #{waterNum} LIMIT 1
     </select>
     <select id="getWcIdByElectricityNum" resultType="java.lang.Long">
-         SELECT WC_ID FROM cy_wc WHERE ELECTRICITY_NUM = #{electricityNum} LIMIT 1
+        SELECT WC_ID FROM cy_wc WHERE ELECTRICITY_NUM = #{electricityNum} LIMIT 1
     </select>
 
     <select id="findAllMonthWcConsumptionByYear" resultType="java.util.Map">
@@ -257,6 +260,100 @@
 
     <select id="findAllOwnWcConsumptionByYear" resultType="java.util.Map">
         CALL findAllOwnWcConsumptionByYear(#{year})
+    </select>
+
+    <select id="findWcListByPosition" resultType="cc.mrbird.febs.chaoyang3team.domain.Wc">
+        SELECT (@i := @i + 1) AS id, a.* FROM
+        (
+            SELECT
+            wc.WC_ID,
+            wc.WC_NAME,
+            wc.OPEN_HOUR,
+            '朝环三队' AS manageUnitToDict,
+            wc.WC_ADDRESS,
+            ROUND(GETDISTANCE (#{longitude}, #{latitude}, wc.LONGITUDE, wc.LATITUDE)) AS distance,
+            ROUND( wc.LONGITUDE, 6 ) AS longitude,
+            ROUND( wc.LATITUDE, 6 ) AS latitude,
+            (
+                SELECT cws.STATUS
+                FROM cy_wc_status AS cws
+                WHERE cws.WC_ID=wc.WC_ID
+                AND (ISNULL(cws.END_DATE) OR cws.END_DATE>=DATE_FORMAT(NOW(),'%y-%m-%d'))
+                ORDER BY cws.END_DATE
+                DESC LIMIT 1
+            ) AS status,
+            wc.PIT_MALE,
+            wc.PIT_FEMALE
+            FROM
+            cy_wc AS wc
+            WHERE
+            LENGTH(wc.LONGITUDE+0)=LENGTH(wc.LONGITUDE) AND LENGTH(wc.LATITUDE+0)=LENGTH(wc.LATITUDE)
+            AND GETDISTANCE (#{longitude}, #{latitude}, wc.LONGITUDE, wc.LATITUDE) &lt;= #{radius}
+            ORDER BY
+            distance
+        ) AS a,(SELECT @i := #{length} - 1) AS b
+    </select>
+
+    <select id="getWcAndFilesById" resultType="cc.mrbird.febs.chaoyang3team.domain.Wc">
+        SELECT
+        (
+            SELECT cws.STATUS
+            FROM cy_wc_status AS cws
+            WHERE cws.WC_ID=wc.WC_ID
+            AND (ISNULL(cws.END_DATE) OR cws.END_DATE>=DATE_FORMAT(NOW(),'%y-%m-%d'))
+            ORDER BY cws.END_DATE
+            DESC LIMIT 1
+        ) AS status,
+        wc.WC_ID AS wcId,
+        wc.WC_NAME AS wcName,
+        wc.DISTRICT,
+        wc.MANAGE_UNIT,
+        wc.WC_NUM AS wcNum,
+        wc.LONGITUDE,
+        wc.LATITUDE,
+        wc.WC_KIND,
+        wc.BUILDING_METHOD,
+        wc.BUILDING_TYPE,
+        wc.IS_MANAGE_ROOM,
+        wc.WC_SORT,
+        wc.FLUSHING_METHOD,
+        wc.INDICATOR_STATUS,
+        wc.STREET_TOWN AS streetTown,
+        wc.IS5TH_RING,
+        wc.USE_DATE,
+        wc.REPLACE_DATE AS replaceDate,
+        wc.INITIAL_MONEY,
+        wc.WC_AREA,
+        wc.IS_PROPERTY_RIGHT,
+        wc.SINK,
+        wc.PIT_MALE,
+        wc.PIT_FEMALE,
+        wc.PIT_SEXLESS,
+        wc.URINALS_TYPE,
+        wc.URINALS_NUM,
+        wc.IS_ACCESSIBILITY,
+        wc.INDICATOR_NUM,
+        wc.IS_DISABLED_ROOM,
+        wc.FECAL_METHOD,
+        wc.URINALS_LEN,
+        wc.OPEN_HOUR,
+        wc.ASSIGNMENT_STYLE,
+        wc.IS_INDICATOR,
+        wc.WC_OWN AS wcOwn,
+        wc.MANAGE_TYPE,
+        wc.CLEAN_NUM,
+        wc.WC_ADDRESS,
+        wc.WC_NOW_STATUS AS wcNowStatus,
+	    group_concat(tf.ADDRESS separator '|') AS filesAddress,
+	    (
+	        SELECT ROUND(AVG(cwe.WHOLE_STAR))
+	        FROM cy_wc_evaluate AS cwe
+	        WHERE cwe.WC_ID=wc.WC_ID AND cwe.IS_COMPLAINT='1'
+	    ) AS wholeStar
+        FROM cy_wc AS wc
+        LEFT JOIN p_wc_file AS pwf ON(pwf.WC_ID = wc.WC_ID)
+        LEFT JOIN t_file AS tf ON(tf.FILE_ID = pwf.FILE_ID)
+        WHERE wc.WC_ID = #{wcId}
     </select>
 
 </mapper>

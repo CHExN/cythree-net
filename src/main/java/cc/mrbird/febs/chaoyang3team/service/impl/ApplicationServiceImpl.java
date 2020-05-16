@@ -71,7 +71,7 @@ public class ApplicationServiceImpl extends ServiceImpl<ApplicationMapper, Appli
 
             // 通过用户名获取用户权限集合
             Set<String> userPermissions = this.userManager.getUserPermissions(username);
-            // 如果拥有以下任意一个或复数权限，就代表只能看到这些物品的权限，搜索也是一样，搜只会出现这些的物质类别
+            // 如果拥有以下任意一个或复数权限，就代表只能看到这些物品的权限，搜索也是一样，搜只会出现这些的物资类别
             List<String> typeApplicationAuthorityList = new ArrayList<>();
             if (userPermissions.contains("storeroom:view1")) {
                 typeApplicationAuthorityList.add("1");
@@ -248,6 +248,7 @@ public class ApplicationServiceImpl extends ServiceImpl<ApplicationMapper, Appli
     }
 
     @Override
+    @Transactional
     public void deleteApplicationsFile(String[] fileIds) {
         // 根据文件id删除
         this.fileService.deleteFiles(fileIds);
@@ -268,7 +269,7 @@ public class ApplicationServiceImpl extends ServiceImpl<ApplicationMapper, Appli
                 "uid", fileInfo.getFileId(),
                 "url", urlResult,
                 "status", "done",
-                "name", urlResult.substring(7)
+                "name", urlResult.substring(25)
         );
         return new FebsResponse().data(result);
     }

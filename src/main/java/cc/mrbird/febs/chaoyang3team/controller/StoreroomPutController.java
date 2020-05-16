@@ -92,10 +92,10 @@ public class StoreroomPutController extends BaseController {
     @Log("删除入库单")
     @DeleteMapping("/{putIds}")
     @RequiresPermissions("storeroomPut:delete")
-    public void deleteStoreroomPuts(@NotBlank(message = "{required}") @PathVariable String putIds) throws FebsException {
+    public Map<String, Object> deleteStoreroomPuts(@NotBlank(message = "{required}") @PathVariable String putIds) throws FebsException {
         try {
             String[] ids = putIds.split(StringPool.COMMA);
-            this.storeroomPutOutService.deleteStoreroomPuts(ids);
+            return this.storeroomPutOutService.deleteStoreroomPuts(ids);
         } catch (Exception e) {
             message = "删除入库单失败";
             log.error(message, e);

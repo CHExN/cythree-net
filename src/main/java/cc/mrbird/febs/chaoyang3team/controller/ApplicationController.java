@@ -44,17 +44,19 @@ public class ApplicationController extends BaseController {
     private ApplicationFileService applicationFileService;
 
     @GetMapping("applicationFiles")
+    @RequiresPermissions("application:view")
     public FebsResponse findFilesByApplicationId(String applicationId) {
         return this.applicationFileService.findFilesByApplicationId(applicationId);
     }
 
-    @Log("上传验收图片失败")
+    @Log("上传采购申请单图片")
     @PostMapping("uploadApplicationPhoto")
+    @RequiresPermissions("application:addDeletePhoto")
     public FebsResponse uploadApplicationPhoto(@RequestParam("file") MultipartFile file, String id) throws FebsException {
         try {
             return this.applicationService.uploadApplicationPhoto(file, id);
         } catch (Exception e) {
-            message = "上传验收图片失败";
+            message = "上传采购申请单图片失败";
             log.error(message, e);
             throw new FebsException(message);
         }
@@ -68,8 +70,8 @@ public class ApplicationController extends BaseController {
 
     @GetMapping("applicationPlan")
     @RequiresPermissions("application:view")
-    public List<Plan> findPlansByApplicationId(String applicationId) {
-        return this.applicationPlanService.findPlansByApplicationId(applicationId);
+    public List<Plan> findPlansByApplicationId(String applicationId, Boolean status) {
+        return this.applicationPlanService.findPlansByApplicationId(applicationId, status);
     }
 
     @Log("新增采购申请单")
@@ -114,12 +116,13 @@ public class ApplicationController extends BaseController {
 
     @Log("删除采购申请单文件")
     @DeleteMapping("/deleteFile/{fileIds}")
+    @RequiresPermissions("application:addDeletePhoto")
     public void deleteApplicationsFile(@NotBlank(message = "{required}") @PathVariable String fileIds) throws FebsException {
         try {
             String[] ids = fileIds.split(StringPool.COMMA);
             this.applicationService.deleteApplicationsFile(ids);
         } catch (Exception e) {
-            message = "删除采购申请单失败";
+            message = "删除采购申请单文件失败";
             log.error(message, e);
             throw new FebsException(message);
         }

@@ -27,6 +27,7 @@
         csi.BIRTH_DATE,
         csi.WORK_DATE,
         csi.FARMER_WORK_DATE,
+        csi.ADD_DATE,
         csi.TRANSFER_DATE,
         csi.CURRENT_POSITION,
         csi.POST,
@@ -41,13 +42,18 @@
         csi.IS_LEAVE,
         csi.LEAVE_DATE,
         csi.DEPT_ID,
-        td.DEPT_NAME,
-        cci.ID,
-        cci.FILE_NUM
+        td.DEPT_NAME
         FROM cy_staff_inside AS csi
-        LEFT JOIN cy_contract_inside AS cci ON(cci.ID_NUM=csi.ID_NUM)
         LEFT JOIN t_dept td ON (csi.DEPT_ID = td.DEPT_ID)
         WHERE FIND_IN_SET(csi.IS_LEAVE, #{staffInside.isLeave})
+        <choose>
+            <when test="staffInside.deleted !=null and staffInside.deleted != ''">
+                AND csi.DELETED = #{staffInside.deleted}
+            </when>
+            <otherwise>
+                AND csi.DELETED=0
+            </otherwise>
+        </choose>
         <if test="staffInside.name != null and staffInside.name != ''">
             AND csi.NAME LIKE CONCAT('%',#{staffInside.name},'%')
         </if>
@@ -97,10 +103,10 @@
             AND csi.PHONE_CELL LIKE CONCAT('%',#{staffInside.phoneCell},'%')
         </if>
         <!--<if test="staffInside.age != null">-->
-            <!--AND csi.AGE = #{staffInside.age}-->
+        <!--AND csi.AGE = #{staffInside.age}-->
         <!--</if>-->
         <!--<if test="staffInside.currentPosition != null and staffInside.currentPosition != ''">-->
-            <!--AND csi.CURRENT_POSITION LIKE CONCAT('%',#{staffInside.currentPosition},'%')-->
+        <!--AND csi.CURRENT_POSITION LIKE CONCAT('%',#{staffInside.currentPosition},'%')-->
         <!--</if>-->
         <if test="staffInside.post != null and staffInside.post != ''">
             AND FIND_IN_SET(csi.POST, #{staffInside.post})
@@ -115,7 +121,7 @@
             AND csi.ENTRY_STATUS = #{staffInside.entryStatus}
         </if>
         <!--<if test="staffInside.fileNum != null and staffInside.fileNum != ''">-->
-            <!--AND cci.FILE_NUM LIKE CONCAT('%',#{staffInside.fileNum},'%')-->
+        <!--AND cci.FILE_NUM LIKE CONCAT('%',#{staffInside.fileNum},'%')-->
         <!--</if>-->
         <if test="staffInside.mini != null and staffInside.mini != ''">
             AND csi.BIRTH_DATE &lt;= DATE_SUB(CURDATE(),INTERVAL #{staffInside.mini} YEAR)
@@ -123,11 +129,13 @@
         <if test="staffInside.max != null and staffInside.max != ''">
             AND csi.BIRTH_DATE &gt;= DATE_SUB(CURDATE(),INTERVAL #{staffInside.max} YEAR)
         </if>
-        <if test="staffInside.createTimeFrom != null and staffInside.createTimeFrom !=''">
-            AND csi.LEAVE_DATE &gt;= #{staffInside.createTimeFrom}
+        <if test="staffInside.createTimeFrom != null and staffInside.createTimeFrom !='' and staffInside.createTimeTo!= null and staffInside.createTimeTo !=''">
+            AND csi.ADD_DATE &gt;= #{staffInside.createTimeFrom}
+            AND csi.ADD_DATE &lt;= #{staffInside.createTimeTo}
         </if>
-        <if test="staffInside.createTimeTo!= null and staffInside.createTimeTo !=''">
-            AND csi.LEAVE_DATE &lt;= #{staffInside.createTimeTo}
+        <if test="staffInside.reduceTimeFrom != null and staffInside.reduceTimeFrom !='' and staffInside.reduceTimeTo!= null and staffInside.reduceTimeTo !=''">
+            AND csi.LEAVE_DATE &gt;= #{staffInside.reduceTimeFrom}
+            AND csi.LEAVE_DATE &lt;= #{staffInside.reduceTimeTo}
         </if>
     </select>
 
@@ -139,7 +147,7 @@
         csi.ID_NUM,
         csi.SORT_NUM AS sortNum
         FROM cy_staff_inside AS csi
-        WHERE FIND_IN_SET(csi.IS_LEAVE, #{staffInside.isLeave})
+        WHERE csi.DELETED=0 AND FIND_IN_SET(csi.IS_LEAVE, #{staffInside.isLeave})
         <if test="staffInside.lowCause != null and staffInside.lowCause != ''">
             AND (SELECT COUNT(1) FROM cy_contract_inside AS cci WHERE cci.ID_NUM=csi.ID_NUM) = 0
         </if>
@@ -179,6 +187,7 @@
         csi.BIRTH_DATE,
         csi.WORK_DATE,
         csi.FARMER_WORK_DATE,
+        csi.ADD_DATE,
         csi.TRANSFER_DATE,
         csi.CURRENT_POSITION,
         csi.POST,
@@ -223,6 +232,7 @@
         csi.BIRTH_DATE,
         csi.WORK_DATE,
         csi.FARMER_WORK_DATE,
+        csi.ADD_DATE,
         csi.TRANSFER_DATE,
         csi.CURRENT_POSITION,
         csi.POST,
@@ -242,7 +252,9 @@
     </select>
 
     <select id="getContractInsideIds" resultType="java.lang.String">
-        SELECT ID FROM cy_contract_inside WHERE FIND_IN_SET(STAFF_ID, #{staffInsideIdsStr})
+        SELECT cci.ID FROM cy_contract_inside AS cci
+        LEFT JOIN cy_staff_inside AS csi ON(csi.ID_NUM=cci.ID_NUM)
+        WHERE FIND_IN_SET(csi.STAFF_ID, #{staffInsideIdsStr})
     </select>
 
     <select id="getTechnicalType" resultType="java.lang.String">
@@ -261,6 +273,26 @@
         SELECT STAFF_ID,`NAME` FROM cy_staff_inside WHERE ID_NUM = #{idNum} LIMIT 1
     </select>
 
+    <update id="updateStaffInsideSortNum">
+        UPDATE cy_staff_inside AS a INNER JOIN (
+            SELECT csi.STAFF_ID,(@i:=@i+1) AS pm,IF(csi.MODIFY_TIME IS NULL,csi.CREATE_TIME,csi.MODIFY_TIME) AS datetime
+            FROM cy_staff_inside AS csi,(select @i:=0) AS it
+            WHERE csi.DELETED=0 AND csi.IS_LEAVE=0
+            ORDER BY csi.SORT_NUM ASC, datetime DESC
+        ) AS b ON a.STAFF_ID=b.STAFF_ID
+        SET a.SORT_NUM=b.pm
+    </update>
+
+    <update id="updateStaffInsideLeaveSortNum">
+        UPDATE cy_staff_inside AS a INNER JOIN (
+            SELECT csi.STAFF_ID, (@i:=@i+1) AS pm, csi.LEAVE_DATE AS datetime
+            FROM cy_staff_inside AS csi, (select @i:=0) AS it
+            WHERE csi.DELETED=0 AND csi.IS_LEAVE=1
+            ORDER BY csi.SORT_NUM ASC, datetime DESC
+        ) AS b ON a.STAFF_ID=b.STAFF_ID
+        SET a.SORT_NUM=b.pm
+    </update>
+
     <select id="getIncreaseOrDecreaseStaffInside" resultType="cc.mrbird.febs.chaoyang3team.domain.StaffInside">
         SELECT
         csi.STAFF_ID,
@@ -270,41 +302,29 @@
         csi.TECHNICAL_TYPE,
         '编内' AS type,
         <if test="staffInside.isLeave == 0">
-            csi.TRANSFER_DATE AS leaveDate
+            csi.ADD_DATE AS leaveDate
         </if>
         <if test="staffInside.isLeave == 1">
             csi.LEAVE_DATE AS leaveDate
         </if>
         FROM cy_staff_inside AS csi
-        WHERE csi.IS_LEAVE=#{staffInside.isLeave}
+        WHERE csi.DELETED=0 AND csi.IS_LEAVE=#{staffInside.isLeave}
         <if test="staffInside.isLeave == 0">
-            AND csi.TRANSFER_DATE &gt;= #{staffInside.createTimeFrom} AND csi.TRANSFER_DATE &lt;= #{staffInside.createTimeTo}
+            AND csi.ADD_DATE &gt;= #{staffInside.createTimeFrom}
+            AND csi.ADD_DATE &lt;= #{staffInside.createTimeTo}
         </if>
         <if test="staffInside.isLeave == 1">
-            AND csi.LEAVE_DATE &gt;= #{staffInside.createTimeFrom} AND csi.LEAVE_DATE &lt;= #{staffInside.createTimeTo}
-        </if>
-        UNION ALL
-        SELECT
-        cso.STAFF_ID,
-        cso.`NAME`,
-        cso.GENDER,
-        cso.ID_NUM,
-        cso.TECHNICAL_TYPE,
-        '编外' AS type,
-        <if test="staffInside.isLeave == 0">
-            cso.TRANSFER_DATE AS leaveDate
-        </if>
-        <if test="staffInside.isLeave == 1">
-            cso.LEAVE_DATE AS leaveDate
-        </if>
-        FROM cy_staff_outside AS cso
-        WHERE cso.IS_LEAVE=#{staffInside.isLeave}
-        <if test="staffInside.isLeave == 0">
-            AND cso.TRANSFER_DATE &gt;= #{staffInside.createTimeFrom} AND cso.TRANSFER_DATE &lt;= #{staffInside.createTimeTo}
-        </if>
-        <if test="staffInside.isLeave == 1">
-            AND cso.LEAVE_DATE &gt;= #{staffInside.createTimeFrom} AND cso.LEAVE_DATE &lt;= #{staffInside.createTimeTo}
+            AND csi.LEAVE_DATE &gt;= #{staffInside.createTimeFrom}
+            AND csi.LEAVE_DATE &lt;= #{staffInside.createTimeTo}
         </if>
     </select>
+
+    <delete id="deleteStaffInsideTrue">
+        DELETE FROM cy_staff_inside WHERE FIND_IN_SET(STAFF_ID, #{staffInsideIdsStr})
+    </delete>
+
+    <update id="restoreStaffInside">
+        UPDATE cy_staff_inside SET DELETED=0 WHERE FIND_IN_SET(STAFF_ID, #{staffInsideIds})
+    </update>
 
 </mapper>

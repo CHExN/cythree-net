@@ -63,7 +63,7 @@ public class LetterServiceImpl extends ServiceImpl<LetterMapper, Letter> impleme
                 "uid", fileInfo.getFileId(),
                 "url", urlResult,
                 "status", "done",
-                "name", urlResult.substring(7)
+                "name", urlResult.substring(25)
         );
         return new FebsResponse().data(result);
     }

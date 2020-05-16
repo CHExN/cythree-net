@@ -18,4 +18,8 @@ public interface ContractInsideMapper extends BaseMapper<ContractInside> {
     ContractInside getContractInside(String idNum);
 
     List<String> getStaffInsideIds(String contractInsideIdsStr);
+
+    void deleteContractInsideTrue(String contractInsideIdsStr);
+
+    void restoreContractInside(String contractInsideIds);
 }

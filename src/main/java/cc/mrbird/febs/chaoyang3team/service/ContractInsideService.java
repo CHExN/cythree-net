@@ -18,7 +18,11 @@ public interface ContractInsideService extends IService<ContractInside> {
 
     void updateContractInside(ContractInside contractInside);
 
-    void deleteContractInside(String[] contractInsideIds);
+    void deleteContractInside(String[] contractInsideIds, Integer deleted);
 
-    void deleteContractInsideAndStaffInside(String[] staffInsideIds);
+    void deleteContractInsideAndStaffInside(String[] contractInsideIds, Integer deleted);
+
+    void restoreContractInside(String contractInsideIds);
+
+    void togetherRestoreContractInside(String contractInsideIds);
 }

@@ -36,9 +36,9 @@
         UNION ALL
         SELECT COUNT(1) FROM cy_wc
         UNION ALL
-        SELECT COUNT(1) FROM cy_staff_inside
+        SELECT COUNT(1) FROM cy_staff_inside WHERE IS_LEAVE='0' AND DELETED=0
         UNION ALL
-        SELECT COUNT(1) FROM cy_staff_outside
+        SELECT COUNT(1) FROM cy_staff_outside WHERE IS_LEAVE='0' AND DELETED=0
         UNION ALL
         SELECT ROUND(nowYear1.count + nowYear2.count,2) FROM (
         -- 今年工资总支出

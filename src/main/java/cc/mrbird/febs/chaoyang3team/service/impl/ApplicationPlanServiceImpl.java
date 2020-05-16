@@ -41,8 +41,8 @@ public class ApplicationPlanServiceImpl extends ServiceImpl<ApplicationPlanMappe
     }
 
     @Override
-    public List<Plan> findPlansByApplicationId(String applicationId) {
-        return this.baseMapper.findPlansByApplicationId(applicationId);
+    public List<Plan> findPlansByApplicationId(String applicationId, Boolean status) {
+        return this.baseMapper.findPlansByApplicationId(applicationId, status);
     }
 
     @Override

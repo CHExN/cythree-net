@@ -27,6 +27,7 @@ public class WcStoreroom implements Serializable {
      */
     @TableField("STOREROOM_ID")
     private Long storeroomId;
+    private transient String storeroomName;
 
     /**
      * 分配数量
@@ -52,6 +53,17 @@ public class WcStoreroom implements Serializable {
     @TableField("DAY")
     private String day;
 
+    /**
+     * 操作用户
+     */
+    @TableField("USERNAME")
+    private String username;
+
+    /**
+     * 公厕所属(分队)
+     */
+    @TableField("WC_OWN")
+    private String wcOwn;
 
     private transient String yearForm;
     private transient String yearTo;
@@ -59,7 +71,6 @@ public class WcStoreroom implements Serializable {
     private transient String monthTo;
     private transient String wcName;
     private transient String wcNum;
-    private transient String WcOwn;
     private transient String name;
     private transient String typeApplication;
     private transient BigDecimal money;

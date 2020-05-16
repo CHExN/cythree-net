@@ -41,12 +41,14 @@ public class Storeroom implements Serializable {
      */
     @TableField("UNIT")
     private String unit;
+    private transient String unitOriginal;
 
     /**
      * 物品入/出库数量
      */
     @TableField("AMOUNT")
     private BigDecimal amount;
+    private transient BigDecimal amountOriginal;
 
     /**
      * 备注
@@ -71,12 +73,14 @@ public class Storeroom implements Serializable {
      */
     @TableField("MONEY")
     private BigDecimal money;
+    private transient BigDecimal moneyOriginal;
 
     /**
      * 物资类别 1保洁物品 2劳保物品 3办公室用品 4维修用品 5固定资产 6工会用品 7技安用品 8食堂用品 9其他
      */
     @TableField("TYPE_APPLICATION")
     private String typeApplication;
+    private transient String typeApplicationToDict;
     private transient String typeApplicationAuthority;
 
     /**
@@ -106,7 +110,7 @@ public class Storeroom implements Serializable {
     private String status;
 
     /**
-     * 已分配的数量（同上，此字段只适用于typeApplication为保洁物品、劳保物品、维修用品的出库记录）
+     * 剩余分配的数量（同上，此字段只适用于typeApplication为保洁物品、劳保物品、维修用品的出库记录）
      */
     @TableField("AMOUNT_DIST")
     private BigDecimal amountDist;

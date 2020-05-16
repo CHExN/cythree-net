@@ -131,4 +131,30 @@
     <select id="selectStoreroomOutByStoreroomId" resultType="java.lang.Long">
         SELECT DISTINCT OUT_ID FROM p_storeroom_out WHERE FIND_IN_SET(STOREROOM_ID,#{storeroomIds})
     </select>
+
+    <select id="whetherThereAreStoreroomOutRecords"
+            resultType="cc.mrbird.febs.chaoyang3team.domain.StoreroomPutOut">
+        SELECT cspo.NUM, psp.PUT_ID AS id, COUNT(cs2.ID) AS `count`
+        FROM cy_storeroom AS cs
+        LEFT JOIN p_storeroom_put AS psp ON(cs.ID=psp.STOREROOM_ID)
+        LEFT JOIN cy_storeroom_put_out AS cspo ON(cspo.ID=psp.PUT_ID)
+        LEFT JOIN cy_storeroom AS cs2 ON(cs2.PARENT_ID=cs.PARENT_ID)
+        WHERE cs2.IS_IN=2 AND FIND_IN_SET(psp.PUT_ID, #{storeroomPutIdStr})
+        GROUP BY psp.PUT_ID
+    </select>
+
+    <update id="updateApplicationProcessByPutId">
+        UPDATE cy_application AS ca
+		LEFT JOIN cy_storeroom_put_out AS cspo ON(cspo.APPLICATION_ID=ca.ID)
+		SET ca.PROCESS=1
+		WHERE FIND_IN_SET(cspo.ID, #{storeroomPutIdStr})
+    </update>
+
+    <update id="returnStoreroomAmountByOutIds">
+        UPDATE cy_storeroom AS cs
+        LEFT JOIN cy_storeroom AS cs2 ON(cs2.ID=cs.PARENT_ID)
+        SET cs2.AMOUNT=(cs2.AMOUNT+cs.AMOUNT)
+        WHERE FIND_IN_SET(cs.ID, #{storeroomIdsStr})
+    </update>
+
 </mapper>

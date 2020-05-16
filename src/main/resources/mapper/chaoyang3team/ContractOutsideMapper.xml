@@ -14,11 +14,27 @@
         cci.REMARK,
         csi.STAFF_ID,
         csi.`NAME`,
+        csi.TEAM,
+        csi.TYPE,
         csi.SORT_NUM_1,
         csi.SORT_NUM_2
         FROM cy_contract_outside AS cci
         LEFT JOIN cy_staff_outside AS csi ON(csi.ID_NUM=cci.ID_NUM)
-        WHERE 1=1
+        WHERE FIND_IN_SET(csi.IS_LEAVE, #{contractOutside.isLeave})
+        <choose>
+            <when test="contractOutside.deleted !=null and contractOutside.deleted != ''">
+                AND cci.DELETED = #{contractOutside.deleted}
+            </when>
+            <otherwise>
+                AND cci.DELETED=0
+            </otherwise>
+        </choose>
+        <if test="contractOutside.type != null and contractOutside.type != ''">
+            AND FIND_IN_SET(csi.TYPE, #{contractOutside.type})
+        </if>
+        <if test="contractOutside.team != null and contractOutside.team != ''">
+            AND FIND_IN_SET(csi.TEAM, #{contractOutside.team})
+        </if>
         <if test="contractOutside.idNum != null and contractOutside.idNum != ''">
             AND cci.ID_NUM LIKE CONCAT('%',#{contractOutside.idNum},'%')
         </if>
@@ -95,4 +111,13 @@
         LEFT JOIN cy_staff_outside AS cso ON(cso.ID_NUM=cco.ID_NUM)
         WHERE FIND_IN_SET(cco.ID, #{contractOutsideIdsStr})
     </select>
+
+    <delete id="deleteContractOutsideTrue">
+        DELETE FROM cy_contract_outside WHERE FIND_IN_SET(ID, #{contractOutsideIdsStr})
+    </delete>
+
+    <update id="restoreContractOutside">
+        UPDATE cy_contract_outside SET DELETED=0 WHERE FIND_IN_SET(ID, #{contractOutsideIds})
+    </update>
+
 </mapper>

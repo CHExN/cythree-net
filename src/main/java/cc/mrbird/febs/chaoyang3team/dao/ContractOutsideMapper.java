@@ -18,4 +18,8 @@ public interface ContractOutsideMapper extends BaseMapper<ContractOutside> {
     ContractOutside getContractOutside(String idNum);
 
     List<String> getStaffOutsideIds(String contractOutsideIdsStr);
+
+    void deleteContractOutsideTrue(String contractOutsideIdsStr);
+
+    void restoreContractOutside(String contractOutsideIds);
 }

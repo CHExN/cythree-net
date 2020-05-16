@@ -37,7 +37,7 @@
             <!--</otherwise>-->
         <!--</choose>-->
         <if test="!is35">
-            AND FIND_IN_SET(a.TYPE_APPLICATION, '1,2,4,5,6,7,9') AND a.IS_FIXED_ASSETS = '0'
+            AND FIND_IN_SET(a.TYPE_APPLICATION, '1,2,4,5,6,7,8,9') AND a.IS_FIXED_ASSETS = '0'
         </if>
         <if test="application.typeApplicationAuthority != null and application.typeApplicationAuthority != ''">
             AND FIND_IN_SET(a.TYPE_APPLICATION, #{application.typeApplicationAuthority})

@@ -17,7 +17,7 @@ public interface ApplicationPlanService extends IService<ApplicationPlan> {
 
     List<String> findPlanIdsByApplicationIds(String[] applicationIds);
 
-    List<Plan> findPlansByApplicationId(String applicationId);
+    List<Plan> findPlansByApplicationId(String applicationId, Boolean status);
 
     void batchInsertApplicationPlan(List<ApplicationPlan> list);
 

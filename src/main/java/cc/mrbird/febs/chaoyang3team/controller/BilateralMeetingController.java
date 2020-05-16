@@ -71,7 +71,6 @@ public class BilateralMeetingController extends BaseController {
     @GetMapping
     @RequiresPermissions("bilateralMeeting:view")
     public Map<String, Object> BilateralMeetingList(QueryRequest request, BilateralMeeting bilateralMeeting, ServletRequest servletRequest) {
-        System.out.println(bilateralMeeting);
         return getDataTable(this.bilateralMeetingService.findBilateralMeetingDetail(request, bilateralMeeting, servletRequest));
     }
 

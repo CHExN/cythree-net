@@ -12,22 +12,31 @@
         cci.JOB_AGREEMENT_DATE,
         cci.REMARK_RENEW,
         cci.REMARK,
-        cci.FILE_NUM,
-        cci.BAD_NUM,
+--         cci.FILE_NUM,
+        -- cci.BAD_NUM,
         csi.STAFF_ID,
-        csi.`NAME`
+        csi.`NAME`,
+        csi.SORT_NUM AS sortNum
         FROM cy_contract_inside AS cci
         LEFT JOIN cy_staff_inside AS csi ON(csi.ID_NUM=cci.ID_NUM)
-        WHERE 1=1
+        WHERE FIND_IN_SET(csi.IS_LEAVE, #{contractInside.isLeave})
+        <choose>
+            <when test="contractInside.deleted !=null and contractInside.deleted != ''">
+                AND cci.DELETED = #{contractInside.deleted}
+            </when>
+            <otherwise>
+                AND cci.DELETED=0
+            </otherwise>
+        </choose>
         <if test="contractInside.idNum != null and contractInside.idNum != ''">
             AND cci.ID_NUM LIKE CONCAT('%',#{contractInside.idNum},'%')
         </if>
-        <if test="contractInside.fileNum != null and contractInside.fileNum != ''">
-            AND cci.FILE_NUM LIKE CONCAT('%',#{contractInside.fileNum},'%')
-        </if>
-        <if test="contractInside.badNum != null and contractInside.badNum != ''">
+<!--        <if test="contractInside.fileNum != null and contractInside.fileNum != ''">-->
+<!--            AND cci.FILE_NUM LIKE CONCAT('%',#{contractInside.fileNum},'%')-->
+<!--        </if>-->
+        <!--<if test="contractInside.badNum != null and contractInside.badNum != ''">
             AND cci.BAD_NUM LIKE CONCAT('%',#{contractInside.badNum},'%')
-        </if>
+        </if>-->
         <if test="contractInside.remarkRenew != null and contractInside.remarkRenew != ''">
             AND cci.REMARK_RENEW LIKE CONCAT('%',#{contractInside.remarkRenew},'%')
         </if>
@@ -42,9 +51,12 @@
             SELECT group_concat(cci.ID) AS id
             FROM cy_contract_inside AS cci
             JOIN mysql.help_topic AS b
-            ON b.help_topic_id &lt; (length(cci.CONTRACT_PERIOD_DATE) - length(REPLACE(cci.CONTRACT_PERIOD_DATE,',',''))+1)
-            WHERE substring_index(substring_index(substring_index(cci.CONTRACT_PERIOD_DATE,',',b.help_topic_id+1),',',-1),'~',1)&gt;=#{contractInside.contractPeriodFromFrom}
-            AND substring_index(substring_index(substring_index(cci.CONTRACT_PERIOD_DATE,',',b.help_topic_id+1),',',-1),'~',1)&lt;=#{contractInside.contractPeriodFromTo}
+            ON b.help_topic_id &lt; (length(cci.CONTRACT_PERIOD_DATE) -
+            length(REPLACE(cci.CONTRACT_PERIOD_DATE,',',''))+1)
+            WHERE
+            substring_index(substring_index(substring_index(cci.CONTRACT_PERIOD_DATE,',',b.help_topic_id+1),',',-1),'~',1)&gt;=#{contractInside.contractPeriodFromFrom}
+            AND
+            substring_index(substring_index(substring_index(cci.CONTRACT_PERIOD_DATE,',',b.help_topic_id+1),',',-1),'~',1)&lt;=#{contractInside.contractPeriodFromTo}
             ))
         </if>
         <if test="contractInside.contractPeriodToFrom != null and contractInside.contractPeriodToFrom != '' and contractInside.contractPeriodToTo != null and contractInside.contractPeriodToTo != ''">
@@ -52,9 +64,12 @@
             SELECT group_concat(cci.ID) AS id
             FROM cy_contract_inside AS cci
             JOIN mysql.help_topic AS b
-            ON b.help_topic_id &lt; (length(cci.CONTRACT_PERIOD_DATE) - length(REPLACE(cci.CONTRACT_PERIOD_DATE,',',''))+1)
-            WHERE substring_index(substring_index(substring_index(cci.CONTRACT_PERIOD_DATE,',',b.help_topic_id+1),',',-1),'~',-1)&gt;=#{contractInside.contractPeriodToFrom}
-            AND substring_index(substring_index(substring_index(cci.CONTRACT_PERIOD_DATE,',',b.help_topic_id+1),',',-1),'~',-1)&lt;=#{contractInside.contractPeriodToTo}
+            ON b.help_topic_id &lt; (length(cci.CONTRACT_PERIOD_DATE) -
+            length(REPLACE(cci.CONTRACT_PERIOD_DATE,',',''))+1)
+            WHERE
+            substring_index(substring_index(substring_index(cci.CONTRACT_PERIOD_DATE,',',b.help_topic_id+1),',',-1),'~',-1)&gt;=#{contractInside.contractPeriodToFrom}
+            AND
+            substring_index(substring_index(substring_index(cci.CONTRACT_PERIOD_DATE,',',b.help_topic_id+1),',',-1),'~',-1)&lt;=#{contractInside.contractPeriodToTo}
             ))
         </if>
         <if test="contractInside.jobAgreementFromFrom != null and contractInside.jobAgreementFromFrom != '' and contractInside.jobAgreementFromTo != null and contractInside.jobAgreementFromTo != ''">
@@ -63,8 +78,10 @@
             FROM cy_contract_inside AS cci
             JOIN mysql.help_topic AS b
             ON b.help_topic_id &lt; (length(cci.JOB_AGREEMENT_DATE) - length(REPLACE(cci.JOB_AGREEMENT_DATE,',',''))+1)
-            WHERE substring_index(substring_index(substring_index(cci.JOB_AGREEMENT_DATE,',',b.help_topic_id+1),',',-1),'~',1)&gt;=#{contractInside.jobAgreementFromFrom}
-            AND substring_index(substring_index(substring_index(cci.JOB_AGREEMENT_DATE,',',b.help_topic_id+1),',',-1),'~',1)&lt;=#{contractInside.jobAgreementFromTo}
+            WHERE
+            substring_index(substring_index(substring_index(cci.JOB_AGREEMENT_DATE,',',b.help_topic_id+1),',',-1),'~',1)&gt;=#{contractInside.jobAgreementFromFrom}
+            AND
+            substring_index(substring_index(substring_index(cci.JOB_AGREEMENT_DATE,',',b.help_topic_id+1),',',-1),'~',1)&lt;=#{contractInside.jobAgreementFromTo}
             ))
         </if>
         <if test="contractInside.jobAgreementToFrom != null and contractInside.jobAgreementToFrom != '' and contractInside.jobAgreementToTo != null and contractInside.jobAgreementToTo != ''">
@@ -73,8 +90,10 @@
             FROM cy_contract_inside AS cci
             JOIN mysql.help_topic AS b
             ON b.help_topic_id &lt; (length(cci.JOB_AGREEMENT_DATE) - length(REPLACE(cci.JOB_AGREEMENT_DATE,',',''))+1)
-            WHERE substring_index(substring_index(substring_index(cci.JOB_AGREEMENT_DATE,',',b.help_topic_id+1),',',-1),'~',-1)&gt;=#{contractInside.jobAgreementToFrom}
-            AND substring_index(substring_index(substring_index(cci.JOB_AGREEMENT_DATE,',',b.help_topic_id+1),',',-1),'~',-1)&lt;=#{contractInside.jobAgreementToTo}
+            WHERE
+            substring_index(substring_index(substring_index(cci.JOB_AGREEMENT_DATE,',',b.help_topic_id+1),',',-1),'~',-1)&gt;=#{contractInside.jobAgreementToFrom}
+            AND
+            substring_index(substring_index(substring_index(cci.JOB_AGREEMENT_DATE,',',b.help_topic_id+1),',',-1),'~',-1)&lt;=#{contractInside.jobAgreementToTo}
             ))
         </if>
     </select>
@@ -89,9 +108,9 @@
         cci.JOB_AGREEMENT,
         cci.JOB_AGREEMENT_DATE,
         cci.REMARK_RENEW,
-        cci.REMARK,
-        cci.FILE_NUM,
-        cci.BAD_NUM
+        cci.REMARK
+--         cci.FILE_NUM
+--         cci.BAD_NUM
         FROM cy_contract_inside AS cci
         WHERE cci.ID_NUM=#{idNum}
     </select>
@@ -102,4 +121,13 @@
         LEFT JOIN cy_staff_inside AS csi ON(csi.ID_NUM=cco.ID_NUM)
         WHERE FIND_IN_SET(cco.ID, #{contractInsideIdsStr})
     </select>
+
+    <delete id="deleteContractInsideTrue">
+        DELETE FROM cy_contract_inside WHERE FIND_IN_SET(ID, #{contractInsideIdsStr})
+    </delete>
+
+    <update id="restoreContractInside">
+        UPDATE cy_contract_inside SET DELETED=0 WHERE FIND_IN_SET(ID, #{contractInsideIds})
+    </update>
+
 </mapper>

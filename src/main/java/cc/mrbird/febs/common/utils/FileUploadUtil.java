@@ -10,9 +10,19 @@ import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+/**
+ * 上传文件工具类
+ */
 @Slf4j
 public class FileUploadUtil {
 
+    /**
+     * 上传文件
+     *
+     * @param filesParam 要上传的文件
+     * @return 上传后文件的地址
+     * @throws Exception 报错
+     */
     public static String fileUpload(MultipartFile filesParam) throws Exception {
         String fileName = filesParam.getOriginalFilename();
         int index = fileName.lastIndexOf("\\");
@@ -22,9 +32,6 @@ public class FileUploadUtil {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMddHHmmssSSS");
         String dateTimeNum = simpleDateFormat.format(new Date());
         String newFileName = dateTimeNum + "_" + fileName;
-        //target文件夹中创建了
-//        String paths = ResourceUtils.getFile(ResourceUtils.CLASSPATH_URL_PREFIX + "static").getPath() + "/files";
-//        String paths = request.getServletContext().getRealPath("/resources/static/files");
         String paths = "/home/cythree/files";
         File targetFile = new File(paths);
         if (!targetFile.exists()) {
@@ -40,30 +47,20 @@ public class FileUploadUtil {
         String fileType = fileName.substring(fileName.lastIndexOf(".") + 1).toLowerCase();
         if (fileType.equals("jpeg") || fileType.equals("jpg") || fileType.equals("png") || fileType.equals("bmp")) {
             if (filesParam.getSize() > 1048576) {
-                String fullPathAddress = paths + "\\" + newFileName;
+                String fullPathAddress = paths + "/" + newFileName;
                 Thumbnails.of(fullPathAddress).scale(0.5f).toFile(fullPathAddress);
             }
         }
         return "/files/" + newFileName;
     }
 
+
+    /**
+     * 删除文件
+     *
+     * @param fileName 要删除的文件名称
+     */
     public static void fileDelete(String fileName) {
-//        try {
-//            String paths = ResourceUtils.getFile(ResourceUtils.CLASSPATH_URL_PREFIX + "static").getPath() + "/files";
-//            String file = fileName.substring(7);
-//            File targetFile = new File(paths, file);
-//            if (targetFile.exists()) {
-//                if (targetFile.delete()) {
-//                    log.info("文件删除成功");
-//                } else {
-//                    log.error("文件删除失败");
-//                }
-//            } else {
-//                log.error("没有文件");
-//            }
-//        } catch (FileNotFoundException e) {
-//            e.printStackTrace();
-//        }
         String paths = "/home/cythree/files";
         String file = fileName.substring(7);
         File targetFile = new File(paths, file);
