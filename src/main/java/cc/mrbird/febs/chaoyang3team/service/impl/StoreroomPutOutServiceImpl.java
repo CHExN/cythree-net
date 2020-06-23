@@ -261,13 +261,13 @@ public class StoreroomPutOutServiceImpl extends ServiceImpl<StoreroomPutOutMappe
         storeroomPutOut.setModifyTime(LocalDateTime.now());
 
         JSONArray jsonArray = JSONArray.fromObject(storeroomPutOut.getStoreroomList());
-        List<Storeroom> storeroomPutList = (List<Storeroom>) JSONArray.toCollection(jsonArray, Storeroom.class);
+        List<Storeroom> storeroomPutOutList = (List<Storeroom>) JSONArray.toCollection(jsonArray, Storeroom.class);
         List<Storeroom> storeroomList = new ArrayList<>();
 
         StringJoiner parentIdJoiner = new StringJoiner(",");
-        storeroomPutList.forEach(s -> {
+        storeroomPutOutList.forEach(s -> {
             // 记录所关联的库房id
-            parentIdJoiner.add(s.getParentId() + "");
+            parentIdJoiner.add(s.getParentId().toString());
 
             // 库房数据
             Storeroom storeroom = new Storeroom();
@@ -278,10 +278,12 @@ public class StoreroomPutOutServiceImpl extends ServiceImpl<StoreroomPutOutMappe
             storeroom.setMoney(s.getMoney());
             storeroom.setReceipt(s.getReceipt());
             storeroom.setRemark(s.getRemark());
-            // 如果修改的是入库数据，就把库房数据的日期和供应商也连同修改
+            storeroom.setTypeApplication(storeroomPutOut.getTypeApplication());
+            storeroom.setSupplier(storeroomPutOut.getSupplier());
+
+            // 如果修改的是入库数据，就把库房数据的日期也连同修改
             if (storeroomPutOut.getIsPut().equals("1")) {
                 storeroom.setDate(storeroomPutOut.getDate());
-//                storeroom.setSupplier(storeroomPutOut.getSupplier());
             }
             storeroomList.add(storeroom);
 
@@ -290,14 +292,24 @@ public class StoreroomPutOutServiceImpl extends ServiceImpl<StoreroomPutOutMappe
             s.setIsIn(null);
             s.setStatus(null);
             s.setAmountDist(null);
-            s.setDate(storeroomPutOut.getDate());
-            s.setToDeptId(storeroomPutOut.getToDeptId());
-            // 根据parentId更新出入库允许更新的项
-            this.storeroomService.updateStoreroomByParentId(s, storeroomPutOut.getIsPut());
             s.setDate(null);
             s.setToDeptId(null);
-            this.storeroomService.updateStoreroomByParentId(s, storeroomPutOut.getIsPut().equals("1") ? "2" : "1"); // 如果上面是1那这里就是2，否则反之
+            s.setTypeApplication(storeroomPutOut.getTypeApplication());
+            s.setSupplier(storeroomPutOut.getSupplier());
+
+            // 根据parentId更新出入库允许更新的项
+            this.storeroomService.updateStoreroomByParentId(s, null);
+
+            // 根据storeroom自身的id来更新与出入库单同步的项（日期、出库部门、物资类别、供应商）
+            Storeroom updateStoreroom = new Storeroom();
+            updateStoreroom.setId(s.getId());
+            updateStoreroom.setDate(storeroomPutOut.getDate());
+            updateStoreroom.setToDeptId(storeroomPutOut.getToDeptId());
+            /*updateStoreroom.setTypeApplication(storeroomPutOut.getTypeApplication());
+            updateStoreroom.setSupplier(storeroomPutOut.getSupplier());*/
+            this.storeroomService.updateStoreroom(updateStoreroom);
         });
+
         // 批量更新对应的库房数据
         this.storeroomService.batchUpdateStoreroom(storeroomList);
 
@@ -338,6 +350,8 @@ public class StoreroomPutOutServiceImpl extends ServiceImpl<StoreroomPutOutMappe
         // 2020-03-31号开始，入库单开始绑定采购申请单（除了食堂用品），删除入库单后，采购申请单的流程自动变为“待入库状态”（除了食堂用品），在31号之前的入库单则没法
         // 根据入库单ids更新相应采购申请单状态为“待入库”
         this.baseMapper.updateApplicationProcessByPutId(storeroomPutIdsStr);
+        // 根据入库单ids更新相应采购申请单内采购物资状态为“未入库”
+        this.baseMapper.updatePlanStatusByPutId(storeroomPutIdsStr);
 
         List<String> list = Arrays.asList(storeroomPutIds);
         // 删除入库单

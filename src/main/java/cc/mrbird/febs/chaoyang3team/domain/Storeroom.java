@@ -10,6 +10,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 
 /**
+ * 在这里不论添加什么字段，都得去StoreroomOutAdd.vue里，在转换JSON的时候把新加的字段给去除
  * @author CHExN
  */
 @Data
@@ -23,12 +24,15 @@ public class Storeroom implements Serializable {
      */
     @TableId(value = "ID", type = IdType.AUTO)
     private Long id;
+    private transient String ids;
+    private transient String[] idArr;
 
     /**
      * 入库物品名称
      */
     @TableField("NAME")
     private String name;
+    private transient String[] names;
 
     /**
      * 型号
@@ -126,5 +130,7 @@ public class Storeroom implements Serializable {
     private transient BigDecimal storeroomCount;
     private transient String putNum;
     private transient String outNum;
+
+    private transient UnitConversion unitConversion;
 
 }

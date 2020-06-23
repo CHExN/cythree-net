@@ -161,15 +161,6 @@ public class Wc implements Serializable {
     @ExcelField(value = "公厕现在的状态")
     private String wcNowStatus;
 
-    @ExcelField(value = "水表编号")
-    private String waterNum;
-
-    @ExcelField(value = "电表编号")
-    private String electricityNum;
-
-    @ExcelField(value = "缴费号")
-    private String paymentNum;
-
 
     private transient String a;
     private transient BigDecimal b;
@@ -187,6 +178,18 @@ public class Wc implements Serializable {
     private transient String n;
     private transient String o;
     private transient String p;
+    private transient BigDecimal q;
+    private transient BigDecimal r;
+    private transient BigDecimal s;
+    private transient BigDecimal t;
+    private transient BigDecimal u;
+    private transient BigDecimal v;
+    private transient BigDecimal w;
+    private transient BigDecimal x;
+    private transient BigDecimal y;
+    private transient BigDecimal z;
+    private transient BigDecimal aa;
+    private transient BigDecimal ab;
 
     // 距离
     private transient Integer distance;

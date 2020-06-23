@@ -60,7 +60,7 @@ public class SealController extends BaseController {
 
     @GetMapping
     @RequiresPermissions("seal:view")
-    public Map<String, Object> SealList(QueryRequest request, Seal seal, ServletRequest servletRequest) {
+    public Map<String, Object> sealList(QueryRequest request, Seal seal, ServletRequest servletRequest) {
         return getDataTable(this.sealService.findSealDetail(request, seal, servletRequest));
     }
 

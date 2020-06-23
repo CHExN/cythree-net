@@ -116,9 +116,12 @@ public class LoginController {
         // 所有分队前7消耗量排名
         List<Map<String, Object>> allOwnWcConsumptionByYear = wcService.findAllOwnWcConsumptionByYear(year);
         data.put("allOwnWcConsumptionByYear", allOwnWcConsumptionByYear);
-        // 入库类别占比
+        // 入库物资类别占比
         List<Map<String, Object>> storeroomPutTypeApplicationProportion = storeroomPutService.findStoreroomPutTypeApplicationProportion(date);
         data.put("storeroomPutTypeApplicationProportion", storeroomPutTypeApplicationProportion);
+        // 入库供应商占比
+        List<Map<String, Object>> storeroomPutSupplierProportion = storeroomPutService.findStoreroomPutSupplierProportion(date, null);
+        data.put("storeroomPutSupplierProportion", storeroomPutSupplierProportion);
 //        User param = new User();
 //        param.setUsername(username);
 //        List<Map<String, Object>> lastSevenUserVisitCount = loginLogMapper.findLastSevenDaysVisitCount(param);

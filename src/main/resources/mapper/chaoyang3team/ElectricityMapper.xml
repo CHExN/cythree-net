@@ -4,19 +4,17 @@
 
     <select id="findElectricityDetail" resultType="cc.mrbird.febs.chaoyang3team.domain.Electricity">
         SELECT
-        wc.WC_ID,
-        wc.WC_NAME,
+        wc.WC_ID AS wcId,
+        wc.WC_NAME AS wcName,
         wc.WC_NUM AS wcNum,
-        wc.ELECTRICITY_NUM,
-        wc.PAYMENT_NUM,
         e.ELECTRICITY_ID AS electricityId,
         e.`YEAR`,
         e.`MONTH`,
-        e.ACTUAL_AMOUNT,
-        e.UNIT_PRICE,
-        e.TOTAL_AMOUNT,
+        e.ACTUAL_AMOUNT AS actualAmount,
+        e.UNIT_PRICE AS unitPrice,
+        e.TOTAL_AMOUNT AS totalAmount,
         e.CREATE_DATE AS createDate,
-        e.REC_DATE,
+        e.REC_DATE AS recDate,
         e.TYPE
         FROM cy_electricity AS e
         LEFT JOIN p_wc_electricity AS we ON(we.ELECTRICITY_ID=e.ELECTRICITY_ID)
@@ -28,14 +26,11 @@
         <if test="electricity.wcNum != null and electricity.wcNum != ''">
             AND wc.WC_NUM LIKE CONCAT('%',#{electricity.wcNum},'%')
         </if>
-        <if test="electricity.electricityNum != null and electricity.electricityNum != ''">
-            AND wc.ELECTRICITY_NUM LIKE CONCAT('%',#{electricity.electricityNum},'%')
-        </if>
         <if test="electricity.year != null and electricity.year != ''">
-            AND e.`YEAR`=#{electricity.year}
+            AND FIND_IN_SET(e.`YEAR`, #{electricity.year})
         </if>
         <if test="electricity.month != null and electricity.month != ''">
-            AND e.`MONTH`=#{electricity.month}
+            AND FIND_IN_SET(e.`MONTH`, #{electricity.month})
         </if>
         <if test="electricity.createTimeFrom != null and electricity.createTimeFrom !=''">
             AND e.CREATE_DATE &gt;= #{electricity.createTimeFrom}

@@ -57,4 +57,9 @@ public class StoreroomPutServiceImpl extends ServiceImpl<StoreroomPutMapper, Sto
         return baseMapper.findStoreroomPutTypeApplicationProportion(date);
     }
 
+    @Override
+    public List<Map<String, Object>> findStoreroomPutSupplierProportion(String date, String typeApplication) {
+        return baseMapper.findStoreroomPutSupplierProportion(date, typeApplication);
+    }
+
 }

@@ -1,7 +1,6 @@
 package cc.mrbird.febs.chaoyang3team.dao;
 
 import cc.mrbird.febs.chaoyang3team.domain.Vacation;
-import cc.mrbird.febs.chaoyang3team.domain.VacationImport;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -20,14 +19,30 @@ public interface VacationMapper extends BaseMapper<Vacation> {
 
     Long findInsideAnnualLeaveCount(@Param("vacation") Vacation vacation);
 
-    IPage<VacationImport> findInsideAnnualLeave(Page<VacationImport> page, @Param("vacation") Vacation vacation);
+    IPage<Vacation> findInsideAnnualLeave(Page<Vacation> page, @Param("vacation") Vacation vacation);
 
-    Long findInsVacationCount(@Param("vacation") Vacation vacation);
+    /**
+     * 编内人员
+     */
+    Long findInsideVacationCount(@Param("vacation") Vacation vacation);
+    IPage<Vacation> findInsideVacation(Page<Vacation> page, @Param("vacation") Vacation vacation);
 
-    IPage<VacationImport> findInsVacation(Page<VacationImport> page, @Param("vacation") Vacation vacation);
+    /**
+     * 编外归属人员
+     */
+    Long findAttributionVacationCount(@Param("vacation") Vacation vacation);
+    IPage<Vacation> findAttributionVacation(Page<Vacation> page, @Param("vacation") Vacation vacation);
 
-    Long findOutVacationCount(@Param("vacation") Vacation vacation);
+    /**
+     * 编外分队人员
+     */
+    Long findOutsideVacationCount(@Param("vacation") Vacation vacation);
+    IPage<Vacation> findOutsideVacation(Page<Vacation> page, @Param("vacation") Vacation vacation);
 
-    IPage<VacationImport> findOutVacation(Page<VacationImport> page, @Param("vacation") Vacation vacation);
+    /**
+     * 劳务派遣人员
+     */
+    Long findSendVacationCount(@Param("vacation") Vacation vacation);
+    IPage<Vacation> findSendVacation(Page<Vacation> page, @Param("vacation") Vacation vacation);
 
 }

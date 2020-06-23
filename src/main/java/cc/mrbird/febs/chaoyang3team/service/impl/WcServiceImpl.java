@@ -136,12 +136,15 @@ public class WcServiceImpl extends ServiceImpl<WcMapper, Wc> implements WcServic
     @Transactional
     public void deleteWc(String[] wcIds) {
         // 删除与公厕有关的出库记录绑定数据
-        this.wcStoreroomService.deleteWcStoreroomsByWcId(wcIds);
-        this.wcWaterService.deleteByWcId(wcIds);
-        this.wcElectricityService.deleteByElectricityId(wcIds);
+        // this.wcStoreroomService.deleteWcStoreroomsByWcId(wcIds);
+        // this.wcWaterService.deleteByWcId(wcIds);
+        // this.wcElectricityService.deleteByElectricityId(wcIds);
+
+        // 删除公厕信息
         List<String> ids = Arrays.asList(wcIds);
         this.baseMapper.deleteBatchIds(ids);
-        // 根据公厕id查找对应照片id
+
+        // 删除照片信息
         List<String> fileIdList = this.wcFileService.findFileIdsByWcIds(wcIds);
         if (!fileIdList.isEmpty()) {
             String[] fileIds = fileIdList.toArray(new String[0]);
@@ -156,6 +159,7 @@ public class WcServiceImpl extends ServiceImpl<WcMapper, Wc> implements WcServic
     }
 
     @Override
+    @Transactional
     public void deleteWcFile(String[] fileIds) {
         // 根据文件id删除
         this.fileService.deleteFiles(fileIds);
@@ -164,6 +168,7 @@ public class WcServiceImpl extends ServiceImpl<WcMapper, Wc> implements WcServic
     }
 
     @Override
+    @Transactional
     public void batchInsertWc(List<Wc> wcList) {
         this.saveBatch(wcList);
     }
@@ -185,23 +190,13 @@ public class WcServiceImpl extends ServiceImpl<WcMapper, Wc> implements WcServic
     }
 
     @Override
-    public Wc getWcByWcNum(String wcNum) {
-        return baseMapper.getWcByWcNum(wcNum);
+    public Wc getWcByWcNum(String wcNum, Boolean isLastFour) {
+        return baseMapper.getWcByWcNum(wcNum, isLastFour);
     }
 
     @Override
-    public Long getWcIdByWcNum(String wcNum) {
-        return baseMapper.getWcIdByWcNum(wcNum);
-    }
-
-    @Override
-    public Long getWcIdByWaterNum(String waterNum) {
-        return baseMapper.getWcIdByWaterNum(waterNum);
-    }
-
-    @Override
-    public Long getWcIdByElectricityNum(String electricityNum) {
-        return baseMapper.getWcIdByElectricityNum(electricityNum);
+    public Long getWcIdByWcNum(String wcNum, Boolean isLastFour) {
+        return baseMapper.getWcIdByWcNum(wcNum, isLastFour);
     }
 
     @Override

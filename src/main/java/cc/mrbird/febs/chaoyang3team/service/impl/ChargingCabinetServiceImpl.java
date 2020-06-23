@@ -30,10 +30,8 @@ public class ChargingCabinetServiceImpl extends ServiceImpl<ChargingCabinetMappe
     public IPage<ChargingCabinet> findChargingCabinetDetail(QueryRequest request, ChargingCabinet chargingCabinet) {
         try {
             Page<ChargingCabinet> page = new Page<>();
-            page.setSearchCount(false);
             SortUtil.handlePageSort(request, page,"id", FebsConstant.ORDER_ASC, false);
-            Integer total = this.baseMapper.findChargingCabinetDetailCount(chargingCabinet);
-            return total > 0 ? this.baseMapper.findChargingCabinetDetail(page, chargingCabinet).setTotal(total) : null;
+            return this.baseMapper.findChargingCabinetDetail(page, chargingCabinet);
         } catch (Exception e) {
             log.error("查询充电柜信息异常", e);
             return null;

@@ -30,10 +30,8 @@ public class CarElectricServiceImpl extends ServiceImpl<CarElectricMapper, CarEl
     public IPage<CarElectric> findCarElectricDetail(QueryRequest request, CarElectric carElectric) {
         try {
             Page<CarElectric> page = new Page<>();
-            page.setSearchCount(false);
             SortUtil.handlePageSort(request, page,"id", FebsConstant.ORDER_ASC, false);
-            Integer total = this.baseMapper.findCarElectricDetailCount(carElectric);
-            return total > 0 ? this.baseMapper.findCarElectricDetail(page, carElectric).setTotal(total) : null;
+            return this.baseMapper.findCarElectricDetail(page, carElectric);
         } catch (Exception e) {
             log.error("查询电动车信息异常", e);
             return null;

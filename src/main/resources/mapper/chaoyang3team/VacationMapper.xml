@@ -19,24 +19,32 @@
         <if test="vacation.insOut == 0">
             LEFT JOIN cy_staff_inside AS cs ON(cs.STAFF_ID=cv.STAFF_ID)
         </if>
-        <if test="vacation.insOut == 1">
+        <if test="vacation.insOut == 1 or vacation.insOut == 2">
             LEFT JOIN cy_staff_outside AS cs ON(cs.STAFF_ID=cv.STAFF_ID)
         </if>
-        WHERE cv.INS_OUT=#{vacation.insOut}
+        <if test="vacation.insOut == 3">
+            LEFT JOIN cy_staff_send AS cs ON(cs.STAFF_ID=cv.STAFF_ID)
+        </if>
+        WHERE cv.INS_OUT=#{vacation.insOut} AND cs.DELETED=0 AND FIND_IN_SET(cs.IS_LEAVE, #{vacation.isLeave})
+        <if test="vacation.insOut == 1">
+            AND FIND_IN_SET(cs.`TYPE`, '0')
+        </if>
+        <if test="vacation.insOut == 2">
+            AND FIND_IN_SET(cs.`TYPE`, '1,2,3')
+        </if>
         <if test="vacation.name != null and vacation.name != ''">
-            AND cs.`NAME` LIKE CONCAT('%',#{vacation.name},'%')
+            <foreach collection="vacation.names" index="index" item="item" open="AND (" separator="OR" close=")">
+                cs.`NAME` LIKE CONCAT('%',#{item},'%')
+            </foreach>
+        </if>
+        <if test="vacation.date != null and vacation.date != ''">
+            AND (LEFT(cv.DATE, 7) &lt;= #{vacation.date} AND LEFT(RIGHT(cv.DATE, 10) ,7) &gt;= #{vacation.date})
         </if>
         <if test="vacation.isVacation != null and vacation.isVacation != ''">
             AND FIND_IN_SET(cv.IS_VACATION, #{vacation.isVacation})
         </if>
         <if test="vacation.type != null and vacation.type != ''">
             AND FIND_IN_SET(cv.TYPE, #{vacation.type})
-        </if>
-        <if test="vacation.createTimeFrom != null and vacation.createTimeFrom !=''">
-            AND cv.DATE &gt;= #{vacation.createTimeFrom}
-        </if>
-        <if test="vacation.createTimeTo!= null and vacation.createTimeTo !=''">
-            AND cv.DATE &lt;= #{vacation.createTimeTo}
         </if>
     </select>
 
@@ -54,102 +62,241 @@
     </select>
 
     <!-- 这里用vacation.day是因为day是int类型，没有其他的原因 -->
-    <select id="findInsideAnnualLeave" resultType="cc.mrbird.febs.chaoyang3team.domain.VacationImport">
+    <!--<select id="findInsideAnnualLeave" resultType="cc.mrbird.febs.chaoyang3team.domain.VacationImport">
         SELECT
         DISTINCT csi.STAFF_ID,
         csi.SORT_NUM AS sortNum,
         csi.`NAME`,
         csi.WORK_DATE,
         (SELECT SUM(cv.`DAY`) FROM cy_vacation AS cv WHERE cv.STAFF_ID=csi.STAFF_ID AND cv.TYPE='年假') AS alreadyDays,
-        (SELECT SUM(cv.`DAY`) FROM cy_vacation AS cv WHERE cv.STAFF_ID=csi.STAFF_ID AND cv.TYPE='年假' AND cv.DATE&gt;=CONCAT(#{vacation.day}-1,'-12-16') AND cv.DATE&lt;=CONCAT(#{vacation.day},'-01-15')) AS january,
-        (SELECT SUM(cv.`DAY`) FROM cy_vacation AS cv WHERE cv.STAFF_ID=csi.STAFF_ID AND cv.TYPE='年假' AND cv.DATE&gt;=CONCAT(#{vacation.day},'-01-16') AND cv.DATE&lt;=CONCAT(#{vacation.day},'-02-15')) AS february,
-        (SELECT SUM(cv.`DAY`) FROM cy_vacation AS cv WHERE cv.STAFF_ID=csi.STAFF_ID AND cv.TYPE='年假' AND cv.DATE&gt;=CONCAT(#{vacation.day},'-02-16') AND cv.DATE&lt;=CONCAT(#{vacation.day},'-03-15')) AS march,
-        (SELECT SUM(cv.`DAY`) FROM cy_vacation AS cv WHERE cv.STAFF_ID=csi.STAFF_ID AND cv.TYPE='年假' AND cv.DATE&gt;=CONCAT(#{vacation.day},'-03-16') AND cv.DATE&lt;=CONCAT(#{vacation.day},'-04-15')) AS april,
-        (SELECT SUM(cv.`DAY`) FROM cy_vacation AS cv WHERE cv.STAFF_ID=csi.STAFF_ID AND cv.TYPE='年假' AND cv.DATE&gt;=CONCAT(#{vacation.day},'-04-16') AND cv.DATE&lt;=CONCAT(#{vacation.day},'-05-15')) AS may,
-        (SELECT SUM(cv.`DAY`) FROM cy_vacation AS cv WHERE cv.STAFF_ID=csi.STAFF_ID AND cv.TYPE='年假' AND cv.DATE&gt;=CONCAT(#{vacation.day},'-05-16') AND cv.DATE&lt;=CONCAT(#{vacation.day},'-06-15')) AS june,
-        (SELECT SUM(cv.`DAY`) FROM cy_vacation AS cv WHERE cv.STAFF_ID=csi.STAFF_ID AND cv.TYPE='年假' AND cv.DATE&gt;=CONCAT(#{vacation.day},'-06-16') AND cv.DATE&lt;=CONCAT(#{vacation.day},'-07-15')) AS july,
-        (SELECT SUM(cv.`DAY`) FROM cy_vacation AS cv WHERE cv.STAFF_ID=csi.STAFF_ID AND cv.TYPE='年假' AND cv.DATE&gt;=CONCAT(#{vacation.day},'-07-16') AND cv.DATE&lt;=CONCAT(#{vacation.day},'-08-15')) AS august,
-        (SELECT SUM(cv.`DAY`) FROM cy_vacation AS cv WHERE cv.STAFF_ID=csi.STAFF_ID AND cv.TYPE='年假' AND cv.DATE&gt;=CONCAT(#{vacation.day},'-08-16') AND cv.DATE&lt;=CONCAT(#{vacation.day},'-09-15')) AS september,
-        (SELECT SUM(cv.`DAY`) FROM cy_vacation AS cv WHERE cv.STAFF_ID=csi.STAFF_ID AND cv.TYPE='年假' AND cv.DATE&gt;=CONCAT(#{vacation.day},'-09-16') AND cv.DATE&lt;=CONCAT(#{vacation.day},'-10-15')) AS october,
-        (SELECT SUM(cv.`DAY`) FROM cy_vacation AS cv WHERE cv.STAFF_ID=csi.STAFF_ID AND cv.TYPE='年假' AND cv.DATE&gt;=CONCAT(#{vacation.day},'-10-16') AND cv.DATE&lt;=CONCAT(#{vacation.day},'-11-15')) AS november,
-        (SELECT SUM(cv.`DAY`) FROM cy_vacation AS cv WHERE cv.STAFF_ID=csi.STAFF_ID AND cv.TYPE='年假' AND cv.DATE&gt;=CONCAT(#{vacation.day},'-11-16') AND cv.DATE&lt;=CONCAT(#{vacation.day},'-12-15')) AS december
+        (SELECT SUM(cv.`DAY`) FROM cy_vacation AS cv WHERE cv.STAFF_ID=csi.STAFF_ID AND cv.TYPE='年假' AND cv.DATE&gt;=CONCAT(#{vacation.day}-1,'-12-16')
+        AND cv.DATE&lt;=CONCAT(#{vacation.day},'-01-15')) AS january,
+        (SELECT SUM(cv.`DAY`) FROM cy_vacation AS cv WHERE cv.STAFF_ID=csi.STAFF_ID AND cv.TYPE='年假' AND cv.DATE&gt;=CONCAT(#{vacation.day},'-01-16')
+        AND cv.DATE&lt;=CONCAT(#{vacation.day},'-02-15')) AS february,
+        (SELECT SUM(cv.`DAY`) FROM cy_vacation AS cv WHERE cv.STAFF_ID=csi.STAFF_ID AND cv.TYPE='年假' AND cv.DATE&gt;=CONCAT(#{vacation.day},'-02-16')
+        AND cv.DATE&lt;=CONCAT(#{vacation.day},'-03-15')) AS march,
+        (SELECT SUM(cv.`DAY`) FROM cy_vacation AS cv WHERE cv.STAFF_ID=csi.STAFF_ID AND cv.TYPE='年假' AND cv.DATE&gt;=CONCAT(#{vacation.day},'-03-16')
+        AND cv.DATE&lt;=CONCAT(#{vacation.day},'-04-15')) AS april,
+        (SELECT SUM(cv.`DAY`) FROM cy_vacation AS cv WHERE cv.STAFF_ID=csi.STAFF_ID AND cv.TYPE='年假' AND cv.DATE&gt;=CONCAT(#{vacation.day},'-04-16')
+        AND cv.DATE&lt;=CONCAT(#{vacation.day},'-05-15')) AS may,
+        (SELECT SUM(cv.`DAY`) FROM cy_vacation AS cv WHERE cv.STAFF_ID=csi.STAFF_ID AND cv.TYPE='年假' AND cv.DATE&gt;=CONCAT(#{vacation.day},'-05-16')
+        AND cv.DATE&lt;=CONCAT(#{vacation.day},'-06-15')) AS june,
+        (SELECT SUM(cv.`DAY`) FROM cy_vacation AS cv WHERE cv.STAFF_ID=csi.STAFF_ID AND cv.TYPE='年假' AND cv.DATE&gt;=CONCAT(#{vacation.day},'-06-16')
+        AND cv.DATE&lt;=CONCAT(#{vacation.day},'-07-15')) AS july,
+        (SELECT SUM(cv.`DAY`) FROM cy_vacation AS cv WHERE cv.STAFF_ID=csi.STAFF_ID AND cv.TYPE='年假' AND cv.DATE&gt;=CONCAT(#{vacation.day},'-07-16')
+        AND cv.DATE&lt;=CONCAT(#{vacation.day},'-08-15')) AS august,
+        (SELECT SUM(cv.`DAY`) FROM cy_vacation AS cv WHERE cv.STAFF_ID=csi.STAFF_ID AND cv.TYPE='年假' AND cv.DATE&gt;=CONCAT(#{vacation.day},'-08-16')
+        AND cv.DATE&lt;=CONCAT(#{vacation.day},'-09-15')) AS september,
+        (SELECT SUM(cv.`DAY`) FROM cy_vacation AS cv WHERE cv.STAFF_ID=csi.STAFF_ID AND cv.TYPE='年假' AND cv.DATE&gt;=CONCAT(#{vacation.day},'-09-16')
+        AND cv.DATE&lt;=CONCAT(#{vacation.day},'-10-15')) AS october,
+        (SELECT SUM(cv.`DAY`) FROM cy_vacation AS cv WHERE cv.STAFF_ID=csi.STAFF_ID AND cv.TYPE='年假' AND cv.DATE&gt;=CONCAT(#{vacation.day},'-10-16')
+        AND cv.DATE&lt;=CONCAT(#{vacation.day},'-11-15')) AS november,
+        (SELECT SUM(cv.`DAY`) FROM cy_vacation AS cv WHERE cv.STAFF_ID=csi.STAFF_ID AND cv.TYPE='年假' AND cv.DATE&gt;=CONCAT(#{vacation.day},'-11-16')
+        AND cv.DATE&lt;=CONCAT(#{vacation.day},'-12-15')) AS december
         FROM cy_staff_inside AS csi
         LEFT JOIN cy_vacation AS cv ON(cv.STAFF_ID=csi.STAFF_ID)
         WHERE cv.INS_OUT='0' AND cv.TYPE='年假' AND cv.DATE&gt;=CONCAT(#{vacation.day}-1,'-12-16') AND cv.DATE&lt;=CONCAT(#{vacation.day},'-12-15')
         <if test="vacation.name!= null and vacation.name !=''">
             AND csi.`NAME` LIKE CONCAT('%',#{vacation.name},'%')
         </if>
-    </select>
-
-    <select id="findInsVacationCount" resultType="java.lang.Long">
-        SELECT COUNT(DISTINCT csi.STAFF_ID) FROM cy_staff_inside AS csi
-        LEFT JOIN cy_vacation AS cv ON(cv.STAFF_ID=csi.STAFF_ID)
-        WHERE cv.INS_OUT='0' AND cv.DATE&gt;=CONCAT(#{vacation.day}-1,'-12-16') AND cv.DATE&lt;=CONCAT(#{vacation.day},'-12-15')
-        <if test="vacation.name!= null and vacation.name !=''">
-            AND csi.`NAME` LIKE CONCAT('%',#{vacation.name},'%')
-        </if>
-    </select>
-
-    <select id="findInsVacation" resultType="cc.mrbird.febs.chaoyang3team.domain.VacationImport">
+    </select>-->
+    <select id="findInsideAnnualLeave" resultType="cc.mrbird.febs.chaoyang3team.domain.Vacation">
         SELECT
-        DISTINCT csi.STAFF_ID,
-        csi.SORT_NUM AS sortNum,
         csi.`NAME`,
+        csi.SORT_NUM,
         csi.WORK_DATE,
-        (SELECT GROUP_CONCAT(CONCAT(cv.TYPE,cv.DAY,'天',cv.REMARK)) FROM cy_vacation AS cv WHERE cv.STAFF_ID=csi.STAFF_ID AND cv.DATE&gt;=CONCAT(#{vacation.day}-1,'-12-16') AND cv.DATE&lt;=CONCAT(#{vacation.day},'-01-15')) AS january,
-        (SELECT GROUP_CONCAT(CONCAT(cv.TYPE,cv.DAY,'天',cv.REMARK)) FROM cy_vacation AS cv WHERE cv.STAFF_ID=csi.STAFF_ID AND cv.DATE&gt;=CONCAT(#{vacation.day},'-01-16') AND cv.DATE&lt;=CONCAT(#{vacation.day},'-02-15')) AS february,
-        (SELECT GROUP_CONCAT(CONCAT(cv.TYPE,cv.DAY,'天',cv.REMARK)) FROM cy_vacation AS cv WHERE cv.STAFF_ID=csi.STAFF_ID AND cv.DATE&gt;=CONCAT(#{vacation.day},'-02-16') AND cv.DATE&lt;=CONCAT(#{vacation.day},'-03-15')) AS march,
-        (SELECT GROUP_CONCAT(CONCAT(cv.TYPE,cv.DAY,'天',cv.REMARK)) FROM cy_vacation AS cv WHERE cv.STAFF_ID=csi.STAFF_ID AND cv.DATE&gt;=CONCAT(#{vacation.day},'-03-16') AND cv.DATE&lt;=CONCAT(#{vacation.day},'-04-15')) AS april,
-        (SELECT GROUP_CONCAT(CONCAT(cv.TYPE,cv.DAY,'天',cv.REMARK)) FROM cy_vacation AS cv WHERE cv.STAFF_ID=csi.STAFF_ID AND cv.DATE&gt;=CONCAT(#{vacation.day},'-04-16') AND cv.DATE&lt;=CONCAT(#{vacation.day},'-05-15')) AS may,
-        (SELECT GROUP_CONCAT(CONCAT(cv.TYPE,cv.DAY,'天',cv.REMARK)) FROM cy_vacation AS cv WHERE cv.STAFF_ID=csi.STAFF_ID AND cv.DATE&gt;=CONCAT(#{vacation.day},'-05-16') AND cv.DATE&lt;=CONCAT(#{vacation.day},'-06-15')) AS june,
-        (SELECT GROUP_CONCAT(CONCAT(cv.TYPE,cv.DAY,'天',cv.REMARK)) FROM cy_vacation AS cv WHERE cv.STAFF_ID=csi.STAFF_ID AND cv.DATE&gt;=CONCAT(#{vacation.day},'-06-16') AND cv.DATE&lt;=CONCAT(#{vacation.day},'-07-15')) AS july,
-        (SELECT GROUP_CONCAT(CONCAT(cv.TYPE,cv.DAY,'天',cv.REMARK)) FROM cy_vacation AS cv WHERE cv.STAFF_ID=csi.STAFF_ID AND cv.DATE&gt;=CONCAT(#{vacation.day},'-07-16') AND cv.DATE&lt;=CONCAT(#{vacation.day},'-08-15')) AS august,
-        (SELECT GROUP_CONCAT(CONCAT(cv.TYPE,cv.DAY,'天',cv.REMARK)) FROM cy_vacation AS cv WHERE cv.STAFF_ID=csi.STAFF_ID AND cv.DATE&gt;=CONCAT(#{vacation.day},'-08-16') AND cv.DATE&lt;=CONCAT(#{vacation.day},'-09-15')) AS september,
-        (SELECT GROUP_CONCAT(CONCAT(cv.TYPE,cv.DAY,'天',cv.REMARK)) FROM cy_vacation AS cv WHERE cv.STAFF_ID=csi.STAFF_ID AND cv.DATE&gt;=CONCAT(#{vacation.day},'-09-16') AND cv.DATE&lt;=CONCAT(#{vacation.day},'-10-15')) AS october,
-        (SELECT GROUP_CONCAT(CONCAT(cv.TYPE,cv.DAY,'天',cv.REMARK)) FROM cy_vacation AS cv WHERE cv.STAFF_ID=csi.STAFF_ID AND cv.DATE&gt;=CONCAT(#{vacation.day},'-10-16') AND cv.DATE&lt;=CONCAT(#{vacation.day},'-11-15')) AS november,
-        (SELECT GROUP_CONCAT(CONCAT(cv.TYPE,cv.DAY,'天',cv.REMARK)) FROM cy_vacation AS cv WHERE cv.STAFF_ID=csi.STAFF_ID AND cv.DATE&gt;=CONCAT(#{vacation.day},'-11-16') AND cv.DATE&lt;=CONCAT(#{vacation.day},'-12-15')) AS december
+        cv.ID,
+        cv.INS_OUT,
+        csi.STAFF_ID,
+        cv.IS_VACATION,
+        cv.TYPE,
+        cv.`DAY`,
+        cv.REMARK,
+        GROUP_CONCAT(cv.DATE) AS `DATE`,
+        cv.CREATE_TIME,
+        cv.MODIFY_TIME
         FROM cy_staff_inside AS csi
-        LEFT JOIN cy_vacation AS cv ON(cv.STAFF_ID=csi.STAFF_ID)
-        WHERE cv.INS_OUT='0' AND cv.DATE&gt;=CONCAT(#{vacation.day}-1,'-12-16') AND cv.DATE&lt;=CONCAT(#{vacation.day},'-12-15')
+        LEFT JOIN cy_vacation AS cv ON(cv.DATE LIKE CONCAT('%',#{vacation.date},'%') AND csi.STAFF_ID=cv.STAFF_ID AND cv.TYPE='年假')
+        WHERE csi.DELETED=0 AND FIND_IN_SET(csi.IS_LEAVE, #{vacation.isLeave})
         <if test="vacation.name!= null and vacation.name !=''">
-            AND csi.`NAME` LIKE CONCAT('%',#{vacation.name},'%')
+            <foreach collection="vacation.names" index="index" item="item" open="AND (" separator="OR" close=")">
+                csi.`NAME` LIKE CONCAT('%',#{item},'%')
+            </foreach>
         </if>
+        <if test="vacation.idNum!= null and vacation.idNum !=''">
+            AND csi.ID_NUM LIKE CONCAT('%',#{vacation.idNum},'%')
+        </if>
+        GROUP BY csi.STAFF_ID
+        ORDER BY IS_LEAVE ASC, SORT_NUM ASC
     </select>
 
-    <select id="findOutVacationCount" resultType="java.lang.Long">
-        SELECT COUNT(DISTINCT cso.STAFF_ID) FROM cy_staff_outside AS cso
-        LEFT JOIN cy_vacation AS cv ON(cv.STAFF_ID=cso.STAFF_ID)
-        WHERE cv.INS_OUT='1' AND cv.DATE&gt;=CONCAT(#{vacation.day}-1,'-12-16') AND cv.DATE&lt;=CONCAT(#{vacation.day},'-12-15')
-        <if test="vacation.name!= null and vacation.name !=''">
-            AND cso.`NAME` LIKE CONCAT('%',#{vacation.name},'%')
-        </if>
-    </select>
-
-    <select id="findOutVacation" resultType="cc.mrbird.febs.chaoyang3team.domain.VacationImport">
+    <select id="findInsideVacation" resultType="cc.mrbird.febs.chaoyang3team.domain.Vacation">
         SELECT
-        DISTINCT cso.STAFF_ID,
-        cso.SORT_NUM_1,
-        cso.SORT_NUM_2,
-        cso.`NAME`,
-        (SELECT GROUP_CONCAT(CONCAT(cv.TYPE,cv.DAY,'天',cv.REMARK)) FROM cy_vacation AS cv WHERE cv.STAFF_ID=cso.STAFF_ID AND cv.DATE&gt;=CONCAT(#{vacation.day}-1,'-12-16') AND cv.DATE&lt;=CONCAT(#{vacation.day},'-01-15')) AS january,
-        (SELECT GROUP_CONCAT(CONCAT(cv.TYPE,cv.DAY,'天',cv.REMARK)) FROM cy_vacation AS cv WHERE cv.STAFF_ID=cso.STAFF_ID AND cv.DATE&gt;=CONCAT(#{vacation.day},'-01-16') AND cv.DATE&lt;=CONCAT(#{vacation.day},'-02-15')) AS february,
-        (SELECT GROUP_CONCAT(CONCAT(cv.TYPE,cv.DAY,'天',cv.REMARK)) FROM cy_vacation AS cv WHERE cv.STAFF_ID=cso.STAFF_ID AND cv.DATE&gt;=CONCAT(#{vacation.day},'-02-16') AND cv.DATE&lt;=CONCAT(#{vacation.day},'-03-15')) AS march,
-        (SELECT GROUP_CONCAT(CONCAT(cv.TYPE,cv.DAY,'天',cv.REMARK)) FROM cy_vacation AS cv WHERE cv.STAFF_ID=cso.STAFF_ID AND cv.DATE&gt;=CONCAT(#{vacation.day},'-03-16') AND cv.DATE&lt;=CONCAT(#{vacation.day},'-04-15')) AS april,
-        (SELECT GROUP_CONCAT(CONCAT(cv.TYPE,cv.DAY,'天',cv.REMARK)) FROM cy_vacation AS cv WHERE cv.STAFF_ID=cso.STAFF_ID AND cv.DATE&gt;=CONCAT(#{vacation.day},'-04-16') AND cv.DATE&lt;=CONCAT(#{vacation.day},'-05-15')) AS may,
-        (SELECT GROUP_CONCAT(CONCAT(cv.TYPE,cv.DAY,'天',cv.REMARK)) FROM cy_vacation AS cv WHERE cv.STAFF_ID=cso.STAFF_ID AND cv.DATE&gt;=CONCAT(#{vacation.day},'-05-16') AND cv.DATE&lt;=CONCAT(#{vacation.day},'-06-15')) AS june,
-        (SELECT GROUP_CONCAT(CONCAT(cv.TYPE,cv.DAY,'天',cv.REMARK)) FROM cy_vacation AS cv WHERE cv.STAFF_ID=cso.STAFF_ID AND cv.DATE&gt;=CONCAT(#{vacation.day},'-06-16') AND cv.DATE&lt;=CONCAT(#{vacation.day},'-07-15')) AS july,
-        (SELECT GROUP_CONCAT(CONCAT(cv.TYPE,cv.DAY,'天',cv.REMARK)) FROM cy_vacation AS cv WHERE cv.STAFF_ID=cso.STAFF_ID AND cv.DATE&gt;=CONCAT(#{vacation.day},'-07-16') AND cv.DATE&lt;=CONCAT(#{vacation.day},'-08-15')) AS august,
-        (SELECT GROUP_CONCAT(CONCAT(cv.TYPE,cv.DAY,'天',cv.REMARK)) FROM cy_vacation AS cv WHERE cv.STAFF_ID=cso.STAFF_ID AND cv.DATE&gt;=CONCAT(#{vacation.day},'-08-16') AND cv.DATE&lt;=CONCAT(#{vacation.day},'-09-15')) AS september,
-        (SELECT GROUP_CONCAT(CONCAT(cv.TYPE,cv.DAY,'天',cv.REMARK)) FROM cy_vacation AS cv WHERE cv.STAFF_ID=cso.STAFF_ID AND cv.DATE&gt;=CONCAT(#{vacation.day},'-09-16') AND cv.DATE&lt;=CONCAT(#{vacation.day},'-10-15')) AS october,
-        (SELECT GROUP_CONCAT(CONCAT(cv.TYPE,cv.DAY,'天',cv.REMARK)) FROM cy_vacation AS cv WHERE cv.STAFF_ID=cso.STAFF_ID AND cv.DATE&gt;=CONCAT(#{vacation.day},'-10-16') AND cv.DATE&lt;=CONCAT(#{vacation.day},'-11-15')) AS november,
-        (SELECT GROUP_CONCAT(CONCAT(cv.TYPE,cv.DAY,'天',cv.REMARK)) FROM cy_vacation AS cv WHERE cv.STAFF_ID=cso.STAFF_ID AND cv.DATE&gt;=CONCAT(#{vacation.day},'-11-16') AND cv.DATE&lt;=CONCAT(#{vacation.day},'-12-15')) AS december
-        FROM cy_staff_outside AS cso
-        LEFT JOIN cy_vacation AS cv ON(cv.STAFF_ID=cso.STAFF_ID)
-        WHERE cv.INS_OUT='1' AND cv.DATE&gt;=CONCAT(#{vacation.day}-1,'-12-16') AND cv.DATE&lt;=CONCAT(#{vacation.day},'-12-15')
+        csi.`NAME`,
+        csi.SORT_NUM,
+        csi.WORK_DATE,
+        cv.ID,
+        cv.INS_OUT,
+        csi.STAFF_ID,
+        cv.IS_VACATION,
+        cv.TYPE,
+        cv.`DAY`,
+        cv.REMARK,
+        GROUP_CONCAT(cv.DATE) AS `DATE`,
+        cv.CREATE_TIME,
+        cv.MODIFY_TIME
+        FROM cy_staff_inside AS csi
+        LEFT JOIN cy_vacation AS cv ON(cv.DATE LIKE CONCAT('%',#{vacation.date},'%') AND csi.STAFF_ID=cv.STAFF_ID)
+        WHERE csi.DELETED=0 AND FIND_IN_SET(csi.IS_LEAVE, #{vacation.isLeave})
         <if test="vacation.name!= null and vacation.name !=''">
-            AND cso.`NAME` LIKE CONCAT('%',#{vacation.name},'%')
+            <foreach collection="vacation.names" index="index" item="item" open="AND (" separator="OR" close=")">
+                csi.`NAME` LIKE CONCAT('%',#{item},'%')
+            </foreach>
         </if>
-        ORDER BY SORT_NUM_1 ASC, SORT_NUM_2 ASC
+        <if test="vacation.idNum!= null and vacation.idNum !=''">
+            AND csi.ID_NUM LIKE CONCAT('%',#{vacation.idNum},'%')
+        </if>
+        GROUP BY csi.STAFF_ID
+        ORDER BY IS_LEAVE ASC, SORT_NUM ASC
+    </select>
+
+    <select id="findAttributionVacation" resultType="cc.mrbird.febs.chaoyang3team.domain.Vacation">
+        SELECT
+        cso.`NAME`,
+        cso.SORT_NUM_2 AS sortNum,
+        cv.ID,
+        cv.INS_OUT,
+        cso.STAFF_ID,
+        cv.IS_VACATION,
+        cv.TYPE,
+        cv.`DAY`,
+        cv.REMARK,
+        GROUP_CONCAT(cv.DATE) AS `DATE`,
+        cv.CREATE_TIME,
+        cv.MODIFY_TIME
+        FROM cy_staff_outside AS cso
+        LEFT JOIN cy_vacation AS cv ON(cv.DATE LIKE CONCAT('%',#{vacation.date},'%') AND cso.STAFF_ID=cv.STAFF_ID)
+        WHERE cso.DELETED=0 AND FIND_IN_SET(cso.TYPE, '0') AND FIND_IN_SET(cso.IS_LEAVE, #{vacation.isLeave})
+        <if test="vacation.name!= null and vacation.name !=''">
+            <foreach collection="vacation.names" index="index" item="item" open="AND (" separator="OR" close=")">
+                cso.`NAME` LIKE CONCAT('%',#{item},'%')
+            </foreach>
+        </if>
+        <if test="vacation.idNum!= null and vacation.idNum !=''">
+            AND cso.ID_NUM LIKE CONCAT('%',#{vacation.idNum},'%')
+        </if>
+        GROUP BY cso.STAFF_ID
+        ORDER BY IS_LEAVE ASC, SORT_NUM_1 ASC, SORT_NUM_2 ASC
+    </select>
+
+    <select id="findOutsideVacation" resultType="cc.mrbird.febs.chaoyang3team.domain.Vacation">
+        SELECT
+        cso.`NAME`,
+        cso.SORT_NUM_2 AS sortNum,
+        cv.ID,
+        cv.INS_OUT,
+        cso.STAFF_ID,
+        cv.IS_VACATION,
+        cv.TYPE,
+        cv.`DAY`,
+        cv.REMARK,
+        GROUP_CONCAT(cv.DATE) AS `DATE`,
+        cv.CREATE_TIME,
+        cv.MODIFY_TIME
+        FROM cy_staff_outside AS cso
+        LEFT JOIN cy_vacation AS cv ON(cv.DATE LIKE CONCAT('%',#{vacation.date},'%') AND cso.STAFF_ID=cv.STAFF_ID)
+        WHERE cso.DELETED=0 AND FIND_IN_SET(cso.TYPE, '1,2,3') AND FIND_IN_SET(cso.IS_LEAVE, #{vacation.isLeave})
+        <if test="vacation.name!= null and vacation.name !=''">
+            <foreach collection="vacation.names" index="index" item="item" open="AND (" separator="OR" close=")">
+                cso.`NAME` LIKE CONCAT('%',#{item},'%')
+            </foreach>
+        </if>
+        <if test="vacation.idNum!= null and vacation.idNum !=''">
+            AND cso.ID_NUM LIKE CONCAT('%',#{vacation.idNum},'%')
+        </if>
+        GROUP BY cso.STAFF_ID
+        ORDER BY IS_LEAVE ASC, SORT_NUM_1 ASC, SORT_NUM_2 ASC
+    </select>
+
+    <select id="findSendVacation" resultType="cc.mrbird.febs.chaoyang3team.domain.Vacation">
+        SELECT
+        css.`NAME`,
+        css.SORT_NUM,
+        cv.ID,
+        cv.INS_OUT,
+        css.STAFF_ID,
+        cv.IS_VACATION,
+        cv.TYPE,
+        cv.`DAY`,
+        cv.REMARK,
+        GROUP_CONCAT(cv.DATE) AS `DATE`,
+        cv.CREATE_TIME,
+        cv.MODIFY_TIME
+        FROM cy_staff_send AS css
+        LEFT JOIN cy_vacation AS cv ON(cv.DATE LIKE CONCAT('%',#{vacation.date},'%') AND css.STAFF_ID=cv.STAFF_ID)
+        WHERE css.DELETED=0 AND FIND_IN_SET(css.IS_LEAVE, #{vacation.isLeave})
+        <if test="vacation.name!= null and vacation.name !=''">
+            <foreach collection="vacation.names" index="index" item="item" open="AND (" separator="OR" close=")">
+                css.`NAME` LIKE CONCAT('%',#{item},'%')
+            </foreach>
+        </if>
+        <if test="vacation.idNum!= null and vacation.idNum !=''">
+            AND css.ID_NUM LIKE CONCAT('%',#{vacation.idNum},'%')
+        </if>
+        GROUP BY css.STAFF_ID
+        ORDER BY IS_LEAVE ASC, SORT_NUM ASC
+    </select>
+    <select id="findInsideVacationCount" resultType="java.lang.Long">
+        SELECT COUNT(1)
+        FROM cy_staff_inside
+        WHERE DELETED=0 AND FIND_IN_SET(IS_LEAVE, #{vacation.isLeave})
+        <if test="vacation.name!= null and vacation.name !=''">
+            <foreach collection="vacation.names" index="index" item="item" open="AND (" separator="OR" close=")">
+                `NAME` LIKE CONCAT('%',#{item},'%')
+            </foreach>
+        </if>
+        <if test="vacation.idNum!= null and vacation.idNum !=''">
+            AND ID_NUM LIKE CONCAT('%',#{vacation.idNum},'%')
+        </if>
+    </select>
+    <select id="findAttributionVacationCount" resultType="java.lang.Long">
+        SELECT COUNT(1)
+        FROM cy_staff_outside
+        WHERE DELETED=0 AND FIND_IN_SET(`TYPE`, '0') AND FIND_IN_SET(IS_LEAVE, #{vacation.isLeave})
+        <if test="vacation.name!= null and vacation.name !=''">
+            <foreach collection="vacation.names" index="index" item="item" open="AND (" separator="OR" close=")">
+                `NAME` LIKE CONCAT('%',#{item},'%')
+            </foreach>
+        </if>
+        <if test="vacation.idNum!= null and vacation.idNum !=''">
+            AND ID_NUM LIKE CONCAT('%',#{vacation.idNum},'%')
+        </if>
+    </select>
+    <select id="findOutsideVacationCount" resultType="java.lang.Long">
+        SELECT COUNT(1)
+        FROM cy_staff_outside
+        WHERE DELETED=0 AND FIND_IN_SET(`TYPE`, '1,2,3') AND FIND_IN_SET(IS_LEAVE, #{vacation.isLeave})
+        <if test="vacation.name!= null and vacation.name !=''">
+            <foreach collection="vacation.names" index="index" item="item" open="AND (" separator="OR" close=")">
+                `NAME` LIKE CONCAT('%',#{item},'%')
+            </foreach>
+        </if>
+        <if test="vacation.idNum!= null and vacation.idNum !=''">
+            AND ID_NUM LIKE CONCAT('%',#{vacation.idNum},'%')
+        </if>
+    </select>
+    <select id="findSendVacationCount" resultType="java.lang.Long">
+        SELECT COUNT(1)
+        FROM cy_staff_send
+        WHERE DELETED=0 AND FIND_IN_SET(IS_LEAVE, #{vacation.isLeave})
+        <if test="vacation.name!= null and vacation.name !=''">
+            <foreach collection="vacation.names" index="index" item="item" open="AND (" separator="OR" close=")">
+                `NAME` LIKE CONCAT('%',#{item},'%')
+            </foreach>
+        </if>
+        <if test="vacation.idNum!= null and vacation.idNum !=''">
+            AND ID_NUM LIKE CONCAT('%',#{vacation.idNum},'%')
+        </if>
     </select>
 
 </mapper>

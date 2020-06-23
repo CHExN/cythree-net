@@ -57,7 +57,7 @@ public class ContractController extends BaseController {
 
     @GetMapping
     @RequiresPermissions("contract:view")
-    public Map<String, Object> ContractList(QueryRequest request, Contract contract, ServletRequest servletRequest) {
+    public Map<String, Object> contractList(QueryRequest request, Contract contract, ServletRequest servletRequest) {
         return getDataTable(this.contractService.findContractDetail(request, contract, servletRequest));
     }
 

@@ -51,7 +51,7 @@
         <if test="insuranceOutside.newTransfer != null and insuranceOutside.newTransfer != ''">
             AND cii.NEW_TRANSFER = #{insuranceOutside.newTransfer}
         </if>
-        ORDER BY SORT_NUM_1 ASC, SORT_NUM_2 ASC
+        ORDER BY IS_LEAVE ASC, SORT_NUM_1 ASC, SORT_NUM_2 ASC
     </select>
 
     <select id="findInsuranceOutsideSimplify" resultType="cc.mrbird.febs.chaoyang3team.domain.InsuranceOutside">
@@ -74,7 +74,7 @@
         <if test="insuranceOutside.idNum != null and insuranceOutside.idNum != ''">
             AND cso.ID_NUM LIKE CONCAT('%',#{insuranceOutside.idNum},'%')
         </if>
-        ORDER BY SORT_NUM_1 ASC, SORT_NUM_2 ASC
+        ORDER BY IS_LEAVE ASC, SORT_NUM_1 ASC, SORT_NUM_2 ASC
     </select>
 
     <select id="getInsuranceOutsideByIdNum" resultType="cc.mrbird.febs.chaoyang3team.domain.InsuranceInside">

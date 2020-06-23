@@ -43,22 +43,13 @@ public class CarElectric implements Serializable {
     @ExcelField(value = "车牌号")
     private String carNumber;
 
-    @TableField("INSIDE_OR_OUTSIDE")
-    @ExcelField(value = "编制类别", readConverterExp = "编内=0,编外=1", writeConverterExp = "0=编内,1=编外", comment = "只可填写以下各项:[1、编内; 2、编外]")
-    private String insideOrOutside;
-
-    @TableField("ID_NUM")
-    @ExcelField(value = "身份证号", comment = "请填写正确的员工身份证号，否则必定导入失败")
-    private String idNum;
-
-    @ExcelField(value = "是否在职", readConverterExp = "在职=0,非在职=1", writeConverterExp = "0=在职,1=非在职", comment = "只可填写以下各项:[1、在职; 2、非在职]")
-    private transient String isLeave;
-
+    @TableField("USER")
     @ExcelField(value = "使用人")
-    private transient String user;
+    private String user;
 
+    @TableField("USE_DEPT_NAME")
     @ExcelField(value = "使用部门")
-    private transient String useDeptName;
+    private String useDeptName;
 
     @TableField("CAR_ALLOTMENT_DATE")
     @ExcelField(value = "车辆配发日期")
@@ -90,6 +81,10 @@ public class CarElectric implements Serializable {
     @TableField("STATUS")
     @ExcelField(value = "状态", required = true, readConverterExp = "正常=1,损坏=2", writeConverterExp = "1=正常,2=损坏", comment = "只可填写以下各项:[1、正常; 2、损坏]")
     private String status;
+
+    @TableField("REMARK")
+    @ExcelField(value = "备注")
+    private String remark;
 
     /**
      * 是否是三轮 1是 2否

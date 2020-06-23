@@ -3,11 +3,7 @@ package cc.mrbird.febs.chaoyang3team.controller;
 
 import cc.mrbird.febs.chaoyang3team.domain.ChargingCabinet;
 import cc.mrbird.febs.chaoyang3team.domain.ChargingCabinetImport;
-import cc.mrbird.febs.chaoyang3team.domain.StaffInside;
-import cc.mrbird.febs.chaoyang3team.domain.StaffOutside;
 import cc.mrbird.febs.chaoyang3team.service.ChargingCabinetService;
-import cc.mrbird.febs.chaoyang3team.service.StaffInsideService;
-import cc.mrbird.febs.chaoyang3team.service.StaffOutsideService;
 import cc.mrbird.febs.common.annotation.Log;
 import cc.mrbird.febs.common.controller.BaseController;
 import cc.mrbird.febs.common.domain.FebsResponse;
@@ -51,14 +47,10 @@ public class ChargingCabinetController extends BaseController {
 
     @Autowired
     private ChargingCabinetService chargingCabinetService;
-    @Autowired
-    private StaffInsideService staffInsideService;
-    @Autowired
-    private StaffOutsideService staffOutsideService;
 
     @GetMapping
     @RequiresPermissions("chargingCabinet:view")
-    public Map<String, Object> ChargingCabinetList(QueryRequest request, ChargingCabinet chargingCabinet) {
+    public Map<String, Object> chargingCabinetList(QueryRequest request, ChargingCabinet chargingCabinet) {
         return getDataTable(this.chargingCabinetService.findChargingCabinetDetail(request, chargingCabinet));
     }
 
@@ -156,38 +148,18 @@ public class ChargingCabinetController extends BaseController {
                 @Override
                 public void onSuccess(int sheetIndex, int rowIndex, ChargingCabinetImport entity) {
                     // 数据校验成功时，加入集合
-                    StaffOutside staffOutside = null;
-                    StaffInside staffInside = null;
-                    if (entity.getIdNum().equals("$EMPTY_CELL$") || entity.getIdNum().equals("")) {
-                        staffInside = new StaffInside();
-                    }
-                    if (entity.getInsideOrOutside().equals("0")) {
-                        staffInside = staffInsideService.getStaffIdByIdNum(entity.getIdNum().trim());
-                    } else if(entity.getInsideOrOutside().equals("1")) {
-                        staffOutside = staffOutsideService.getStaffIdByIdNum(entity.getIdNum().trim());
-                    }
-                    if ((staffInside == null && staffOutside == null)) {
-                        List<ExcelErrorField> errorFields = new ArrayList<>();
-                        errorFields.add(new ExcelErrorField(
-                                0,
-                                entity.getIdNum().trim(),
-                                "身份证号",
-                                "查询不到此编" + (entity.getInsideOrOutside().equals("1") ? "外" : "内") + "人员的信息"));
-                        onError(sheetIndex, rowIndex, errorFields);
-                    } else {
-                        ChargingCabinet chargingCabinet = new ChargingCabinet();
-                        chargingCabinet.setAssetName(entity.getAssetName().equals("$EMPTY_CELL$") ? "" : entity.getAssetName());
-                        chargingCabinet.setBrandModel(entity.getBrandModel().equals("$EMPTY_CELL$") ? "" : entity.getBrandModel());
-                        chargingCabinet.setAllotmentDate(entity.getAllotmentDate().equals("$EMPTY_CELL$") ? null : LocalDate.parse(entity.getAllotmentDate(), DateTimeFormatter.ofPattern("yyyy-MM-dd")));
-                        chargingCabinet.setInsideOrOutside(entity.getInsideOrOutside().equals("$EMPTY_CELL$") ? "" : entity.getInsideOrOutside());
-                        chargingCabinet.setIdNum(entity.getIdNum().equals("$EMPTY_CELL$") ? "" : entity.getIdNum());
-                        chargingCabinet.setChargingSectionsNumber(entity.getChargingSectionsNumber().equals("$EMPTY_CELL$") ? "" : entity.getChargingSectionsNumber());
-                        chargingCabinet.setIfCharge(entity.getIfCharge().equals("$EMPTY_CELL$") ? "" : entity.getIfCharge());
-                        chargingCabinet.setPlace(entity.getPlace().equals("$EMPTY_CELL$") ? "" : entity.getPlace());
-                        chargingCabinet.setRemark(entity.getRemark().equals("$EMPTY_CELL$") ? "" : entity.getRemark());
-                        chargingCabinet.setCreateTime(now);
-                        data.add(chargingCabinet);
-                    }
+                    ChargingCabinet chargingCabinet = new ChargingCabinet();
+                    chargingCabinet.setAssetName(entity.getAssetName().equals("$EMPTY_CELL$") ? "" : entity.getAssetName());
+                    chargingCabinet.setBrandModel(entity.getBrandModel().equals("$EMPTY_CELL$") ? "" : entity.getBrandModel());
+                    chargingCabinet.setAllotmentDate(entity.getAllotmentDate().equals("$EMPTY_CELL$") ? null : LocalDate.parse(entity.getAllotmentDate(), DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+                    chargingCabinet.setUser(entity.getUser().equals("$EMPTY_CELL$") ? "" : entity.getUser());
+                    chargingCabinet.setUseDeptName(entity.getUseDeptName().equals("$EMPTY_CELL$") ? "" : entity.getUseDeptName());
+                    chargingCabinet.setChargingSectionsNumber(entity.getChargingSectionsNumber().equals("$EMPTY_CELL$") ? "" : entity.getChargingSectionsNumber());
+                    chargingCabinet.setIfCharge(entity.getIfCharge());
+                    chargingCabinet.setPlace(entity.getPlace().equals("$EMPTY_CELL$") ? "" : entity.getPlace());
+                    chargingCabinet.setRemark(entity.getRemark().equals("$EMPTY_CELL$") ? "" : entity.getRemark());
+                    chargingCabinet.setCreateTime(now);
+                    data.add(chargingCabinet);
                 }
 
                 @Override

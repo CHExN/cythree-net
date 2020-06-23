@@ -38,6 +38,11 @@ public class WcStatusServiceImpl extends ServiceImpl<WcStatusMapper, WcStatus> i
     }
 
     @Override
+    public List<WcStatus> getWcStatusList(WcStatus wcStatus) {
+        return baseMapper.getWcStatusList(wcStatus);
+    }
+
+    @Override
     public void createWcStatus(WcStatus wcStatus) {
         wcStatus.setCreateTime(LocalDateTime.now());
         this.save(wcStatus);
@@ -53,5 +58,10 @@ public class WcStatusServiceImpl extends ServiceImpl<WcStatusMapper, WcStatus> i
     public void updateWcStatus(WcStatus wcStatus) {
         wcStatus.setModifyTime(LocalDateTime.now());
         this.baseMapper.updateById(wcStatus);
+    }
+
+    @Override
+    public List<String> getStatus() {
+        return this.baseMapper.getStatus();
     }
 }

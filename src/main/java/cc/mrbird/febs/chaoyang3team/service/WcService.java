@@ -40,13 +40,9 @@ public interface WcService extends IService<Wc> {
 
     List<Wc> findWcCostAccountByYear(String year, Integer up);
 
-    Wc getWcByWcNum(String wcNum);
+    Wc getWcByWcNum(String wcNum, Boolean isLastFour);
 
-    Long getWcIdByWcNum(String wcNum);
-
-    Long getWcIdByWaterNum(String waterNum);
-
-    Long getWcIdByElectricityNum(String electricityNum);
+    Long getWcIdByWcNum(String wcNum, Boolean isLastFour);
 
     Wc selectOne(Long wcId);
 

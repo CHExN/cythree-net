@@ -28,18 +28,13 @@ public class Water implements Serializable {
     @TableId(value = "WATER_ID", type = IdType.AUTO)
     private Long waterId;
 
-    @ExcelField(value = "水表编号")
-    private transient String waterNum;
+    @ExcelField(value = "公厕编号")
+    private transient String wcNum;
 
     @ExcelField(value = "公厕名称")
     private transient String wcName;
 
-    @ExcelField(value = "公厕编号")
-    private transient String wcNum;
-
     private transient Long wcId;
-
-    private transient String date;
 
     @TableField("YEAR")
     @ExcelField(value = "年")
@@ -74,7 +69,6 @@ public class Water implements Serializable {
     private BigDecimal totalAmount;
 
     @TableField("CREATE_DATE")
-    @ExcelField(value = "登记日期")
     private Date createDate;
 
     private transient String createTimeFrom;

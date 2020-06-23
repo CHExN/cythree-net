@@ -148,9 +148,6 @@ public class StaffInside implements Serializable {
     @ExcelField(value = "农转工转工日期")
     private String farmerWorkDate;
 
-    /**
-     * 增加日期
-     */
     @TableField("ADD_DATE")
     @ExcelField(value = "增加日期")
     private String addDate;
@@ -195,6 +192,9 @@ public class StaffInside implements Serializable {
     @TableField("POST_LEVEL")
     @ExcelField(value = "岗位级别")
     private String postLevel;
+
+    @TableField("LEVEL")
+    private Integer level;
 
     @TableField("HIRING_POSITIONS")
     @ExcelField(value = "聘任岗位")

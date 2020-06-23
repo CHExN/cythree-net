@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -35,7 +36,7 @@ public class ElectricityServiceImpl extends ServiceImpl<ElectricityMapper, Elect
     public IPage<Electricity> findElectricityDetail(QueryRequest request, Electricity electricity) {
         try {
             Page<Electricity> page = new Page<>();
-            SortUtil.handlePageSort(request, page, "electricityId", FebsConstant.ORDER_ASC, false);
+            SortUtil.handlePageSort(request, page, "year DESC, month DESC, wcId", FebsConstant.ORDER_ASC, false);
             return this.baseMapper.findElectricityDetail(page, electricity);
         } catch (Exception e) {
             log.error("查询电费信息异常", e);
@@ -46,9 +47,8 @@ public class ElectricityServiceImpl extends ServiceImpl<ElectricityMapper, Elect
     @Override
     @Transactional
     public void createElectricity(Electricity electricity) {
-        String[] dateArr = electricity.getDate().split("-");
-        electricity.setYear(dateArr[0]);
-        electricity.setMonth(dateArr[1]);
+        electricity.setCreateDate(new Date());
+        if (electricity.getMonth().length() == 1) electricity.setMonth("0" + electricity.getMonth());
         this.save(electricity);
         this.wcElectricityService.createWcElectricity(new WcElectricity(electricity.getWcId(), electricity.getElectricityId()));
     }

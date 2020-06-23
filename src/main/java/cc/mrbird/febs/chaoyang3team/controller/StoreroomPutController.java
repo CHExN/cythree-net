@@ -42,12 +42,21 @@ public class StoreroomPutController extends BaseController {
     @Autowired
     private StoreroomPutOutService storeroomPutOutService;
 
-    @GetMapping("index/{date}")
-    public FebsResponse index(@NotBlank(message = "{required}") @PathVariable String date) {
+    @GetMapping("typeApplicationProportion/{date}")
+    public FebsResponse typeApplicationProportion(@NotBlank(message = "{required}") @PathVariable String date) {
         Map<String, Object> data = new HashMap<>();
-        // 入库类别占比
+        // 入库物资类别占比
         List<Map<String, Object>> storeroomPutTypeApplicationProportion = storeroomPutService.findStoreroomPutTypeApplicationProportion(date);
         data.put("storeroomPutTypeApplicationProportion", storeroomPutTypeApplicationProportion);
+        return new FebsResponse().data(data);
+    }
+
+    @GetMapping("supplierProportion")
+    public FebsResponse supplierProportion(String date, String typeApplication) {
+        Map<String, Object> data = new HashMap<>();
+        // 入库供应商占比
+        List<Map<String, Object>> storeroomPutSupplierProportion = storeroomPutService.findStoreroomPutSupplierProportion(date, typeApplication);
+        data.put("storeroomPutSupplierProportion", storeroomPutSupplierProportion);
         return new FebsResponse().data(data);
     }
 

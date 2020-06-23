@@ -33,7 +33,7 @@ public class StaffOutside implements Serializable {
     private String sortNum2;
 
     /**
-     * 类型 0head 1北分队 2南分队 3保洁分队
+     * 类型 0head 1北分队 2南分队 3保洁分队 4派遣人员
      */
     @TableField("TYPE")
     private String type;
@@ -59,30 +59,18 @@ public class StaffOutside implements Serializable {
     @ExcelField(value = "分队")
     private String team;
 
-    /**
-     * 姓名
-     */
     @TableField("NAME")
     @ExcelField(value = "姓名")
     private String name;
 
-    /**
-     * 性别 0女 1男
-     */
     @TableField("GENDER")
     @ExcelField(value = "性别", writeConverterExp = "0=女,1=男")
     private String gender;
 
-    /**
-     * 民族
-     */
     @TableField("CLAN")
     @ExcelField(value = "民族")
     private String clan;
 
-    /**
-     * 籍贯
-     */
     @TableField("BIRTHPLACE")
     @ExcelField(value = "籍贯")
     private String birthplace;
@@ -108,37 +96,22 @@ public class StaffOutside implements Serializable {
     @ExcelField(value = "政治面貌")
     private String politicalFace;
 
-    /**
-     * 身份证号码
-     */
     @TableField("ID_NUM")
     @ExcelField(value = "身份证号码")
     private String idNum;
 
-    /**
-     * 家庭住址
-     */
     @TableField("ADDRESS")
     @ExcelField(value = "家庭住址")
     private String address;
 
-    /**
-     * 座机联系电话
-     */
     @TableField("PHONE_LAND_LINE")
     @ExcelField(value = "座机联系电话")
     private String phoneLandLine;
 
-    /**
-     * 手机联系电话
-     */
     @TableField("PHONE_CELL")
     @ExcelField(value = "手机联系电话")
     private String phoneCell;
 
-    /**
-     * 出生年月
-     */
     @TableField("BIRTH_DATE")
     @ExcelField(value = "出生年月")
     private String birthDate;
@@ -152,23 +125,14 @@ public class StaffOutside implements Serializable {
     @ExcelField(value = "退休日期")
     private transient String retirementDate;
 
-    /**
-     * 增加日期
-     */
     @TableField("ADD_DATE")
     @ExcelField(value = "增加日期")
     private String addDate;
 
-    /**
-     * 调入环卫或报到日期
-     */
     @TableField("TRANSFER_DATE")
     @ExcelField(value = "调入环卫或报到日期")
     private String transferDate;
 
-//    /**
-//     * 到本场队日期
-//     */
 //    @TableField("TO_TEAM_DATE")
 //    @ExcelField(value = "到本场队日期")
 //    private String toTeamDate;
@@ -187,22 +151,13 @@ public class StaffOutside implements Serializable {
     @ExcelField(value = "岗位类别")
     private String technicalType;
 
-    /**
-     * 备注
-     */
     @TableField("REMARK")
     @ExcelField(value = "备注")
     private String remark;
 
-    /**
-     * 创建时间
-     */
     @TableField("CREATE_TIME")
     private LocalDateTime createTime;
 
-    /**
-     * 修改时间
-     */
     @TableField("MODIFY_TIME")
     private LocalDateTime modifyTime;
 

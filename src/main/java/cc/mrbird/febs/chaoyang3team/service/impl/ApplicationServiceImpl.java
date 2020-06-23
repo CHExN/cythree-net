@@ -27,10 +27,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author CHExN
@@ -144,13 +141,39 @@ public class ApplicationServiceImpl extends ServiceImpl<ApplicationMapper, Appli
     @Override
     @Transactional
     public void updateApplication(Application1 application) {
-        this.baseMapper.updateById(application);
         if (application.getPlanList() != null) {
             // 将JSON字符串转换为List<Plan>格式
             JSONArray jsonArray = JSONArray.fromObject(application.getPlanList());
             List<Plan> planList = (List<Plan>) JSONArray.toCollection(jsonArray, Plan.class);
-            this.planService.updateBatchById(planList);
+
+            // 取出传过来的plan，status为1的id，这里的plan都是status为1或者新添加的
+            List<String> planIdList = new ArrayList<>();
+            int count = 0;
+            for (Plan e : planList) {
+                if (e.getStatus().equals("2")) count++;
+                if (e.getId() != null) planIdList.add(e.getId().toString());
+            }
+            if (count == planList.size()) application.setProcess(2);
+
+            // 删除全部plan
+            // if (!planIdList.isEmpty()) this.planService.deletePlans(planIdList.toArray(new String[0]));
+            if (!planIdList.isEmpty()) {
+                this.planService.deletePlansByApplicationIds(new String[]{application.getId().toString()});
+            }
+            // 设置插入id为null，表示插入的为新数据
+            planList.forEach(plan -> plan.setId(null));
+            this.planService.batchInsertPlan(planList);
+
+            // 与applicationId绑定
+            List<ApplicationPlan> applicationPlanList = new ArrayList<>();
+            for (Plan plan : planList) {
+                applicationPlanList.add(new ApplicationPlan(application.getId(), plan.getId()));
+            }
+            this.applicationPlanService.batchInsertApplicationPlan(applicationPlanList);
         }
+
+        this.baseMapper.updateById(application);
+
         if (application.getProcess() != null && application.getProcess() != 0) {
             StringBuilder message = new StringBuilder();
             // 判断如果是办公用品或者固定资产，这两个的申请时每月申请单号的，也就是说application.getNum() == null，所以要新建立一个

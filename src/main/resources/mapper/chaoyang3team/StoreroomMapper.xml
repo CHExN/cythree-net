@@ -16,14 +16,21 @@
         s.TYPE_APPLICATION,
         s.SUPPLIER,
         s.IS_IN,
-        spo.NUM AS putNum
+        spo.NUM AS putNum,
+        #{storeroom.names} as names,
+        #{storeroom.names} as unitOriginal
         FROM cy_storeroom AS s
         LEFT JOIN cy_storeroom AS s1 ON(s.ID=s1.PARENT_ID)
         LEFT JOIN p_storeroom_put AS sp ON(sp.STOREROOM_ID=s1.ID)
         LEFT JOIN cy_storeroom_put_out AS spo ON(spo.ID=sp.PUT_ID)
         WHERE s.IS_IN=0 AND s1.TO_DEPT_ID=0 AND (s.AMOUNT=0)=0
-        <if test="storeroom.name != null and storeroom.name != ''">
+        <!--<if test="storeroom.name != null and storeroom.name != ''">
             AND s.NAME LIKE CONCAT('%',#{storeroom.name},'%')
+        </if>-->
+        <if test="storeroom.name != null and storeroom.name != ''">
+            <foreach collection="storeroom.names" index="index" item="item" open="AND (" separator="OR" close=")">
+                s.NAME LIKE CONCAT('%',#{item},'%')
+            </foreach>
         </if>
         <if test="storeroom.putNum != null and storeroom.putNum != ''">
             AND spo.NUM LIKE CONCAT('%',#{storeroom.putNum},'%')
@@ -65,18 +72,20 @@
         s.TYPE,
         IFNULL( cuc.AMOUNT, s.AMOUNT ) AS AMOUNT,
         IFNULL( cuc.AMOUNT_DIST, s.AMOUNT_DIST ) AS AMOUNT_DIST,
-        IFNULL( cuc.AMOUNT_DIST, s.AMOUNT_DIST ) AS storeroomCount,
+        0 + CAST(IFNULL( cuc.AMOUNT_DIST, s.AMOUNT_DIST ) AS CHAR) AS storeroomCount,
         IFNULL( cuc.UNIT, s.UNIT ) AS UNIT,
-        s.MONEY / IFNULL(cuc.AMOUNT_CONVERSION, 1) AS MONEY,
+        0 + CAST(s.MONEY / IFNULL(cuc.AMOUNT_CONVERSION, 1) AS CHAR) AS MONEY,
         s.UNIT AS unitOriginal,
         s.AMOUNT AS amountOriginal,
         s.MONEY AS moneyOriginal,
         s.REMARK,
         s.RECEIPT,
+        s.DATE,
         s.TYPE_APPLICATION,
         (SELECT td.VALUEE FROM t_dict td WHERE td.TABLE_NAME='cy_storeroom' AND td.FIELD_NAME='TYPE_APPLICATION' AND
         td.KEYY=s.TYPE_APPLICATION LIMIT 1) AS TYPE_APPLICATION_TO_DICT,
         s.SUPPLIER,
+        spo.NUM AS outNum,
         spo.TO_DEPT_ID,
         td.DEPT_NAME AS toDeptName
         FROM cy_storeroom AS s
@@ -85,17 +94,33 @@
         LEFT JOIN t_dept AS td ON(td.DEPT_ID=spo.TO_DEPT_ID)
         LEFT JOIN cy_unit_conversion AS cuc ON ( cuc.STOREROOM_ID = s.ID )
         WHERE s.IS_IN='2'
-        AND s.STATUS = #{storeroom.status}
+        AND FIND_IN_SET(s.STATUS,#{storeroom.status})
         AND FIND_IN_SET(spo.TO_DEPT_ID, #{storeroom.toDeptIds})
         <if test="storeroom.typeApplicationAuthority != null and storeroom.typeApplicationAuthority != ''">
             AND FIND_IN_SET(s.TYPE_APPLICATION, #{storeroom.typeApplicationAuthority})
         </if>
         AND FIND_IN_SET(s.TYPE_APPLICATION, #{storeroom.typeApplication})
-        <if test="storeroom.name != null and storeroom.name != ''">
+        <!--<if test="storeroom.name != null and storeroom.name != ''">
             AND s.NAME LIKE CONCAT('%',#{storeroom.name},'%')
+        </if>-->
+        <if test="storeroom.name != null and storeroom.name != ''">
+            <foreach collection="storeroom.names" index="index" item="item" open="AND (" separator="OR" close=")">
+                s.NAME LIKE CONCAT('%',#{item},'%')
+            </foreach>
         </if>
         <if test="storeroom.remark != null and storeroom.remark != ''">
             AND s.REMARK LIKE CONCAT('%',#{storeroom.remark},'%')
+        </if>
+        <if test="storeroom.id != null and storeroom.id != ''">
+            AND s.ID LIKE CONCAT('%',#{storeroom.id},'%')
+        </if>
+        <if test="storeroom.type != null and storeroom.type != ''">
+            AND s.TYPE LIKE CONCAT('%',#{storeroom.type},'%')
+        </if>
+        <if test="storeroom.ids != null and storeroom.ids != ''">
+            <foreach collection="storeroom.idArr" index="index" item="item" open="AND (" separator="OR" close=")">
+                s.ID LIKE CONCAT('%',#{item},'%')
+            </foreach>
         </if>
     </select>
 
@@ -228,8 +253,13 @@
         <if test="storeroom.typeApplicationAuthority != null and storeroom.typeApplicationAuthority != ''">
             AND FIND_IN_SET(cs.TYPE_APPLICATION, #{storeroom.typeApplicationAuthority})
         </if>
-        <if test="storeroom.name != null and storeroom.name != ''">
+        <!--<if test="storeroom.name != null and storeroom.name != ''">
             AND cs.NAME LIKE CONCAT('%',#{storeroom.name},'%')
+        </if>-->
+        <if test="storeroom.name != null and storeroom.name != ''">
+            <foreach collection="storeroom.names" index="index" item="item" open="AND (" separator="OR" close=")">
+                cs.NAME LIKE CONCAT('%',#{item},'%')
+            </foreach>
         </if>
         <if test="storeroom.putNum != null and storeroom.putNum != ''">
             AND cspo.NUM LIKE CONCAT('%',#{storeroom.putNum},'%')

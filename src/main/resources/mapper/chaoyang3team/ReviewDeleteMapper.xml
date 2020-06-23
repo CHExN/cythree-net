@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.mrbird.febs.chaoyang3team.dao.ReviewDeleteMapper">
+
+    <select id="findReviewDeleteDetail" resultType="cc.mrbird.febs.chaoyang3team.domain.ReviewDelete">
+        SELECT <include refid="reviewDeleteResult"/>
+        FROM cy_review_delete AS crd
+        WHERE 1=1
+        <include refid="reviewDeleteParam"/>
+    </select>
+
+    <select id="selectReviewDeleteOne" resultType="cc.mrbird.febs.chaoyang3team.domain.ReviewDelete">
+        SELECT <include refid="reviewDeleteResult"/>
+        FROM cy_review_delete AS crd
+        WHERE USERNAME=#{username} AND TABLE_ID=#{tableId} AND `TYPE`=#{type}
+        ORDER BY crd.ID DESC
+        LIMIT 1
+    </select>
+
+    <sql id="reviewDeleteResult">
+        crd.ID,
+        crd.INFO,
+        crd.CREATE_TIME,
+        crd.MODIFY_TIME,
+        crd.TABLE_ID,
+        crd.PROCESS,
+        crd.DEPT_NAME,
+        crd.DEPT_ID,
+        crd.USERNAME,
+        crd.REMARK,
+        crd.TYPE
+    </sql>
+
+    <sql id="reviewDeleteParam">
+        <if test="reviewDelete.process != null and reviewDelete.process != ''">
+            AND FIND_IN_SET(crd.PROCESS, #{reviewDelete.process})
+        </if>
+        <if test="reviewDelete.type != null and reviewDelete.type != ''">
+            AND FIND_IN_SET(crd.`TYPE`, #{reviewDelete.type})
+        </if>
+        <if test="reviewDelete.info != null and reviewDelete.info != ''">
+            AND crd.INFO LIKE CONCAT('%',#{reviewDelete.info},'%')
+        </if>
+        <if test="reviewDelete.username != null and reviewDelete.username != ''">
+            AND crd.USERNAME LIKE CONCAT('%',#{reviewDelete.username},'%')
+        </if>
+        <if test="reviewDelete.deptId != null and reviewDelete.deptId != ''">
+            AND crd.DEPT_ID = #{reviewDelete.deptId}
+        </if>
+        <if test="reviewDelete.remark != null and reviewDelete.remark != ''">
+            AND crd.REMARK LIKE CONCAT('%',#{reviewDelete.remark},'%')
+        </if>
+        <if test="reviewDelete.createTimeFrom != null and reviewDelete.createTimeFrom !=''">
+            AND crd.CREATE_TIME &gt;= #{reviewDelete.createTimeFrom}
+        </if>
+        <if test="reviewDelete.createTimeTo!= null and reviewDelete.createTimeTo !=''">
+            AND crd.CREATE_TIME &lt;= #{reviewDelete.createTimeTo}
+        </if>
+    </sql>
+
+</mapper>

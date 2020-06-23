@@ -64,7 +64,7 @@ public class ApplicationController extends BaseController {
 
     @GetMapping
     @RequiresPermissions("application:view")
-    public Map<String, Object> ApplicationList(QueryRequest request, Application1 application, ServletRequest servletRequest) {
+    public Map<String, Object> applicationList(QueryRequest request, Application1 application, ServletRequest servletRequest) {
         return getDataTable(this.applicationService.findApplicationDetail(request, application, servletRequest));
     }
 

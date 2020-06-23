@@ -13,6 +13,4 @@ public interface ChargingCabinetMapper extends BaseMapper<ChargingCabinet> {
 
     IPage<ChargingCabinet> findChargingCabinetDetail(Page page, @Param("chargingCabinet") ChargingCabinet chargingCabinet);
 
-    Integer findChargingCabinetDetailCount(@Param("chargingCabinet") ChargingCabinet chargingCabinet);
-
 }

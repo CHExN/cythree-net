@@ -133,13 +133,4 @@ public class WcImport implements Serializable {
 
     @ExcelField(value = "公厕现在的状态")
     private String wcNowStatus;
-
-    @ExcelField(value = "水表编号")
-    private String waterNum;
-
-    @ExcelField(value = "电表编号")
-    private String electricityNum;
-
-    @ExcelField(value = "缴费号")
-    private String paymentNum;
 }

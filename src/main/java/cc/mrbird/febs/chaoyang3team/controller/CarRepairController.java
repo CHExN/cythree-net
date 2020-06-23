@@ -38,7 +38,7 @@ public class CarRepairController extends BaseController {
 
     @GetMapping
     @RequiresPermissions("carRepair:view")
-    public Map<String, Object> RepairList(QueryRequest request, CarRepair carRepair) {
+    public Map<String, Object> repairList(QueryRequest request, CarRepair carRepair) {
         return getDataTable(this.carRepairService.findRepairDetail(request, carRepair));
     }
 

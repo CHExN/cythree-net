@@ -57,7 +57,7 @@ public class LetterController extends BaseController {
 
     @GetMapping
     @RequiresPermissions("letter:view")
-    public Map<String, Object> LetterList(QueryRequest request, Letter letter, ServletRequest servletRequest) {
+    public Map<String, Object> letterList(QueryRequest request, Letter letter, ServletRequest servletRequest) {
         return getDataTable(this.letterService.findLetterDetail(request, letter, servletRequest));
     }
 

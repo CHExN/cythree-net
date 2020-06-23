@@ -12,7 +12,7 @@ import java.io.Serializable;
  * @author CHExN
  */
 @Data
-@Excel("工资表")
+@Excel("编内工资表")
 public class WageImport implements Serializable {
 
     private static final long serialVersionUID = 3526020032109213405L;
@@ -23,7 +23,7 @@ public class WageImport implements Serializable {
     @ExcelField(value = "证照号码", required = true, comment = "请填写正确的员工身份证号，否则必定导入失败")
     private String staffIdCard;
 
-    @ExcelField(value = "岗位工资", required = true, validator = NumericValidator.class)
+    @ExcelField(value = "岗位工资", validator = NumericValidator.class)
     private String currentIncome;
 
     @ExcelField(value = "补发薪级", validator = NumericValidator.class)
@@ -65,7 +65,7 @@ public class WageImport implements Serializable {
     @ExcelField(value = "综合补助", validator = NumericValidator.class)
     private String comprehensiveSubsidy;
 
-    @ExcelField(value = "应发工资", validator = NumericValidator.class)
+    @ExcelField(value = "应发工资")
     private String payable;
 
     @ExcelField(value = "住房公积金", validator = NumericValidator.class)
@@ -101,7 +101,7 @@ public class WageImport implements Serializable {
     @ExcelField(value = "扣税", validator = NumericValidator.class)
     private String taxDeduction;
 
-    @ExcelField(value = "实发工资", validator = NumericValidator.class)
+    @ExcelField(value = "实发工资")
     private String realWage;
 
     @ExcelField(value = "空列01")
@@ -115,5 +115,14 @@ public class WageImport implements Serializable {
     @ExcelField(value = "空列05")
     private String emptyColumn05;
 
-
+    @ExcelField(value = "空列06")
+    private String emptyColumn06;
+    @ExcelField(value = "空列07")
+    private String emptyColumn07;
+    @ExcelField(value = "空列08")
+    private String emptyColumn08;
+    @ExcelField(value = "空列09")
+    private String emptyColumn09;
+    @ExcelField(value = "空列10")
+    private String emptyColumn10;
 }

@@ -26,8 +26,8 @@ spring:
           password: XZHT2017@xzht
 #          password: mysql_2014
           driver-class-name: com.mysql.cj.jdbc.Driver
-          url: jdbc:mysql://114.116.126.4:8635/cythree?useUnicode=true&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=Asia/Shanghai
-#          url: jdbc:mysql://114.116.126.4:8635/asdf?useUnicode=true&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=Asia/Shanghai
+#          url: jdbc:mysql://114.116.126.4:8635/cythree?useUnicode=true&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=Asia/Shanghai
+          url: jdbc:mysql://114.116.126.4:8635/asdf?useUnicode=true&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=Asia/Shanghai
         # 数据源-2，名称为 test
 #        test:
 #          username: root
@@ -84,6 +84,6 @@ febs:
         num: 1000
   shiro:
     # 后端免认证接口 url
-    anonUrl: /login,/logout/**,/regist,/user/check/**,/wc/weChat/**,/file/uploadFile,/wcEvaluate/weChat/add
+    anonUrl: /login,/logout/**,/regist,/user/check/**,/wc/weChat/**,/file/uploadFile,/news/weChat/**,/wcEvaluate/weChat/**
     # token有效期，单位秒
     jwtTimeOut: 43200

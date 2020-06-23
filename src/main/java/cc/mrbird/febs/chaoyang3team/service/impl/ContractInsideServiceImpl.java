@@ -35,7 +35,7 @@ public class ContractInsideServiceImpl extends ServiceImpl<ContractInsideMapper,
     public IPage<ContractInside> findContractInsideDetail(QueryRequest request, ContractInside contractInside) {
         try {
             Page<ContractInside> page = new Page<>();
-            SortUtil.handlePageSort(request, page, "sortNum", FebsConstant.ORDER_ASC, false);
+            SortUtil.handlePageSort(request, page, "IS_LEAVE ASC, sortNum", FebsConstant.ORDER_ASC, false);
             return this.baseMapper.findContractInsideDetail(page, contractInside);
         } catch (Exception e) {
             log.error("查询编内合同信息异常", e);

@@ -2,12 +2,9 @@ package cc.mrbird.febs.chaoyang3team.controller;
 
 
 import cc.mrbird.febs.chaoyang3team.domain.StaffInside;
-import cc.mrbird.febs.chaoyang3team.domain.StaffOutside;
 import cc.mrbird.febs.chaoyang3team.domain.Wage;
 import cc.mrbird.febs.chaoyang3team.domain.WageImport;
 import cc.mrbird.febs.chaoyang3team.service.StaffInsideService;
-import cc.mrbird.febs.chaoyang3team.service.StaffOutsideService;
-import cc.mrbird.febs.chaoyang3team.service.WageRemarkService;
 import cc.mrbird.febs.chaoyang3team.service.WageService;
 import cc.mrbird.febs.common.annotation.Log;
 import cc.mrbird.febs.common.controller.BaseController;
@@ -54,10 +51,8 @@ public class WageController extends BaseController {
     private WageService wageService;
     @Autowired
     private StaffInsideService staffInsideService;
-    @Autowired
-    private StaffOutsideService staffOutsideService;
-    @Autowired
-    private WageRemarkService wageRemarkService;
+    /*@Autowired
+    private WageRemarkService wageRemarkService;*/
 
     @GetMapping("oneInfo")
     @RequiresPermissions("wage:view")
@@ -67,37 +62,37 @@ public class WageController extends BaseController {
 
     @GetMapping
     @RequiresPermissions("wage:view")
-    public Map<String, Object> WageList(QueryRequest request, Wage wage) {
+    public Map<String, Object> wageList(QueryRequest request, Wage wage) {
         return getDataTable(this.wageService.findWageDetail(request, wage));
     }
 
-    @Log("新增工资信息")
+    @Log("新增编内工资信息")
     @PostMapping
     @RequiresPermissions("wage:add")
     public void addWage(@Valid Wage wage) throws FebsException {
         try {
             this.wageService.createWage(wage);
         } catch (Exception e) {
-            message = "新增工资信息失败";
+            message = "新增编内工资信息失败";
             log.error(message, e);
             throw new FebsException(message);
         }
     }
 
-    @Log("修改工资信息")
+    @Log("修改编内工资信息")
     @PutMapping
     @RequiresPermissions("wage:update")
     public void updateWage(@Valid Wage wage) throws FebsException {
         try {
             this.wageService.updateWage(wage);
         } catch (Exception e) {
-            message = "修改工资信息失败";
+            message = "修改编内工资信息失败";
             log.error(message, e);
             throw new FebsException(message);
         }
     }
 
-    @Log("删除工资信息")
+    @Log("删除编内工资信息")
     @DeleteMapping("/{wageIds}")
     @RequiresPermissions("wage:delete")
     public void deleteWages(@NotBlank(message = "{required}") @PathVariable String wageIds) throws FebsException {
@@ -105,7 +100,7 @@ public class WageController extends BaseController {
             String[] ids = wageIds.split(StringPool.COMMA);
             this.wageService.deleteWage(ids);
         } catch (Exception e) {
-            message = "删除工资信息失败";
+            message = "删除编内工资信息失败";
             log.error(message, e);
             throw new FebsException(message);
         }
@@ -182,7 +177,7 @@ public class WageController extends BaseController {
             wage.setHolidayCosts("0");
             wage.setAnnualLeavePay("0");
             wage.setComprehensiveSubsidy("0");
-            wage.setPayable("0");
+            wage.setPayable("不用填写，自动计算");
             wage.setHousingFund("0");
             wage.setBasicPensionIp("0");
             wage.setUnemploymentIp("0");
@@ -190,12 +185,17 @@ public class WageController extends BaseController {
             wage.setMedicalMutualAid("0");
             wage.setCorporateAnnuity("0");
             wage.setTaxDeduction("0");
-            wage.setRealWage("0");
+            wage.setRealWage("不用填写，自动计算");
             wage.setEmptyColumn01("0");
             wage.setEmptyColumn02("0");
             wage.setEmptyColumn03("0");
             wage.setEmptyColumn04("0");
             wage.setEmptyColumn05("0");
+            wage.setEmptyColumn06("0");
+            wage.setEmptyColumn07("0");
+            wage.setEmptyColumn08("0");
+            wage.setEmptyColumn09("0");
+            wage.setEmptyColumn10("0");
             list.add(wage);
         });
         // 构建模板
@@ -205,10 +205,10 @@ public class WageController extends BaseController {
     /**
      * 导入Excel数据，并批量插入
      */
-    @Log("导入工资信息Excel数据，并批量插入")
+    @Log("导入编内工资信息Excel数据，并批量插入")
     @PostMapping("import")
     @RequiresPermissions("wage:add")
-    public FebsResponse importExcels(@RequestParam("file") MultipartFile file, String insideOrOutside, String date) throws FebsException {
+    public FebsResponse importExcels(@RequestParam("file") MultipartFile file, String date) throws FebsException {
         try {
             if (file.isEmpty()) {
                 throw new FebsException("导入数据为空");
@@ -221,7 +221,7 @@ public class WageController extends BaseController {
             long beginTimeMillis = System.currentTimeMillis();
             final List<Wage> data = Lists.newArrayList();
             final List<Map<String, Object>> error = Lists.newArrayList();
-            String dateArr[] = date.split("-");
+            String[] dateArr = date.split("-");
             LocalDateTime now = LocalDateTime.now();
             BigDecimal zero = BigDecimal.valueOf(0);
             ExcelKit.$Import(WageImport.class).readXlsx(file.getInputStream(), new ExcelReadHandler<WageImport>() {
@@ -229,26 +229,19 @@ public class WageController extends BaseController {
                 @Override
                 public void onSuccess(int sheetIndex, int rowIndex, WageImport entity) {
                     // 数据校验成功时，加入集合
-                    StaffOutside staffOutside = null;
-                    StaffInside staffInside = null;
-                    if (insideOrOutside.equals("0")) {
-                        staffInside = staffInsideService.getStaffIdByIdNum(entity.getStaffIdCard().trim());
-                    } else {
-                        staffOutside = staffOutsideService.getStaffIdByIdNum(entity.getStaffIdCard().trim());
-                    }
-                    if (staffInside == null && staffOutside == null) {
+                    StaffInside staffInside = staffInsideService.getStaffIdByIdNum(entity.getStaffIdCard().trim());
+                    if (staffInside == null) {
                         List<ExcelErrorField> errorFields = new ArrayList<>();
                         errorFields.add(new ExcelErrorField(
                                 0,
                                 entity.getStaffIdCard().trim(),
                                 "证照号码",
-                                "查询不到 [" + entity.getStaffName() + "] 这个编" + (insideOrOutside.equals("0") ? "内" : "外") + "人员的信息"));
+                                "查询不到 [" + entity.getStaffName() + "] 这个编内人员的信息"));
                         onError(sheetIndex, rowIndex, errorFields);
                     } else {
                         Wage wage = new Wage();
-                        wage.setInsideOrOutside(insideOrOutside.equals("0") + "");
-                        wage.setStaffId(staffInside == null ? staffOutside.getStaffId() : staffInside.getStaffId());
-                        wage.setStaffName(staffInside == null ? staffOutside.getName() : staffInside.getName());
+                        wage.setStaffId(staffInside.getStaffId());
+                        wage.setStaffName(staffInside.getName());
                         wage.setStaffIdCard(entity.getStaffIdCard().trim());
                         wage.setCurrentIncome(entity.getCurrentIncome().equals("$EMPTY_CELL$") || entity.getCurrentIncome().equals("") ? zero : new BigDecimal(entity.getCurrentIncome()));
                         wage.setReissueSalaryScale(entity.getReissueSalaryScale().equals("$EMPTY_CELL$") || entity.getReissueSalaryScale().equals("") ? zero : new BigDecimal(entity.getReissueSalaryScale()));
@@ -264,7 +257,37 @@ public class WageController extends BaseController {
                         wage.setHolidayCosts(entity.getHolidayCosts().equals("$EMPTY_CELL$") || entity.getHolidayCosts().equals("") ? zero : new BigDecimal(entity.getHolidayCosts()));
                         wage.setAnnualLeavePay(entity.getAnnualLeavePay().equals("$EMPTY_CELL$") || entity.getAnnualLeavePay().equals("") ? zero : new BigDecimal(entity.getAnnualLeavePay()));
                         wage.setComprehensiveSubsidy(entity.getComprehensiveSubsidy().equals("$EMPTY_CELL$") || entity.getComprehensiveSubsidy().equals("") ? zero : new BigDecimal(entity.getComprehensiveSubsidy()));
-                        wage.setPayable(entity.getPayable().equals("$EMPTY_CELL$") || entity.getPayable().equals("") ? zero : new BigDecimal(entity.getPayable()));
+                        wage.setEmptyColumn01(entity.getEmptyColumn01().equals("$EMPTY_CELL$") || entity.getEmptyColumn01().equals("") ? zero : new BigDecimal(entity.getEmptyColumn01()));
+                        wage.setEmptyColumn02(entity.getEmptyColumn02().equals("$EMPTY_CELL$") || entity.getEmptyColumn02().equals("") ? zero : new BigDecimal(entity.getEmptyColumn02()));
+                        wage.setEmptyColumn03(entity.getEmptyColumn03().equals("$EMPTY_CELL$") || entity.getEmptyColumn03().equals("") ? zero : new BigDecimal(entity.getEmptyColumn03()));
+                        wage.setEmptyColumn04(entity.getEmptyColumn04().equals("$EMPTY_CELL$") || entity.getEmptyColumn04().equals("") ? zero : new BigDecimal(entity.getEmptyColumn04()));
+                        wage.setEmptyColumn05(entity.getEmptyColumn05().equals("$EMPTY_CELL$") || entity.getEmptyColumn05().equals("") ? zero : new BigDecimal(entity.getEmptyColumn05()));
+                        // 应发工资
+                        // wage.setPayable(entity.getPayable().equals("$EMPTY_CELL$") || entity.getPayable().equals("") ? zero : new BigDecimal(entity.getPayable()));
+                        wage.setPayable(wage.getCurrentIncome()
+                                .add(wage.getReissueSalaryScale())
+                                .add(wage.getSalarySalary())
+                                .add(wage.getPostAllowance())
+                                .add(wage.getFinancialBurdenPerformancePay())
+                                .add(wage.getOvertimePay())
+                                .add(wage.getEnvironmentalSanitationDutyAllowance())
+                                .add(wage.getHousingSubsidy())
+                                .add(wage.getOnlyChildFee())
+                                .add(wage.getTemporarySubsidy())
+                                .add(wage.getJobPerformance())
+                                .add(wage.getHolidayCosts())
+                                .add(wage.getAnnualLeavePay())
+                                .add(wage.getComprehensiveSubsidy())
+                                .add(wage.getEmptyColumn01())
+                                .add(wage.getEmptyColumn02())
+                                .add(wage.getEmptyColumn03())
+                                .add(wage.getEmptyColumn04())
+                                .add(wage.getEmptyColumn05())
+                        );
+                        System.out.println(staffInside.getName());
+                        System.out.println("应发工资");
+                        System.out.println(wage.getPayable());
+
                         wage.setHousingFund(entity.getHousingFund().equals("$EMPTY_CELL$") || entity.getHousingFund().equals("") ? zero : new BigDecimal(entity.getHousingFund()));
                         wage.setBasicPensionIp(entity.getBasicPensionIp().equals("$EMPTY_CELL$") || entity.getBasicPensionIp().equals("") ? zero : new BigDecimal(entity.getBasicPensionIp()));
                         wage.setUnemploymentIp(entity.getUnemploymentIp().equals("$EMPTY_CELL$") || entity.getUnemploymentIp().equals("") ? zero : new BigDecimal(entity.getUnemploymentIp()));
@@ -272,12 +295,31 @@ public class WageController extends BaseController {
                         wage.setMedicalMutualAid(entity.getMedicalMutualAid().equals("$EMPTY_CELL$") || entity.getMedicalMutualAid().equals("") ? zero : new BigDecimal(entity.getMedicalMutualAid()));
                         wage.setCorporateAnnuity(entity.getCorporateAnnuity().equals("$EMPTY_CELL$") || entity.getCorporateAnnuity().equals("") ? zero : new BigDecimal(entity.getCorporateAnnuity()));
                         wage.setTaxDeduction(entity.getTaxDeduction().equals("$EMPTY_CELL$") || entity.getTaxDeduction().equals("") ? zero : new BigDecimal(entity.getTaxDeduction()));
-                        wage.setRealWage(entity.getRealWage().equals("$EMPTY_CELL$") || entity.getRealWage().equals("") ? zero : new BigDecimal(entity.getRealWage()));
-                        wage.setRealWage(entity.getEmptyColumn01().equals("$EMPTY_CELL$") || entity.getEmptyColumn01().equals("") ? zero : new BigDecimal(entity.getEmptyColumn01()));
-                        wage.setRealWage(entity.getEmptyColumn02().equals("$EMPTY_CELL$") || entity.getEmptyColumn02().equals("") ? zero : new BigDecimal(entity.getEmptyColumn02()));
-                        wage.setRealWage(entity.getEmptyColumn03().equals("$EMPTY_CELL$") || entity.getEmptyColumn03().equals("") ? zero : new BigDecimal(entity.getEmptyColumn03()));
-                        wage.setRealWage(entity.getEmptyColumn04().equals("$EMPTY_CELL$") || entity.getEmptyColumn04().equals("") ? zero : new BigDecimal(entity.getEmptyColumn04()));
-                        wage.setRealWage(entity.getEmptyColumn05().equals("$EMPTY_CELL$") || entity.getEmptyColumn05().equals("") ? zero : new BigDecimal(entity.getEmptyColumn05()));
+                        wage.setEmptyColumn06(entity.getEmptyColumn06().equals("$EMPTY_CELL$") || entity.getEmptyColumn06().equals("") ? zero : new BigDecimal(entity.getEmptyColumn06()));
+                        wage.setEmptyColumn07(entity.getEmptyColumn07().equals("$EMPTY_CELL$") || entity.getEmptyColumn07().equals("") ? zero : new BigDecimal(entity.getEmptyColumn07()));
+                        wage.setEmptyColumn08(entity.getEmptyColumn08().equals("$EMPTY_CELL$") || entity.getEmptyColumn08().equals("") ? zero : new BigDecimal(entity.getEmptyColumn08()));
+                        wage.setEmptyColumn09(entity.getEmptyColumn09().equals("$EMPTY_CELL$") || entity.getEmptyColumn09().equals("") ? zero : new BigDecimal(entity.getEmptyColumn09()));
+                        wage.setEmptyColumn10(entity.getEmptyColumn10().equals("$EMPTY_CELL$") || entity.getEmptyColumn10().equals("") ? zero : new BigDecimal(entity.getEmptyColumn10()));
+                        // 实发工资
+                        // wage.setRealWage(entity.getRealWage().equals("$EMPTY_CELL$") || entity.getRealWage().equals("") ? zero : new BigDecimal(entity.getRealWage()));
+                        wage.setRealWage(wage.getPayable()
+                                .subtract(wage.getHousingFund())
+                                .subtract(wage.getBasicPensionIp())
+                                .subtract(wage.getUnemploymentIp())
+                                .subtract(wage.getBasicMedicalIp())
+                                .subtract(wage.getMedicalMutualAid())
+                                .subtract(wage.getCorporateAnnuity())
+                                .subtract(wage.getTaxDeduction())
+                                .subtract(wage.getEmptyColumn06())
+                                .subtract(wage.getEmptyColumn07())
+                                .subtract(wage.getEmptyColumn08())
+                                .subtract(wage.getEmptyColumn09())
+                                .subtract(wage.getEmptyColumn10())
+                        );
+                        System.out.println("实发工资");
+                        System.out.println(wage.getRealWage());
+                        System.out.println(wage);
+
                         wage.setCreateTime(now.toString());
                         wage.setYear(dateArr[0]);
                         wage.setMonth(dateArr[1]);

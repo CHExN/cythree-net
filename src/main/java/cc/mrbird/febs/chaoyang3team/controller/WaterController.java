@@ -52,7 +52,7 @@ public class WaterController extends BaseController {
 
     @GetMapping
     @RequiresPermissions("water:view")
-    public Map<String, Object> WaterList(QueryRequest request, Water water) {
+    public Map<String, Object> waterList(QueryRequest request, Water water) {
         return getDataTable(this.waterService.findWaterDetail(request, water));
     }
 
@@ -118,7 +118,7 @@ public class WaterController extends BaseController {
         List<Water> list = new ArrayList<>();
         IntStream.range(0, 20).forEach(i -> {
             Water water = new Water();
-            water.setWaterNum("水费编号" + (i + 1));
+            water.setWcNum("公厕编号后四位" + (i + 1));
             water.setActualAmount(new BigDecimal(Math.random() * (100 - 20) + 20).setScale(2, BigDecimal.ROUND_DOWN));
             water.setUnitPrice(new BigDecimal(Math.random() * (100 - 20) + 20).setScale(2, BigDecimal.ROUND_DOWN));
             water.setTapWaterFee(new BigDecimal(Math.random() * (100 - 20) + 20).setScale(2, BigDecimal.ROUND_DOWN));
@@ -138,7 +138,7 @@ public class WaterController extends BaseController {
     @Log("导入水费信息Excel数据，并批量插入")
     @PostMapping("import")
     @RequiresPermissions("water:add")
-    public FebsResponse importExcels(@RequestParam("file") MultipartFile file, String date) throws FebsException {
+    public FebsResponse importExcels(@RequestParam("file") MultipartFile file) throws FebsException {
         try {
             if (file.isEmpty()) {
                 throw new FebsException("导入数据为空");
@@ -156,23 +156,28 @@ public class WaterController extends BaseController {
                 @Override
                 public void onSuccess(int sheetIndex, int rowIndex, WaterImport entity) {
                     // 数据校验成功时，加入集合
-                    Long wcId = wcService.getWcIdByWaterNum(entity.getWaterNum());
+                    String wcNum = entity.getWcNum().trim();
+                    Long wcId = wcService.getWcIdByWcNum(wcNum, true);
                     if (wcId == null) {
                         List<ExcelErrorField> errorFields = new ArrayList<>();
-                        errorFields.add(new ExcelErrorField(0, entity.getWaterNum(), "水表编号", "水表编号不存在"));
+                        errorFields.add(new ExcelErrorField(
+                                1,
+                                wcNum,
+                                "公厕编号后四位",
+                                "查询不到 “公厕编号” 后四位为「" + wcNum + "」的这个公厕"));
                         onError(sheetIndex, rowIndex, errorFields);
                     } else {
                         Water water = new Water();
+                        water.setYear(entity.getYear());
+                        water.setMonth(entity.getMonth());
                         water.setWcId(wcId);
-                        water.setWaterNum(entity.getWaterNum());
-                        water.setDate(date);
+                        water.setWcNum(wcNum);
                         water.setActualAmount(entity.getActualAmount());
                         water.setUnitPrice(entity.getUnitPrice());
                         water.setTapWaterFee(entity.getTapWaterFee());
                         water.setWaterResourcesFee(entity.getWaterResourcesFee());
                         water.setSewageFee(entity.getSewageFee());
                         water.setTotalAmount(entity.getTotalAmount());
-                        water.setCreateDate(entity.getCreateDate());
                         waterService.createWater(water);
                         data.add(water);
                     }

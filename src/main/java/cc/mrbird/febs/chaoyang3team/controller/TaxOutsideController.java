@@ -60,7 +60,7 @@ public class TaxOutsideController extends BaseController {
 
     @GetMapping
     @RequiresPermissions("taxOutside:view")
-    public Map<String, Object> TaxOutsideList(QueryRequest request, TaxOutside taxOutside) {
+    public Map<String, Object> taxOutsideList(QueryRequest request, TaxOutside taxOutside) {
         return getDataTable(this.taxOutsideService.findTaxOutsideDetail(request, taxOutside));
     }
 

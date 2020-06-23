@@ -16,8 +16,20 @@ public interface WcStoreroomService extends IService<WcStoreroom> {
 
     IPage<WcStoreroom> findWcStoreroomDetail(QueryRequest request, WcStoreroom wcStoreroom, ServletRequest servletRequest);
 
+    void deleteWcStorerooms(String[] wcStoreroomIds);
+
+    /**
+     * 根据公厕ids删除所有分配记录
+     * 此删除没有进行物资归还操作，慎用
+     * @param wcIds 公厕ids
+     */
     void deleteWcStoreroomsByWcId(String[] wcIds);
 
+    /**
+     * 根据物资ids删除所有分配记录
+     * 此删除没有进行物资归还操作，慎用
+     * @param storeroomIds 物资ids
+     */
     void deleteWcStoreroomsByStoreroomId(String[] storeroomIds);
 
     void createWcStoreroom(String wcStoreroomStr, BigDecimal amountDist, ServletRequest servletRequest);

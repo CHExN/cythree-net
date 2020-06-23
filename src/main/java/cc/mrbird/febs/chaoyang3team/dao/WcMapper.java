@@ -60,10 +60,8 @@ public interface WcMapper extends BaseMapper<Wc> {
      * @param wcNum 公厕编号
      * @return 公厕信息
      */
-    Wc getWcByWcNum(String wcNum);
-    Long getWcIdByWcNum(String wcNum);
-    Long getWcIdByWaterNum(String waterNum);
-    Long getWcIdByElectricityNum(String electricityNum);
+    Wc getWcByWcNum(@Param("wcNum")String wcNum, @Param("isLastFour")Boolean isLastFour);
+    Long getWcIdByWcNum(@Param("wcNum")String wcNum, @Param("isLastFour")Boolean isLastFour);
 
     /**
      * 根据年 获取所有月份的公厕消耗

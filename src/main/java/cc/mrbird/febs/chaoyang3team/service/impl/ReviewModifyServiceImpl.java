@@ -49,7 +49,7 @@ public class ReviewModifyServiceImpl extends ServiceImpl<ReviewModifyMapper, Rev
             SortUtil.handlePageSort(request, page, "id", FebsConstant.ORDER_DESC, false);
             return this.baseMapper.findReviewModifyDetail(page, reviewModify);
         } catch (Exception e) {
-            log.error("查询审核申请信息异常", e);
+            log.error("查询修改申请信息异常", e);
             return null;
         }
     }
@@ -102,8 +102,8 @@ public class ReviewModifyServiceImpl extends ServiceImpl<ReviewModifyMapper, Rev
                 null,
                 null,
                 message.toString(),
-                "captain",
-                "队长",
+                "bot",
+                "系统",
                 reviewModify.getUsername(),
                 null)
         );

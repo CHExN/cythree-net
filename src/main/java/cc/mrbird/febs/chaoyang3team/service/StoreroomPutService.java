@@ -24,4 +24,6 @@ public interface StoreroomPutService extends IService<StoreroomPut> {
 
     List<Map<String, Object>> findStoreroomPutTypeApplicationProportion(String date);
 
+    List<Map<String, Object>> findStoreroomPutSupplierProportion(String date, String typeApplication);
+
 }

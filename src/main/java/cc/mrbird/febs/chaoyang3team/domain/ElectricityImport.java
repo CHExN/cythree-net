@@ -19,8 +19,8 @@ public class ElectricityImport implements Serializable {
 
     private static final long serialVersionUID = -8561474513219102032L;
 
-    @ExcelField(value = "电表编号", required = true, comment = "请填写正确的电表编号，否则必定导入失败")
-    private String electricityNum;
+    @ExcelField(value = "公厕编号后四位", required = true, comment = "请填写正确的公厕编号后四位，否则必定导入失败")
+    private String wcNum;
 
     @ExcelField(value = "实际用量", required = true, validator = NumericValidator.class, comment = "请填写浮点数或者整数")
     private BigDecimal actualAmount;
@@ -31,13 +31,19 @@ public class ElectricityImport implements Serializable {
     @ExcelField(value = "金额合计", required = true, validator = NumericValidator.class, comment = "请填写浮点数或者整数")
     private BigDecimal totalAmount;
 
-    @ExcelField(value = "登记日期", required = true, dateFormat = "yyyy/MM/dd", comment = "请以yyyy/MM/dd的格式填写登记日期")
-    private Date createDate;
+    /*@ExcelField(value = "登记日期", required = true, dateFormat = "yyyy/MM/dd", comment = "请以yyyy/MM/dd的格式填写登记日期")
+    private Date createDate;*/
 
-    @ExcelField(value = "缴费日期", required = true, dateFormat = "yyyy/MM/dd", comment = "请以yyyy/MM/dd的格式填写登记日期")
+    @ExcelField(value = "缴费日期", required = true, dateFormat = "yyyy/MM/dd", comment = "请以yyyy/MM/dd的格式填写缴费日期")
     private Date recDate;
 
-    @ExcelField(value = "购电方式", required = true)
+    @ExcelField(value = "购电方式")
     private String type;
+
+    @ExcelField(value = "年", required = true)
+    private String year;
+
+    @ExcelField(value = "月", required = true)
+    private String month;
 
 }

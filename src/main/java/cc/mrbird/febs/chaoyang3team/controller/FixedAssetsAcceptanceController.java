@@ -34,7 +34,7 @@ public class FixedAssetsAcceptanceController extends BaseController {
 
     @GetMapping
     @RequiresPermissions("fixedAssetsAcceptance:view")
-    public Map<String, Object> FixedAssetsAcceptanceList(QueryRequest request, FixedAssetsAcceptance fixedAssetsAcceptance) {
+    public Map<String, Object> fixedAssetsAcceptanceList(QueryRequest request, FixedAssetsAcceptance fixedAssetsAcceptance) {
         return getDataTable(this.fixedAssetsAcceptanceService.findFixedAssetsAcceptance(request, fixedAssetsAcceptance));
     }
 

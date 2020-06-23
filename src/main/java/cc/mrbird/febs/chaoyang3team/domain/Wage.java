@@ -16,23 +16,19 @@ import java.math.BigDecimal;
  */
 @Data
 @TableName("cy_wage")
-@Excel("工资表")
+@Excel("编内工资表")
 public class Wage implements Serializable {
 
     private static final long serialVersionUID = 810793371144236410L;
 
     /**
-     * 工资表主键
+     * 编内工资表主键
      */
     @TableId(value = "ID", type = IdType.AUTO)
     private Long id;
 
     @ExcelField(value = "序号")
     private transient Integer sortNum;
-
-    @TableField("INSIDE_OR_OUTSIDE")
-    @ExcelField(value = "编制类别", required = true, readConverterExp = "编内=0,编外=1", writeConverterExp = "0=编内,1=编外")
-    private String insideOrOutside;
 
     /**
      * 人员id
@@ -176,7 +172,9 @@ public class Wage implements Serializable {
     @ExcelField(value = "实发工资")
     private transient BigDecimal realWageSum;
 
-
+    /*
+    加款项
+     */
     @TableField("EMPTY_COLUMN_01")
     private BigDecimal emptyColumn01;
     @ExcelField(value = "空列01")
@@ -197,6 +195,30 @@ public class Wage implements Serializable {
     private BigDecimal emptyColumn05;
     @ExcelField(value = "空列05")
     private transient BigDecimal emptyColumn05Sum;
+
+    /*
+    扣款项
+     */
+    @TableField("EMPTY_COLUMN_06")
+    private BigDecimal emptyColumn06;
+    @ExcelField(value = "空列06")
+    private transient BigDecimal emptyColumn06Sum;
+    @TableField("EMPTY_COLUMN_07")
+    private BigDecimal emptyColumn07;
+    @ExcelField(value = "空列07")
+    private transient BigDecimal emptyColumn07Sum;
+    @TableField("EMPTY_COLUMN_08")
+    private BigDecimal emptyColumn08;
+    @ExcelField(value = "空列08")
+    private transient BigDecimal emptyColumn08Sum;
+    @TableField("EMPTY_COLUMN_09")
+    private BigDecimal emptyColumn09;
+    @ExcelField(value = "空列09")
+    private transient BigDecimal emptyColumn09Sum;
+    @TableField("EMPTY_COLUMN_10")
+    private BigDecimal emptyColumn10;
+    @ExcelField(value = "空列10")
+    private transient BigDecimal emptyColumn10Sum;
 
     /**
      * 创建时间
@@ -223,5 +245,8 @@ public class Wage implements Serializable {
     private String monthForm;
     private String yearTo;
     private String monthTo;
+
+    // 在职或非在职 0=在职,1=非在职
+    private transient String isLeave;
 
 }

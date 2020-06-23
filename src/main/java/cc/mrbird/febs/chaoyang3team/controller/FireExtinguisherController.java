@@ -52,7 +52,7 @@ public class FireExtinguisherController extends BaseController {
 
     @GetMapping
     @RequiresPermissions("fireExtinguisher:view")
-    public Map<String, Object> FireExtinguisherList(QueryRequest request, FireExtinguisher fireExtinguisher) {
+    public Map<String, Object> fireExtinguisherList(QueryRequest request, FireExtinguisher fireExtinguisher) {
         return getDataTable(this.fireExtinguisherService.findFireExtinguisherDetail(request, fireExtinguisher));
     }
 
@@ -152,7 +152,7 @@ public class FireExtinguisherController extends BaseController {
                     // 数据校验成功时，加入集合
                     Long wcId = null;
                     if (!entity.getWcNum().equals("$EMPTY_CELL$")) {
-                        wcId = wcService.getWcIdByWcNum(entity.getWcNum());
+                        wcId = wcService.getWcIdByWcNum(entity.getWcNum(), false);
                     }
                     if (!entity.getWcNum().equals("$EMPTY_CELL$") && wcId == null) {
                         List<ExcelErrorField> errorFields = new ArrayList<>();

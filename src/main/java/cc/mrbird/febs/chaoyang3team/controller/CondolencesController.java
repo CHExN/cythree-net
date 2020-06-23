@@ -35,7 +35,7 @@ public class CondolencesController extends BaseController {
 
     @GetMapping
     @RequiresPermissions("condolences:view")
-    public Map<String, Object> CondolencesList(QueryRequest request, Condolences condolences, ServletRequest servletRequest) {
+    public Map<String, Object> condolencesList(QueryRequest request, Condolences condolences, ServletRequest servletRequest) {
         return getDataTable(this.condolencesService.findCondolencesDetail(request, condolences, servletRequest));
     }
 

@@ -21,16 +21,16 @@ public class ChargingCabinetImport implements Serializable {
     @ExcelField(value = "配发日期")
     private String allotmentDate;
 
-    @ExcelField(value = "编制类别", readConverterExp = "编内=0,编外=1", writeConverterExp = "0=编内,1=编外", comment = "只可填写以下各项:[1、编内; 2、编外]")
-    private String insideOrOutside;
+    @ExcelField(value = "责任人")
+    private String user;
 
-    @ExcelField(value = "身份证号", comment = "请填写正确的员工身份证号，否则必定导入失败")
-    private String idNum;
+    @ExcelField(value = "使用部门")
+    private String useDeptName;
 
     @ExcelField(value = "充电端口数")
     private String chargingSectionsNumber;
 
-    @ExcelField(value = "能否充电", readConverterExp = "能=1,否=2", writeConverterExp = "1=能,2=否", comment = "只可填写以下各项:[1、能; 2、否]")
+    @ExcelField(value = "能否充电", required = true, readConverterExp = "能=1,否=2", writeConverterExp = "1=能,2=否", comment = "只可填写以下各项:[1、能; 2、否]")
     private String ifCharge;
 
     @ExcelField(value = "摆放地点")

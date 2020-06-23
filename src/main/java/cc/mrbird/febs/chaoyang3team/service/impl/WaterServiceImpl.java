@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -35,7 +36,7 @@ public class WaterServiceImpl extends ServiceImpl<WaterMapper, Water> implements
     public IPage<Water> findWaterDetail(QueryRequest request, Water water) {
         try {
             Page<Water> page = new Page<>();
-            SortUtil.handlePageSort(request, page, "waterId", FebsConstant.ORDER_ASC, false);
+            SortUtil.handlePageSort(request, page, "year DESC, month DESC, wcId", FebsConstant.ORDER_ASC, false);
             return this.baseMapper.findWaterDetail(page, water);
         } catch (Exception e) {
             log.error("查询水费信息异常", e);
@@ -46,9 +47,8 @@ public class WaterServiceImpl extends ServiceImpl<WaterMapper, Water> implements
     @Override
     @Transactional
     public void createWater(Water water) {
-        String[] dateArr = water.getDate().split("-");
-        water.setYear(dateArr[0]);
-        water.setMonth(dateArr[1]);
+        water.setCreateDate(new Date());
+        if (water.getMonth().length() == 1) water.setMonth("0" + water.getMonth());
         this.save(water);
         this.wcWaterService.createWcWater(new WcWater(water.getWcId(), water.getWaterId()));
     }

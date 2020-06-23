@@ -52,7 +52,7 @@ public class ElectricityController extends BaseController {
 
     @GetMapping
     @RequiresPermissions("electricity:view")
-    public Map<String, Object> ElectricityList(QueryRequest request, Electricity electricity) {
+    public Map<String, Object> electricityList(QueryRequest request, Electricity electricity) {
         return getDataTable(this.electricityService.findElectricityDetail(request, electricity));
     }
 
@@ -118,7 +118,7 @@ public class ElectricityController extends BaseController {
         List<Electricity> list = new ArrayList<>();
         IntStream.range(0, 20).forEach(i -> {
             Electricity electricity = new Electricity();
-            electricity.setElectricityNum("电表编号" + (i + 1));
+            electricity.setWcNum("公厕编号后四位" + (i + 1));
             electricity.setActualAmount(new BigDecimal(Math.random() * (100 - 20) + 20).setScale(2, BigDecimal.ROUND_DOWN));
             electricity.setUnitPrice(new BigDecimal(Math.random() * (100 - 20) + 20).setScale(2, BigDecimal.ROUND_DOWN));
             electricity.setTotalAmount(new BigDecimal(Math.random() * (100 - 20) + 20).setScale(2, BigDecimal.ROUND_DOWN));
@@ -137,7 +137,7 @@ public class ElectricityController extends BaseController {
     @Log("导入电费信息Excel数据，并批量插入")
     @PostMapping("import")
     @RequiresPermissions("electricity:add")
-    public FebsResponse importExcels(@RequestParam("file") MultipartFile file, String date) throws FebsException {
+    public FebsResponse importExcels(@RequestParam("file") MultipartFile file) throws FebsException {
         try {
             if (file.isEmpty()) {
                 throw new FebsException("导入数据为空");
@@ -155,20 +155,25 @@ public class ElectricityController extends BaseController {
                 @Override
                 public void onSuccess(int sheetIndex, int rowIndex, ElectricityImport entity) {
                     // 数据校验成功时，加入集合
-                    Long wcId = wcService.getWcIdByElectricityNum(entity.getElectricityNum());
+                    String wcNum = entity.getWcNum().trim();
+                    Long wcId = wcService.getWcIdByWcNum(wcNum, true);
                     if (wcId == null) {
                         List<ExcelErrorField> errorFields = new ArrayList<>();
-                        errorFields.add(new ExcelErrorField(0, entity.getElectricityNum(), "电表编号", "电表编号不存在"));
+                        errorFields.add(new ExcelErrorField(
+                                1,
+                                wcNum,
+                                "公厕编号后四位",
+                                "查询不到 “公厕编号” 后四位为「" + wcNum + "」的这个公厕"));
                         onError(sheetIndex, rowIndex, errorFields);
                     } else {
                         Electricity electricity = new Electricity();
+                        electricity.setYear(entity.getYear());
+                        electricity.setMonth(entity.getMonth());
                         electricity.setWcId(wcId);
-                        electricity.setElectricityNum(entity.getElectricityNum());
-                        electricity.setDate(date);
+                        electricity.setWcNum(wcNum);
                         electricity.setActualAmount(entity.getActualAmount());
                         electricity.setUnitPrice(entity.getUnitPrice());
                         electricity.setTotalAmount(entity.getTotalAmount());
-                        electricity.setCreateDate(entity.getCreateDate());
                         electricity.setRecDate(entity.getRecDate());
                         electricity.setType(entity.getType());
                         electricityService.createElectricity(electricity);

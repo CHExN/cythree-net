@@ -33,6 +33,9 @@ public class WcStatus implements Serializable {
     private Long wcId;
     private transient String wcName;
     private transient String wcNum;
+    private transient String wcSort;
+    private transient String streetTown;
+    private transient String wcOwn;
 
     /**
      * 创建时间
@@ -47,7 +50,7 @@ public class WcStatus implements Serializable {
     private LocalDateTime modifyTime;
 
     /**
-     * 开始日期
+     * 关门日期
      */
     @TableField("START_DATE")
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
@@ -56,7 +59,7 @@ public class WcStatus implements Serializable {
     private String startDateTo;
 
     /**
-     * 结束日期
+     * 三场抽运/开门日期
      */
     @TableField("END_DATE")
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
@@ -65,10 +68,41 @@ public class WcStatus implements Serializable {
     private String endDateTo;
 
     /**
-     * 状态 默认“维修中”
+     * 状态 默认“井满”
      */
     @TableField("STATUS")
     private String status;
 
+    /**
+     * 备注
+     */
+    @TableField("REMARK")
+    private String remark;
 
+    /**
+     * 是否通知三场 0不通知 1通知
+     */
+    @TableField("IS_NOTICE")
+    private String isNotice;
+
+    /**
+     * 通知日期
+     */
+    @TableField("NOTICE_DATE")
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+    private LocalDate noticeDate;
+
+    /**
+     * 是否重点位置 0否 1是
+     */
+    @TableField("IS_FOCUS")
+    private String isFocus;
+
+    /**
+     * 是否开门 0关门 1开门
+     */
+    @TableField("IS_OPEN")
+    private String isOpen;
+
+    private transient String day;
 }

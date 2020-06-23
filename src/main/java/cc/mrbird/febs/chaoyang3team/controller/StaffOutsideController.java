@@ -148,6 +148,7 @@ public class StaffOutsideController extends BaseController {
     @RequiresPermissions("attributionOutside:view")
     public Map<String, Object> attributionOutsideList(QueryRequest request, StaffOutside staffOutside, ServletRequest servletRequest) {
         staffOutside.setType("0");
+        System.out.println("");
         return getDataTable(this.staffOutsideService.findStaffOutsideDetail(request, staffOutside, servletRequest));
     }
 

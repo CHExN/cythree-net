@@ -7,6 +7,7 @@ import cc.mrbird.febs.chaoyang3team.service.PlanService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -52,7 +53,16 @@ public class PlanServiceImpl extends ServiceImpl<PlanMapper, Plan> implements Pl
     }
 
     @Override
+    public void deletePlansByApplicationIds(String[] applicationIds) {
+        List<String> ids = Arrays.asList(applicationIds);
+        baseMapper.deletePlansByApplicationIds(StringUtils.join(ids,","));
+        this.applicationPlanService.deleteByApplicationId(applicationIds);
+    }
+
+    @Override
+    @Transactional
     public void updatePlanStatus(String planIds) {
         this.baseMapper.updatePlanStatus(planIds);
     }
+
 }

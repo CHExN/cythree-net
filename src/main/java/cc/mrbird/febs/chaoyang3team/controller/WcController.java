@@ -111,9 +111,14 @@ public class WcController extends BaseController {
 
     @GetMapping("wcName")
     @RequiresPermissions("wc:wcName")
-    public Map<String, Object> WcNameList(QueryRequest request, Wc wc, ServletRequest servletRequest) {
+    public Map<String, Object> wcNameList(QueryRequest request, Wc wc, ServletRequest servletRequest) {
 //        return getDataTable(this.wcService.getWcName(request, wc, servletRequest));
         return getDataTable(this.wcService.findWcDetail(request, wc));
+    }
+
+    @GetMapping("getWcByWcNum")
+    public Wc getWcByWcNum(String wcNum, Boolean isLastFour) {
+        return this.wcService.getWcByWcNum(wcNum, isLastFour);
     }
 
     @GetMapping("selectOne")
@@ -124,7 +129,7 @@ public class WcController extends BaseController {
 
     @GetMapping
     @RequiresPermissions("wc:view")
-    public Map<String, Object> WcList(QueryRequest request, Wc wc) {
+    public Map<String, Object> wcList(QueryRequest request, Wc wc) {
         return getDataTable(this.wcService.findWcDetail(request, wc));
     }
 
@@ -297,9 +302,6 @@ public class WcController extends BaseController {
                     wc.setCleanNum(entity.getCleanNum().equals("$EMPTY_CELL$") ? "" : entity.getCleanNum());
                     wc.setWcAddress(entity.getWcAddress().equals("$EMPTY_CELL$") ? "" : entity.getWcAddress());
                     wc.setWcNowStatus(entity.getWcNowStatus().equals("$EMPTY_CELL$") ? "" : entity.getWcNowStatus());
-                    wc.setWaterNum(entity.getWaterNum().equals("$EMPTY_CELL$") ? "" : entity.getWaterNum());
-                    wc.setElectricityNum(entity.getElectricityNum().equals("$EMPTY_CELL$") ? "" : entity.getElectricityNum());
-                    wc.setPaymentNum(entity.getPaymentNum().equals("$EMPTY_CELL$") ? "" : entity.getPaymentNum());
                     data.add(wc);
                 }
 

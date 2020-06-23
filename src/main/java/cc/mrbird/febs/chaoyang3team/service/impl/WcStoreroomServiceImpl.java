@@ -71,6 +71,58 @@ public class WcStoreroomServiceImpl extends ServiceImpl<WcStoreroomMapper, WcSto
 
     @Override
     @Transactional
+    public void deleteWcStorerooms(String[] wcStoreroomIds) {
+        List<String> ids = Arrays.asList(wcStoreroomIds);
+        // 把分配记录的物资返还回去
+        List<WcStoreroom> wcStorerooms = baseMapper.selectList(new LambdaQueryWrapper<WcStoreroom>().in(WcStoreroom::getId, ids));
+        System.out.println("===================");
+        wcStorerooms.forEach(e -> {
+
+            // 根据物资id 判断物资是否有单位转换
+            UnitConversion unitConversion = this.unitConversionService.findById(e.getStoreroomId().toString());
+            if (unitConversion == null) {
+                System.out.println("不是单位转换");
+                // 获取当前物资信息
+                Storeroom storeroomNow = storeroomService.getStoreroomById(e.getStoreroomId().toString());
+                // 创建要更新的实体
+                Storeroom storeroom = new Storeroom();
+                storeroom.setId(e.getStoreroomId());
+                // 设置物资的剩余数量为 已分配的数量 + 物资原有剩余的数量
+                System.out.println("设置物资的剩余数量为 已分配的数量 + 物资原有剩余的数量");
+                System.out.println(e.getAmount() + " + " + storeroomNow.getAmountDist() + " = " + e.getAmount().add(storeroomNow.getAmountDist()));
+                storeroom.setAmountDist(e.getAmount().add(storeroomNow.getAmountDist()));
+                // 如果物资的剩余数量不为0，则status设置为0
+                if (storeroom.getAmountDist().compareTo(BigDecimal.ZERO) > 0) {
+                    storeroom.setStatus("0");
+                    System.out.println("设置storeroom的status为0");
+                }
+                this.storeroomService.updateStoreroom(storeroom);
+            } else {
+                System.out.println("是单位转换");
+                // 设置物资的剩余数量为 已分配的数量 + 物资原有剩余的数量
+                System.out.println("设置物资的剩余数量为 已分配的数量 + 物资原有剩余的数量");
+                System.out.println(e.getAmount() + " + " + unitConversion.getAmountDist() + " = " + e.getAmount().add(unitConversion.getAmountDist()));
+                unitConversion.setAmountDist(e.getAmount().add(unitConversion.getAmountDist()));
+                this.unitConversionService.saveOrUpdateUnitConversion(unitConversion);
+                // 如果物资的剩余数量不为0，则status设置为0
+                if (unitConversion.getAmountDist().compareTo(BigDecimal.ZERO) > 0) {
+                    Storeroom storeroom = new Storeroom();
+                    storeroom.setId(e.getStoreroomId());
+                    storeroom.setStatus("0");
+                    this.storeroomService.updateStoreroom(storeroom);
+                    System.out.println("设置storeroom的status为0");
+                }
+            }
+
+        });
+        System.out.println("===================");
+
+        // 删除分配的记录
+        baseMapper.deleteBatchIds(ids);
+    }
+
+    @Override
+    @Transactional
     public void deleteWcStoreroomsByWcId(String[] wcIds) {
         List<String> list = Arrays.asList(wcIds);
         baseMapper.delete(new LambdaQueryWrapper<WcStoreroom>().in(WcStoreroom::getWcId, list));
@@ -99,6 +151,7 @@ public class WcStoreroomServiceImpl extends ServiceImpl<WcStoreroomMapper, WcSto
             wcStoreroom.setMonth(DateUtil.formatFullTime(now, "MM"));
             wcStoreroom.setDay(DateUtil.formatFullTime(now, "dd"));
             wcStoreroom.setUsername(username);
+            wcStoreroom.setCreateTime(LocalDateTime.now());
         }
         this.batchInsertWcStoreroom(wcStoreroomList);
 

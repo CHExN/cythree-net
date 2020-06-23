@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.mrbird.febs.chaoyang3team.dao.ArticleMapper">
+
+    <select id="findArticleDetail" resultType="cc.mrbird.febs.chaoyang3team.domain.Article">
+        SELECT
+        <include refid="result"/>
+        FROM cy_article AS ca
+        <include refid="param"/>
+    </select>
+
+    <select id="getArticleTopCount" resultType="java.lang.Long">
+        SELECT COUNT(1) FROM cy_article AS ca WHERE ca.IS_TOP = '1'
+    </select>
+
+    <update id="updateArticleSwapSort">
+        UPDATE cy_article AS ca1
+        JOIN cy_article AS ca2 ON(ca1.SORT_NUM=#{sortNum} AND ca2.SORT_NUM=#{beSortNum})
+        SET ca1.SORT_NUM=ca2.SORT_NUM,
+            ca2.SORT_NUM=ca1.SORT_NUM
+    </update>
+
+    <update id="updateArticleSortNum">
+        UPDATE cy_article AS a INNER JOIN (
+            SELECT ca.ID, (@i:=@i+1) AS pm, ca.MODIFY_TIME
+            FROM cy_article AS ca, (select @i:=0) AS it
+            WHERE ca.IS_TOP = '1'
+            ORDER BY ca.SORT_NUM ASC, ca.MODIFY_TIME DESC
+        ) AS b ON a.ID=b.ID
+        SET a.SORT_NUM=b.pm
+    </update>
+
+    <sql id="result">
+        ca.ID,
+        ca.TITLE,
+        ca.CONTENT,
+        ca.CREATE_TIME AS createTime,
+        ca.MODIFY_TIME,
+        ca.USERNAME,
+        ca.SORT_NUM AS sortNum,
+        ca.IS_TOP AS isTop
+	</sql>
+    <sql id="param">
+        <trim prefix="where" prefixOverrides="and | or">
+            <if test="article.title != null and article.title != ''">
+                AND ca.TITLE LIKE CONCAT('%',#{article.title},'%')
+            </if>
+            <if test="article.content != null and article.content != ''">
+                AND ca.CONTENT LIKE CONCAT('%',#{article.content},'%')
+            </if>
+            <if test="article.username != null and article.username != ''">
+                AND ca.USERNAME LIKE CONCAT('%',#{article.username},'%')
+            </if>
+            <if test="article.createTimeFrom != null and article.createTimeFrom !='' and article.createTimeTo!= null and article.createTimeTo !=''">
+                AND ca.CREATE_TIME &gt;= #{article.createTimeFrom}
+                AND ca.CREATE_TIME &lt;= #{article.createTimeTo}
+            </if>
+            <if test="article.modifyTimeFrom != null and article.modifyTimeFrom !='' and article.modifyTimeTo!= null and article.modifyTimeTo !=''">
+                AND ca.MODIFY_TIME &gt;= #{article.modifyTimeFrom}
+                AND ca.MODIFY_TIME &lt;= #{article.modifyTimeTo}
+            </if>
+        </trim>
+    </sql>
+</mapper>

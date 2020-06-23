@@ -70,7 +70,7 @@ public class ContractOutsideController extends BaseController {
 
     @GetMapping
     @RequiresPermissions("contractOutside:view")
-    public Map<String, Object> ContractOutsideList(QueryRequest request, ContractOutside contractOutside, ServletRequest servletRequest) {
+    public Map<String, Object> contractOutsideList(QueryRequest request, ContractOutside contractOutside, ServletRequest servletRequest) {
         return getDataTable(this.contractOutsideService.findContractOutsideDetail(request, contractOutside, servletRequest));
     }
 

@@ -8,6 +8,7 @@
         ON DUPLICATE KEY
         UPDATE UNIT = #{unit}, AMOUNT_CONVERSION = #{amountConversion}, AMOUNT = #{amount}, AMOUNT_DIST = #{amountDist}
     </insert>
+
     <update id="amountIsChange">
         UPDATE cy_unit_conversion SET AMOUNT_DIST = AMOUNT WHERE STOREROOM_ID = #{storeroomId} AND AMOUNT_CONVERSION != #{amountConversion}
     </update>

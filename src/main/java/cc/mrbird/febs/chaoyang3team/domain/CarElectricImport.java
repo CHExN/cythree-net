@@ -27,11 +27,11 @@ public class CarElectricImport implements Serializable {
     @ExcelField(value = "车牌号")
     private String carNumber;
 
-    @ExcelField(value = "编制类别", readConverterExp = "编内=0,编外=1", writeConverterExp = "0=编内,1=编外", comment = "只可填写以下各项:[1、编内; 2、编外]")
-    private String insideOrOutside;
+    @ExcelField(value = "使用人")
+    private String user;
 
-    @ExcelField(value = "身份证号", comment = "请填写正确的员工身份证号，否则必定导入失败")
-    private String idNum;
+    @ExcelField(value = "使用部门")
+    private String useDeptName;
 
     @ExcelField(value = "车辆配发日期", comment = "请以yyyy-MM-dd的格式填写日期")
     private String carAllotmentDate;
@@ -53,4 +53,8 @@ public class CarElectricImport implements Serializable {
 
     @ExcelField(value = "状态", required = true, readConverterExp = "正常=1,损坏=2", writeConverterExp = "1=正常,2=损坏", comment = "只可填写以下各项:[1、正常; 2、损坏]")
     private String status;
+
+    @ExcelField(value = "备注")
+    private String remark;
+
 }

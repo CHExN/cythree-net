@@ -3,11 +3,7 @@ package cc.mrbird.febs.chaoyang3team.controller;
 
 import cc.mrbird.febs.chaoyang3team.domain.CarElectric;
 import cc.mrbird.febs.chaoyang3team.domain.CarElectricImport;
-import cc.mrbird.febs.chaoyang3team.domain.StaffInside;
-import cc.mrbird.febs.chaoyang3team.domain.StaffOutside;
 import cc.mrbird.febs.chaoyang3team.service.CarElectricService;
-import cc.mrbird.febs.chaoyang3team.service.StaffInsideService;
-import cc.mrbird.febs.chaoyang3team.service.StaffOutsideService;
 import cc.mrbird.febs.common.annotation.Log;
 import cc.mrbird.febs.common.controller.BaseController;
 import cc.mrbird.febs.common.domain.FebsResponse;
@@ -51,14 +47,10 @@ public class CarElectricController extends BaseController {
 
     @Autowired
     private CarElectricService carElectricService;
-    @Autowired
-    private StaffInsideService staffInsideService;
-    @Autowired
-    private StaffOutsideService staffOutsideService;
 
     @GetMapping
     @RequiresPermissions("carElectric:view")
-    public Map<String, Object> CarElectricList(QueryRequest request, CarElectric carElectric) {
+    public Map<String, Object> carElectricList(QueryRequest request, CarElectric carElectric) {
         return getDataTable(this.carElectricService.findCarElectricDetail(request, carElectric));
     }
 
@@ -155,45 +147,25 @@ public class CarElectricController extends BaseController {
 
                 @Override
                 public void onSuccess(int sheetIndex, int rowIndex, CarElectricImport entity) {
-                    // 数据校验成功时，加入集合
-                    StaffOutside staffOutside = null;
-                    StaffInside staffInside = null;
-                    if (entity.getIdNum().equals("$EMPTY_CELL$") || entity.getIdNum().equals("")) {
-                        staffInside = new StaffInside();
-                    }
-                    if (entity.getInsideOrOutside().equals("0")) {
-                        staffInside = staffInsideService.getStaffIdByIdNum(entity.getIdNum().trim());
-                    } else if(entity.getInsideOrOutside().equals("1")) {
-                        staffOutside = staffOutsideService.getStaffIdByIdNum(entity.getIdNum().trim());
-                    }
-                    if ((staffInside == null && staffOutside == null)) {
-                        List<ExcelErrorField> errorFields = new ArrayList<>();
-                        errorFields.add(new ExcelErrorField(
-                                0,
-                                entity.getIdNum().trim(),
-                                "身份证号",
-                                "查询不到此编" + (entity.getInsideOrOutside().equals("1") ? "外" : "内") + "人员的信息"));
-                        onError(sheetIndex, rowIndex, errorFields);
-                    } else {
-                        CarElectric carElectric = new CarElectric();
-                        carElectric.setCarType(entity.getCarType().equals("$EMPTY_CELL$") ? "" : entity.getCarType());
-                        carElectric.setCarBrands(entity.getCarBrands().equals("$EMPTY_CELL$") ? "" : entity.getCarBrands());
-                        carElectric.setSteelFrameNumber(entity.getSteelFrameNumber().equals("$EMPTY_CELL$") ? "" : entity.getSteelFrameNumber());
-                        carElectric.setMotorNumber(entity.getMotorNumber().equals("$EMPTY_CELL$") ? "" : entity.getMotorNumber());
-                        carElectric.setCarNumber(entity.getCarNumber().equals("$EMPTY_CELL$") ? "" : entity.getCarNumber());
-                        carElectric.setInsideOrOutside(entity.getInsideOrOutside().equals("$EMPTY_CELL$") ? "" : entity.getInsideOrOutside());
-                        carElectric.setIdNum(entity.getIdNum().equals("$EMPTY_CELL$") ? "" : entity.getIdNum());
-                        carElectric.setCarAllotmentDate(entity.getCarAllotmentDate().equals("$EMPTY_CELL$") ? null : LocalDate.parse(entity.getCarAllotmentDate(), DateTimeFormatter.ofPattern("yyyy-MM-dd")));
-                        carElectric.setBatteryNumber(entity.getBatteryNumber().equals("$EMPTY_CELL$") ? "" : entity.getBatteryNumber());
-                        carElectric.setBatteryReplacementDate1(entity.getBatteryReplacementDate1().equals("$EMPTY_CELL$") ? null : LocalDate.parse(entity.getBatteryReplacementDate1(), DateTimeFormatter.ofPattern("yyyy-MM-dd")));
-                        carElectric.setBatteryReplacementDate2(entity.getBatteryReplacementDate2().equals("$EMPTY_CELL$") ? null : LocalDate.parse(entity.getBatteryReplacementDate2(), DateTimeFormatter.ofPattern("yyyy-MM-dd")));
-                        carElectric.setIfLicense(entity.getIfLicense().equals("$EMPTY_CELL$") ? null : entity.getIfLicense());
-                        carElectric.setStorageLocation(entity.getStorageLocation().equals("$EMPTY_CELL$") ? "" : entity.getStorageLocation());
-                        carElectric.setStatus(entity.getStatus());
-                        carElectric.setCreateTime(now);
-                        carElectric.setIfThree(ifThree);
-                        data.add(carElectric);
-                    }
+                    CarElectric carElectric = new CarElectric();
+                    carElectric.setCarType(entity.getCarType().equals("$EMPTY_CELL$") ? "" : entity.getCarType());
+                    carElectric.setCarBrands(entity.getCarBrands().equals("$EMPTY_CELL$") ? "" : entity.getCarBrands());
+                    carElectric.setSteelFrameNumber(entity.getSteelFrameNumber().equals("$EMPTY_CELL$") ? "" : entity.getSteelFrameNumber());
+                    carElectric.setMotorNumber(entity.getMotorNumber().equals("$EMPTY_CELL$") ? "" : entity.getMotorNumber());
+                    carElectric.setCarNumber(entity.getCarNumber().equals("$EMPTY_CELL$") ? "" : entity.getCarNumber());
+                    carElectric.setUser(entity.getUser().equals("$EMPTY_CELL$") ? "" : entity.getUser());
+                    carElectric.setUseDeptName(entity.getUseDeptName().equals("$EMPTY_CELL$") ? "" : entity.getUseDeptName());
+                    carElectric.setCarAllotmentDate(entity.getCarAllotmentDate().equals("$EMPTY_CELL$") ? null : LocalDate.parse(entity.getCarAllotmentDate(), DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+                    carElectric.setBatteryNumber(entity.getBatteryNumber().equals("$EMPTY_CELL$") ? "" : entity.getBatteryNumber());
+                    carElectric.setBatteryReplacementDate1(entity.getBatteryReplacementDate1().equals("$EMPTY_CELL$") ? null : LocalDate.parse(entity.getBatteryReplacementDate1(), DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+                    carElectric.setBatteryReplacementDate2(entity.getBatteryReplacementDate2().equals("$EMPTY_CELL$") ? null : LocalDate.parse(entity.getBatteryReplacementDate2(), DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+                    carElectric.setIfLicense(entity.getIfLicense().equals("$EMPTY_CELL$") ? null : entity.getIfLicense());
+                    carElectric.setStorageLocation(entity.getStorageLocation().equals("$EMPTY_CELL$") ? "" : entity.getStorageLocation());
+                    carElectric.setStatus(entity.getStatus());
+                    carElectric.setRemark(entity.getRemark().equals("$EMPTY_CELL$") ? "" : entity.getRemark());
+                    carElectric.setCreateTime(now);
+                    carElectric.setIfThree(ifThree);
+                    data.add(carElectric);
                 }
 
                 @Override

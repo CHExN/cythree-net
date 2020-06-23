@@ -28,11 +28,19 @@ public interface StoreroomPutMapper extends BaseMapper<StoreroomPut> {
     List<Storeroom> getStoreroomsByStoreroomPutId(@Param("StoreroomPutId") String StoreroomPutId);
 
     /**
-     * 入库类别占比
+     * 入库物资类别占比
      *
      * @param date 年月
      * @return 入库类别占比
      */
     List<Map<String, Object>> findStoreroomPutTypeApplicationProportion(String date);
+
+    /**
+     * 入库供应商占比
+     *
+     * @param date 年月
+     * @return 入库类别占比
+     */
+    List<Map<String, Object>> findStoreroomPutSupplierProportion(@Param("date")String date, @Param("typeApplication")String typeApplication);
 
 }

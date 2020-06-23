@@ -34,10 +34,10 @@
             AND crm.DEPT_ID = #{reviewModify.deptId}
         </if>
         <if test="reviewModify.createTimeFrom != null and reviewModify.createTimeFrom !=''">
-            AND reviewModify.ACCEPTANCE_DATE &gt;= #{reviewModify.createTimeFrom}
+            AND crm.CREATE_TIME &gt;= #{reviewModify.createTimeFrom}
         </if>
         <if test="reviewModify.createTimeTo!= null and reviewModify.createTimeTo !=''">
-            AND reviewModify.ACCEPTANCE_DATE &lt;= #{reviewModify.createTimeTo}
+            AND crm.CREATE_TIME &lt;= #{reviewModify.createTimeTo}
         </if>
     </select>
 

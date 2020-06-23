@@ -28,18 +28,13 @@ public class Electricity implements Serializable {
     @TableId(value = "ELECTRICITY_ID", type = IdType.AUTO)
     private Long electricityId;
 
-    @ExcelField(value = "电表编号")
-    private transient String electricityNum;
+    @ExcelField(value = "公厕编号")
+    private transient String wcNum;
 
     @ExcelField(value = "公厕名称")
     private transient String wcName;
 
-    @ExcelField(value = "公厕编号")
-    private transient String wcNum;
-
     private transient Long wcId;
-
-    private transient String date;
 
     @TableField("YEAR")
     @ExcelField(value = "年")
@@ -62,7 +57,6 @@ public class Electricity implements Serializable {
     private BigDecimal totalAmount;
 
     @TableField("CREATE_DATE")
-    @ExcelField(value = "登记日期")
     private Date createDate;
 
     @TableField("REC_DATE")

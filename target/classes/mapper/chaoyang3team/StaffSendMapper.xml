@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.mrbird.febs.chaoyang3team.dao.StaffSendMapper">
+
+    <select id="findStaffSendDetail" resultType="cc.mrbird.febs.chaoyang3team.domain.StaffSend">
+        SELECT
+        <include refid="result"/>
+        FROM cy_staff_send AS css
+        <include refid="param"/>
+    </select>
+
+    <select id="getStaffSendByStaffId" resultType="cc.mrbird.febs.chaoyang3team.domain.StaffSend">
+        SELECT
+        <include refid="result"/>
+        FROM cy_staff_send AS css
+        WHERE css.STAFF_ID=#{staffId}
+    </select>
+
+    <select id="getStaffSendByIdNum" resultType="cc.mrbird.febs.chaoyang3team.domain.StaffSend">
+        SELECT
+        <include refid="result"/>
+        FROM cy_staff_send AS css
+        WHERE css.ID_NUM=#{idNum}
+    </select>
+
+    <select id="getBankCardAttribution" resultType="java.lang.String">
+        SELECT BANK_CARD_ATTRIBUTION FROM cy_staff_send GROUP BY BANK_CARD_ATTRIBUTION
+    </select>
+
+    <select id="getCompany" resultType="java.lang.String">
+        SELECT COMPANY FROM cy_staff_send GROUP BY COMPANY
+    </select>
+
+    <select id="getStaffIdByIdNum" resultType="cc.mrbird.febs.chaoyang3team.domain.StaffSend">
+        SELECT STAFF_ID,`NAME` FROM cy_staff_send WHERE ID_NUM = #{idNum} LIMIT 1
+    </select>
+
+    <delete id="deleteStaffSendTrue">
+        DELETE FROM cy_staff_send WHERE FIND_IN_SET(STAFF_ID, #{staffSendIdsStr})
+    </delete>
+
+    <update id="restoreStaffSend">
+        UPDATE cy_staff_send SET DELETED=0 WHERE FIND_IN_SET(STAFF_ID, #{staffSendIds})
+    </update>
+
+    <update id="updateStaffSendSortNum">
+        UPDATE cy_staff_send AS a INNER JOIN (
+            SELECT css.STAFF_ID,(@i:=@i+1) AS pm,IF(css.MODIFY_TIME IS NULL,css.CREATE_TIME,css.MODIFY_TIME) AS datetime
+            FROM cy_staff_send AS css,(select @i:=0) AS it
+            WHERE css.DELETED=0 AND css.IS_LEAVE=0
+            ORDER BY css.SORT_NUM ASC, datetime DESC
+        ) AS b ON a.STAFF_ID=b.STAFF_ID
+        SET a.SORT_NUM=b.pm
+    </update>
+
+    <update id="updateStaffSendLeaveSortNum">
+        UPDATE cy_staff_send AS a INNER JOIN (
+            SELECT css.STAFF_ID, (@i:=@i+1) AS pm, css.LEAVE_DATE AS datetime
+            FROM cy_staff_send AS css, (select @i:=0) AS it
+            WHERE css.DELETED=0 AND css.IS_LEAVE=1
+            ORDER BY css.SORT_NUM ASC, datetime DESC
+        ) AS b ON a.STAFF_ID=b.STAFF_ID
+        SET a.SORT_NUM=b.pm
+    </update>
+
+    <sql id="result">
+		css.STAFF_ID,
+        css.SORT_NUM AS sortNum,
+        css.NAME,
+        css.GENDER,
+        css.BIRTHPLACE,
+        css.CULTURE,
+        css.ID_NUM,
+        css.PHONE_CELL,
+        css.BIRTH_DATE,
+        css.ADD_DATE,
+        css.TRANSFER_DATE,
+        css.COMPANY,
+        css.REMARK,
+        css.IS_LEAVE,
+        css.LEAVE_DATE,
+        css.DELETED,
+        css.BANK_CARD_NUMBER,
+        css.BANK_CARD_ATTRIBUTION
+	</sql>
+    <sql id="param">
+        <trim prefix="where" prefixOverrides="and | or">
+            FIND_IN_SET(css.IS_LEAVE, #{staffSend.isLeave})
+            <choose>
+                <when test="staffSend.deleted !=null and staffSend.deleted != ''">
+                    AND css.DELETED = #{staffSend.deleted}
+                </when>
+                <otherwise>
+                    AND css.DELETED=0
+                </otherwise>
+            </choose>
+            <if test="staffSend.bankCardAttribution != null and staffSend.bankCardAttribution != ''">
+                AND FIND_IN_SET(css.BANK_CARD_ATTRIBUTION, #{staffSend.bankCardAttribution})
+            </if>
+            <if test="staffSend.company != null and staffSend.company != ''">
+                AND FIND_IN_SET(css.COMPANY, #{staffSend.company})
+            </if>
+            <if test="staffSend.name != null and staffSend.name != ''">
+                AND css.NAME LIKE CONCAT('%',#{staffSend.name},'%')
+            </if>
+            <if test="staffSend.gender != null and staffSend.gender != ''">
+                AND css.GENDER = #{staffSend.gender}
+            </if>
+            <if test="staffSend.birthplace != null and staffSend.birthplace != ''">
+                AND css.BIRTHPLACE = #{staffSend.birthplace}
+            </if>
+            <if test="staffSend.culture != null and staffSend.culture != ''">
+                AND css.CULTURE = #{staffSend.culture}
+            </if>
+            <if test="staffSend.idNum != null and staffSend.idNum != ''">
+                AND css.ID_NUM LIKE CONCAT('%',#{staffSend.idNum},'%')
+            </if>
+            <if test="staffSend.phoneCell != null and staffSend.phoneCell != ''">
+                AND css.PHONE_CELL LIKE CONCAT('%',#{staffSend.phoneCell},'%')
+            </if>
+            <if test="staffSend.mini != null and staffSend.mini != ''">
+                AND css.BIRTH_DATE &lt;= DATE_SUB(CURDATE(),INTERVAL #{staffSend.mini} YEAR)
+            </if>
+            <if test="staffSend.max != null and staffSend.max != ''">
+                AND css.BIRTH_DATE &gt;= DATE_SUB(CURDATE(),INTERVAL #{staffSend.max} YEAR)
+            </if>
+            <if test="staffSend.createTimeFrom != null and staffSend.createTimeFrom !=''
+            and staffSend.createTimeTo!= null and staffSend.createTimeTo !=''">
+                AND css.ADD_DATE &gt;= #{staffSend.createTimeFrom}
+                AND css.ADD_DATE &lt;= #{staffSend.createTimeTo}
+            </if>
+            <if test="staffSend.reduceTimeFrom != null and staffSend.reduceTimeFrom !=''
+            and staffSend.reduceTimeTo!= null and staffSend.reduceTimeTo !=''">
+                AND css.LEAVE_DATE &gt;= #{staffSend.reduceTimeFrom}
+                AND css.LEAVE_DATE &lt;= #{staffSend.reduceTimeTo}
+            </if>
+        </trim>
+    </sql>
+</mapper>

@@ -69,7 +69,7 @@ public class ContractInsideController extends BaseController {
 
     @GetMapping
     @RequiresPermissions("contractInside:view")
-    public Map<String, Object> ContractInsideList(QueryRequest request, ContractInside contractInside) {
+    public Map<String, Object> contractInsideList(QueryRequest request, ContractInside contractInside) {
         return getDataTable(this.contractInsideService.findContractInsideDetail(request, contractInside));
     }
 

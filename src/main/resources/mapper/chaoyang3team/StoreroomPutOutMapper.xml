@@ -150,6 +150,15 @@
 		WHERE FIND_IN_SET(cspo.ID, #{storeroomPutIdStr})
     </update>
 
+    <update id="updatePlanStatusByPutId">
+        UPDATE cy_plan AS cp
+        LEFT JOIN p_application_plan AS pap ON(pap.PLAN_ID=cp.ID)
+        LEFT JOIN cy_application AS ca ON(ca.ID=pap.APPLICATION_ID)
+		LEFT JOIN cy_storeroom_put_out AS cspo ON(cspo.APPLICATION_ID=ca.ID)
+		SET cp.STATUS=1
+		WHERE FIND_IN_SET(cspo.ID, #{storeroomPutIdStr})
+    </update>
+
     <update id="returnStoreroomAmountByOutIds">
         UPDATE cy_storeroom AS cs
         LEFT JOIN cy_storeroom AS cs2 ON(cs2.ID=cs.PARENT_ID)

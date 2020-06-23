@@ -7,19 +7,24 @@
         w.WC_NAME,
         w.WC_NUM,
         s.`NAME`,
+        s.`TYPE`,
+        IFNULL( cuc.UNIT, s.UNIT ) AS UNIT,
         s.TYPE_APPLICATION,
         s.MONEY,
         SUM(ws.AMOUNT) AS amount,
+        ws.ID,
         ws.`YEAR`,
         ws.`MONTH`,
         ws.`DAY`,
         ws.WC_ID AS wcId,
         ws.STOREROOM_ID,
         ws.USERNAME,
-        ws.WC_OWN
+        ws.WC_OWN,
+        ws.CREATE_TIME
         FROM p_wc_storeroom AS ws
         LEFT JOIN cy_wc AS w ON(w.WC_ID=ws.WC_ID)
         LEFT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID)
+        LEFT JOIN cy_unit_conversion AS cuc ON ( cuc.STOREROOM_ID = s.ID )
         WHERE (ws.`YEAR`=#{wcStoreroom.yearForm} AND FIND_IN_SET(ws.`MONTH`,#{wcStoreroom.monthForm}))
         <if test="wcStoreroom.username != null and wcStoreroom.username != ''">
             AND ws.USERNAME LIKE CONCAT('%',#{wcStoreroom.username},'%')
@@ -38,6 +43,9 @@
         </if>
         <if test="wcStoreroom.name != null and wcStoreroom.name != ''">
             AND s.NAME LIKE CONCAT('%',#{wcStoreroom.name},'%')
+        </if>
+        <if test="wcStoreroom.createTimeFrom != null and wcStoreroom.createTimeFrom !='' and wcStoreroom.createTimeTo!= null and wcStoreroom.createTimeTo !=''">
+            AND ws.CREATE_TIME &gt;= #{wcStoreroom.createTimeFrom} AND ws.CREATE_TIME &lt;= #{wcStoreroom.createTimeTo}
         </if>
         GROUP BY ws.STOREROOM_ID,ws.WC_ID,ws.`YEAR`,ws.`MONTH`,ws.`DAY` DESC
     </select>

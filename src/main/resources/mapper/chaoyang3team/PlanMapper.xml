@@ -2,7 +2,15 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cc.mrbird.febs.chaoyang3team.dao.PlanMapper">
 
+    <delete id="deletePlansByApplicationIds">
+        DELETE cp
+        FROM cy_plan AS cp
+        LEFT JOIN p_application_plan AS pap ON(pap.PLAN_ID=cp.ID)
+        WHERE FIND_IN_SET(pap.APPLICATION_ID, #{ids})
+    </delete>
+
     <update id="updatePlanStatus">
         UPDATE cy_plan SET STATUS='2' WHERE FIND_IN_SET(ID, #{planIds})
     </update>
+
 </mapper>

@@ -23,8 +23,7 @@ public class WageRemarkServiceImpl extends ServiceImpl<WageRemarkMapper, WageRem
         try {
             LambdaQueryWrapper<WageRemark> queryWrapper = new LambdaQueryWrapper<WageRemark>()
                     .eq(WageRemark::getInsideOrOutside, wageRemark.getInsideOrOutside())
-                    .eq(WageRemark::getYear, wageRemark.getYear())
-                    .eq(WageRemark::getMonth, wageRemark.getMonth());
+                    .eq(WageRemark::getYear, wageRemark.getYear());
 
             if (StringUtils.isNotBlank(wageRemark.getRemark())) {
                 queryWrapper.like(WageRemark::getRemark, wageRemark.getRemark());
@@ -36,9 +35,8 @@ public class WageRemarkServiceImpl extends ServiceImpl<WageRemarkMapper, WageRem
                 String[] remarkArr = wageRemarkResult.getRemark().split(",");
                 Long id = wageRemarkResult.getId();
                 String year = wageRemarkResult.getYear();
-                String month = wageRemarkResult.getMonth();
                 for (int i = 0; i < remarkArr.length; ++i) {
-                    WageRemark addWageRemark = new WageRemark(id, null, year, month, remarkArr[i], i);
+                    WageRemark addWageRemark = new WageRemark(id, null, year, remarkArr[i], i);
                     records.add(addWageRemark);
                 }
             }
@@ -69,8 +67,7 @@ public class WageRemarkServiceImpl extends ServiceImpl<WageRemarkMapper, WageRem
     public WageRemark getOneWageRemark(WageRemark wageRemark) {
         LambdaQueryWrapper<WageRemark> queryWrapper = new LambdaQueryWrapper<WageRemark>()
                 .eq(WageRemark::getInsideOrOutside, wageRemark.getInsideOrOutside())
-                .eq(WageRemark::getYear, wageRemark.getYear())
-                .eq(WageRemark::getMonth, wageRemark.getMonth());
+                .eq(WageRemark::getYear, wageRemark.getYear());
 
         return baseMapper.selectOne(queryWrapper);
     }

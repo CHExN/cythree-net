@@ -34,14 +34,14 @@ public class WcEvaluateController extends BaseController {
 
     @GetMapping("/evaluate")
     @RequiresPermissions("wcEvaluate:view")
-    public Map<String, Object> WcEvaluateList(QueryRequest request, WcEvaluate wcEvaluate) {
+    public Map<String, Object> wcEvaluateList(QueryRequest request, WcEvaluate wcEvaluate) {
         wcEvaluate.setIsComplaint("1");
         return getDataTable(this.wcEvaluateService.findWcEvaluateDetail(request, wcEvaluate));
     }
 
     @GetMapping("/complaint")
     @RequiresPermissions("wcComplaint:view")
-    public Map<String, Object> WcComplaintList(QueryRequest request, WcEvaluate wcEvaluate) {
+    public Map<String, Object> wcComplaintList(QueryRequest request, WcEvaluate wcEvaluate) {
         wcEvaluate.setIsComplaint("0");
         return getDataTable(this.wcEvaluateService.findWcEvaluateDetail(request, wcEvaluate));
     }

@@ -40,10 +40,16 @@ public interface StoreroomPutOutMapper extends BaseMapper<StoreroomPutOut> {
     List<StoreroomPutOut> whetherThereAreStoreroomOutRecords(String storeroomPutIdsStr);
 
     /**
-     * 根据入库ids更新相应采购申请单状态为“待入库”
+     * 根据入库单ids更新相应采购申请单状态为“待入库”
      * @param storeroomPutIdsStr
      */
     void updateApplicationProcessByPutId(String storeroomPutIdsStr);
+
+    /**
+     * 根据入库单ids更新相应采购申请单内采购物资状态为“未入库”
+     * @param storeroomPutIdsStr
+     */
+    void updatePlanStatusByPutId(String storeroomPutIdsStr);
 
     /**
      * 根据出库单里面的物资ids把物资数量返还到库房里

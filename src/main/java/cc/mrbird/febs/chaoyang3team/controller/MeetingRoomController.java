@@ -38,7 +38,7 @@ public class MeetingRoomController extends BaseController {
 
     @GetMapping
     @RequiresPermissions("meetingRoom:view")
-    public Map<String, Object> MeetingRoomList(QueryRequest request, MeetingRoom meetingRoom, ServletRequest servletRequest) {
+    public Map<String, Object> meetingRoomList(QueryRequest request, MeetingRoom meetingRoom, ServletRequest servletRequest) {
         return getDataTable(this.meetingRoomService.findMeetingRoomDetail(request, meetingRoom, servletRequest));
     }
 

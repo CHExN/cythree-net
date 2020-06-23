@@ -1,12 +1,12 @@
 package cc.mrbird.febs.chaoyang3team.service.impl;
 
 import cc.mrbird.febs.chaoyang3team.dao.StaffInsideMapper;
-import cc.mrbird.febs.chaoyang3team.domain.InsideFile;
 import cc.mrbird.febs.chaoyang3team.domain.File;
+import cc.mrbird.febs.chaoyang3team.domain.InsideFile;
 import cc.mrbird.febs.chaoyang3team.domain.StaffInside;
-import cc.mrbird.febs.chaoyang3team.service.InsideFileService;
 import cc.mrbird.febs.chaoyang3team.service.ContractInsideService;
 import cc.mrbird.febs.chaoyang3team.service.FileService;
+import cc.mrbird.febs.chaoyang3team.service.InsideFileService;
 import cc.mrbird.febs.chaoyang3team.service.StaffInsideService;
 import cc.mrbird.febs.common.domain.FebsConstant;
 import cc.mrbird.febs.common.domain.FebsResponse;
@@ -30,7 +30,9 @@ import org.springframework.web.multipart.MultipartFile;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author CHExN
@@ -51,7 +53,7 @@ public class StaffInsideServiceImpl extends ServiceImpl<StaffInsideMapper, Staff
     public IPage<StaffInside> findStaffInsideDetail(QueryRequest request, StaffInside staffInside) {
         try {
             Page<StaffInside> page = new Page<>();
-            SortUtil.handlePageSort(request, page, "sortNum", FebsConstant.ORDER_ASC, false);
+            SortUtil.handlePageSort(request, page, "IS_LEAVE ASC, sortNum", FebsConstant.ORDER_ASC, false);
             IPage<StaffInside> staffInsideDetail = this.baseMapper.findStaffInsideDetail(page, staffInside);
             staffInsideDetail.getRecords().forEach(this::addAgeAddYearByBirthDate);
             return staffInsideDetail;
@@ -65,7 +67,7 @@ public class StaffInsideServiceImpl extends ServiceImpl<StaffInsideMapper, Staff
     public IPage<StaffInside> findStaffInsideSimplify(QueryRequest request, StaffInside staffInside) {
         try {
             Page<StaffInside> page = new Page<>();
-            SortUtil.handlePageSort(request, page, "sortNum", FebsConstant.ORDER_ASC, false);
+            SortUtil.handlePageSort(request, page, "IS_LEAVE ASC, sortNum", FebsConstant.ORDER_ASC, false);
             return this.baseMapper.findStaffInsideSimplify(page, staffInside);
         } catch (Exception e) {
             log.error("查询合同绑定人员界面，还未绑定的人员列信息异常", e);
@@ -105,6 +107,7 @@ public class StaffInsideServiceImpl extends ServiceImpl<StaffInsideMapper, Staff
     @Transactional
     public void createStaffInside(StaffInside staffInside) {
         staffInside.setCreateTime(LocalDateTime.now());
+        staffInside.setLevel(postLevelToNumber(staffInside.getPostLevel()));
         if (StringUtils.isBlank(staffInside.getTransferDate())) {
             staffInside.setAddDate(LocalDate.now().toString());
         } else {
@@ -119,6 +122,7 @@ public class StaffInsideServiceImpl extends ServiceImpl<StaffInsideMapper, Staff
     @Transactional
     public void updateStaffInside(StaffInside staffInside) {
         staffInside.setModifyTime(LocalDateTime.now());
+        staffInside.setLevel(postLevelToNumber(staffInside.getPostLevel()));
         String leaveDate = staffInside.getLeaveDate();
         if (staffInside.getIsLeave().equals("0")) {
             staffInside.setLeaveDate(null);
@@ -133,6 +137,32 @@ public class StaffInsideServiceImpl extends ServiceImpl<StaffInsideMapper, Staff
             this.baseMapper.updateStaffInsideSortNum();
             this.baseMapper.updateStaffInsideLeaveSortNum();
         }
+    }
+
+    private Integer postLevelToNumber(String postLevel) {
+        if (postLevel == null || postLevel.equals("")) return null;
+
+        final Map<String, Integer> chnNumCharMap = new HashMap<>();
+        chnNumCharMap.put("一", 1);
+        chnNumCharMap.put("二", 2);
+        chnNumCharMap.put("三", 3);
+        chnNumCharMap.put("四", 4);
+        chnNumCharMap.put("五", 5);
+        chnNumCharMap.put("六", 6);
+        chnNumCharMap.put("七", 7);
+        chnNumCharMap.put("八", 8);
+        chnNumCharMap.put("九", 9);
+        chnNumCharMap.put("十", 10);
+
+        List<String> postLevelCharList = Arrays.asList(postLevel.split(""));
+        final Integer[] sum = {0};
+        postLevelCharList.forEach(postLevelChar -> {
+            if (chnNumCharMap.containsKey(postLevelChar)) {
+                sum[0] = sum[0] + chnNumCharMap.get(postLevelChar);
+            }
+        });
+        if (sum[0] == 0) sum[0] = 99;
+        return sum[0];
     }
 
     @Override

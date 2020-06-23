@@ -4,19 +4,18 @@
 
     <select id="findWaterDetail" resultType="cc.mrbird.febs.chaoyang3team.domain.Water">
         SELECT
-        wc.WC_ID,
-        wc.WC_NAME,
+        wc.WC_ID AS wcId,
+        wc.WC_NAME AS wcName,
         wc.WC_NUM AS wcNum,
-        wc.WATER_NUM,
         w.WATER_ID AS waterId,
         w.`YEAR`,
         w.`MONTH`,
-        w.ACTUAL_AMOUNT,
-        w.UNIT_PRICE,
-        w.TAP_WATER_FEE,
-        w.WATER_RESOURCES_FEE,
-        w.SEWAGE_FEE,
-        w.TOTAL_AMOUNT,
+        w.ACTUAL_AMOUNT AS actualAmount,
+        w.UNIT_PRICE AS unitPrice,
+        w.TAP_WATER_FEE AS tapWaterFee,
+        w.WATER_RESOURCES_FEE AS waterResourcesFee,
+        w.SEWAGE_FEE AS sewageFee,
+        w.TOTAL_AMOUNT AS totalAmount,
         w.CREATE_DATE AS createDate
         FROM cy_water AS w
         LEFT JOIN p_wc_water AS ww ON(ww.WATER_ID=w.WATER_ID)
@@ -28,14 +27,11 @@
         <if test="water.wcNum != null and water.wcNum != ''">
             AND wc.WC_NUM LIKE CONCAT('%',#{water.wcNum},'%')
         </if>
-        <if test="water.waterNum != null and water.waterNum != ''">
-            AND wc.WATER_NUM LIKE CONCAT('%',#{water.waterNum},'%')
-        </if>
         <if test="water.year != null and water.year != ''">
-            AND w.`YEAR`=#{water.year}
+            AND FIND_IN_SET(w.`YEAR`, #{water.year})
         </if>
         <if test="water.month != null and water.month != ''">
-            AND w.`MONTH`=#{water.month}
+            AND FIND_IN_SET(w.`MONTH`, #{water.month})
         </if>
         <if test="water.createTimeFrom != null and water.createTimeFrom !=''">
             AND w.CREATE_DATE &gt;= #{water.createTimeFrom}

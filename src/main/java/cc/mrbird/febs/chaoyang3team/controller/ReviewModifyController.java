@@ -40,48 +40,48 @@ public class ReviewModifyController extends BaseController {
 
     @GetMapping
     @RequiresPermissions("reviewModify:view")
-    public Map<String, Object> ReviewModifyList(QueryRequest request, ReviewModify reviewModify) {
+    public Map<String, Object> reviewModifyList(QueryRequest request, ReviewModify reviewModify) {
         return getDataTable(this.reviewModifyService.findReviewModifyDetail(request, reviewModify));
     }
 
-    @Log("新增审核申请")
+    @Log("新增修改申请")
     @PostMapping
     public void addReviewModify(@Valid ReviewModify reviewModify, ServletRequest request) throws FebsException {
         try {
             this.reviewModifyService.createReviewModify(reviewModify, request);
         } catch (Exception e) {
-            message = "新增审核申请失败";
+            message = "新增修改申请失败";
             log.error(message, e);
             throw new FebsException(message);
         }
     }
 
-    @Log("修改审核申请")
+    @Log("修改修改申请")
     @PutMapping
     @RequiresPermissions("reviewModify:update")
     public void updateReviewModify(@Valid ReviewModify reviewModify) throws FebsException {
         try {
             this.reviewModifyService.updateReviewModify(reviewModify);
         } catch (Exception e) {
-            message = "修改审核申请失败";
+            message = "修改修改申请失败";
             log.error(message, e);
             throw new FebsException(message);
         }
     }
 
-    @Log("对应审核申请已修改")
+    @Log("对应修改申请已修改")
     @PutMapping("alreadyEdited")
     public void alreadyEditedReviewModify(@Valid ReviewModify reviewModify) throws FebsException {
         try {
             this.reviewModifyService.alreadyEdited(reviewModify);
         } catch (Exception e) {
-            message = "对应审核申请已修改失败";
+            message = "对应修改申请已修改失败";
             log.error(message, e);
             throw new FebsException(message);
         }
     }
 
-    @Log("删除审核申请")
+    @Log("删除修改申请")
     @DeleteMapping("/{reviewModifyIds}")
     @RequiresPermissions("reviewModify:delete")
     public void deleteReviewModifys(@NotBlank(message = "{required}") @PathVariable String reviewModifyIds) throws FebsException {
@@ -89,7 +89,7 @@ public class ReviewModifyController extends BaseController {
             String[] ids = reviewModifyIds.split(StringPool.COMMA);
             this.reviewModifyService.deleteReviewModifys(ids);
         } catch (Exception e) {
-            message = "删除审核申请失败";
+            message = "删除修改申请失败";
             log.error(message, e);
             throw new FebsException(message);
         }

@@ -1,11 +1,14 @@
 package cc.mrbird.febs.chaoyang3team.domain;
 
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 /**
  * @author CHExN
@@ -15,6 +18,9 @@ import java.math.BigDecimal;
 public class WcStoreroom implements Serializable {
 
     private static final long serialVersionUID = -2203884755984912254L;
+
+    @TableId(value = "ID", type = IdType.AUTO)
+    private Long id;
 
     /**
      * 公厕id
@@ -34,6 +40,10 @@ public class WcStoreroom implements Serializable {
      */
     @TableField("AMOUNT")
     private BigDecimal amount;
+    /**
+     * 此storeroomId所剩余的分配数量，用于在删除分配记录是，顺带查询
+     */
+    private transient BigDecimal amountDist;
 
     /**
      * 年
@@ -65,6 +75,10 @@ public class WcStoreroom implements Serializable {
     @TableField("WC_OWN")
     private String wcOwn;
 
+    @TableField("CREATE_TIME")
+    private LocalDateTime createTime;
+
+
     private transient String yearForm;
     private transient String yearTo;
     private transient String monthForm;
@@ -74,6 +88,10 @@ public class WcStoreroom implements Serializable {
     private transient String name;
     private transient String typeApplication;
     private transient BigDecimal money;
+    private transient String unit;
+    private transient String type;
+    private transient String createTimeFrom;
+    private transient String createTimeTo;
 
 
 }

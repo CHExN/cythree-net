@@ -87,7 +87,7 @@
             AND substring_index(substring_index(substring_index(cci.JOB_AGREEMENT_DATE,',',b.help_topic_id+1),',',-1),'~',-1)&lt;=#{contractOutside.jobAgreementToTo}
             ))
         </if>
-        ORDER BY SORT_NUM_1 ASC
+        ORDER BY IS_LEAVE ASC, SORT_NUM_1 ASC, SORT_NUM_2 ASC
     </select>
 
     <select id="getContractOutside" resultType="cc.mrbird.febs.chaoyang3team.domain.ContractOutside">

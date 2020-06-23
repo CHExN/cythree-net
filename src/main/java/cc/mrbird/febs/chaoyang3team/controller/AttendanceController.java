@@ -61,7 +61,7 @@ public class AttendanceController extends BaseController {
 
     @GetMapping
     @RequiresPermissions("attendance:view")
-    public Map<String, Object> AttendanceList(QueryRequest request, Attendance attendance) {
+    public Map<String, Object> attendanceList(QueryRequest request, Attendance attendance) {
         return getDataTable(this.attendanceService.findAttendanceDetail(request, attendance));
     }
 

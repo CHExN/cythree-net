@@ -12,9 +12,11 @@ public interface PlanService extends IService<Plan> {
 
     List<Plan> findPlans(Plan plan);
 
-    void batchInsertPlan(List<Plan> plan);
+    void batchInsertPlan(List<Plan> list);
 
     void deletePlans(String[] planIds);
+
+    void deletePlansByApplicationIds(String[] applicationIds);
 
     void updatePlanStatus(String planIds);
 

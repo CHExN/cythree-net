@@ -40,11 +40,6 @@ public class WageRemark implements Serializable {
     @TableField("YEAR")
     private String year;
 
-    /**
-     * 月
-     */
-    @TableField("MONTH")
-    private String month;
 
     /**
      * 这个月的备注，每个月只有一条

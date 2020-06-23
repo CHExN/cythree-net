@@ -75,7 +75,9 @@ public class WcEvaluateServiceImpl extends ServiceImpl<WcEvaluateMapper, WcEvalu
     public void deleteWcEvaluate(String[] ids) {
         // 删除音频文件
         List<String> fileIds = this.baseMapper.getFileIdsByWcEvaluateIds(StringUtils.join(ids, ","));
-        fileService.deleteFiles(fileIds.toArray(new String[0]));
+        if(!fileIds.isEmpty()) {
+            fileService.deleteFiles(fileIds.toArray(new String[0]));
+        }
         // 删除记录
         List<String> wcEvaluateIds = Arrays.asList(ids);
         this.baseMapper.deleteBatchIds(wcEvaluateIds);

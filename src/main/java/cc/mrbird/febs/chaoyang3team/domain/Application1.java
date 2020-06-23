@@ -89,7 +89,7 @@ public class Application1 implements Serializable {
     private String isIn;
 
     /**
-     * 处理状态 0算是审核通过 -1是不通过 1是正在审核
+     * 处理状态 1算是审核通过 -1是不通过 0是正在审核 2是入库完成
      */
     @TableField("PROCESS")
     private Integer process;

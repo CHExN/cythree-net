@@ -4,6 +4,25 @@
 
     <select id="findWcStatusDetail" resultType="cc.mrbird.febs.chaoyang3team.domain.WcStatus">
         SELECT
+        <include refid="result"/>
+        FROM cy_wc_status AS cws
+        LEFT JOIN cy_wc AS wc ON(wc.WC_ID = cws.WC_ID)
+        <include refid="param"/>
+    </select>
+
+    <select id="getWcStatusList" resultType="cc.mrbird.febs.chaoyang3team.domain.WcStatus">
+        SELECT
+        <include refid="result"/>
+        FROM cy_wc_status AS cws
+        LEFT JOIN cy_wc AS wc ON(wc.WC_ID = cws.WC_ID)
+        <include refid="param"/>
+    </select>
+
+    <select id="getStatus" resultType="java.lang.String">
+        SELECT STATUS FROM cy_wc_status GROUP BY STATUS
+    </select>
+
+    <sql id="result">
         cws.ID,
         cws.WC_ID,
         cws.CREATE_TIME,
@@ -11,32 +30,60 @@
         cws.START_DATE AS startDate,
         cws.END_DATE AS endDate,
         cws.STATUS,
+        cws.REMARK,
+        cws.IS_NOTICE,
+        cws.NOTICE_DATE,
+        cws.IS_FOCUS,
+        cws.IS_OPEN,
+        (TO_DAYS(IFNULL(cws.END_DATE, NOW())) - TO_DAYS(cws.START_DATE) + 1) AS `day`,
         wc.WC_NAME,
-        wc.WC_NUM
-        FROM cy_wc_status AS cws
-        LEFT JOIN cy_wc AS wc ON(wc.WC_ID = cws.WC_ID)
-        WHERE 1=1
-        <if test="wcStatus.wcName != null and wcStatus.wcName != ''">
-            AND wc.WC_NAME LIKE CONCAT('%',#{wcStatus.wcName},'%')
-        </if>
-        <if test="wcStatus.wcNum != null and wcStatus.wcNum != ''">
-            AND wc.WC_NUM LIKE CONCAT('%',#{wcStatus.wcNum},'%')
-        </if>
-        <if test="wcStatus.status != null and wcStatus.status != ''">
-            AND cws.STATUS LIKE CONCAT('%',#{wcStatus.status},'%')
-        </if>
-        <if test="wcStatus.startDateFrom != null and wcStatus.startDateFrom !=''">
-            AND cws.START_DATE &gt;= #{wcStatus.startDateFrom}
-        </if>
-        <if test="wcStatus.startDateTo!= null and wcStatus.startDateTo !=''">
-            AND cws.START_DATE &lt;= #{wcStatus.startDateTo}
-        </if>
-        <if test="wcStatus.endDateFrom != null and wcStatus.endDateFrom !=''">
-            AND cws.END_DATE &gt;= #{wcStatus.endDateFrom}
-        </if>
-        <if test="wcStatus.endDateTo!= null and wcStatus.endDateTo !=''">
-            AND cws.END_DATE &lt;= #{wcStatus.endDateTo}
-        </if>
-    </select>
+        RIGHT(wc.WC_NUM, 4) AS wcNum,
+        wc.WC_SORT AS wcSort,
+        wc.STREET_TOWN,
+        wc.WC_OWN
+	</sql>
+    <sql id="param">
+        <trim prefix="where" prefixOverrides="and | or">
+            <if test="wcStatus.wcName != null and wcStatus.wcName != ''">
+                AND wc.WC_NAME LIKE CONCAT('%',#{wcStatus.wcName},'%')
+            </if>
+            <if test="wcStatus.wcNum != null and wcStatus.wcNum != ''">
+                AND wc.WC_NUM LIKE CONCAT('%',#{wcStatus.wcNum},'%')
+            </if>
+            <if test="wcStatus.wcOwn != null and wcStatus.wcOwn != ''">
+                AND wc.WC_OWN LIKE CONCAT('%',#{wcStatus.wcOwn},'%')
+            </if>
+            <if test="wcStatus.status != null and wcStatus.status != ''">
+                AND FIND_IN_SET(cws.STATUS, #{wcStatus.status})
+            </if>
+            <if test="wcStatus.remark != null and wcStatus.remark != ''">
+                AND cws.REMARK LIKE CONCAT('%',#{wcStatus.remark},'%')
+            </if>
+            <if test="wcStatus.startDateFrom != null and wcStatus.startDateFrom !=''">
+                AND cws.START_DATE &gt;= #{wcStatus.startDateFrom}
+            </if>
+            <if test="wcStatus.startDateTo!= null and wcStatus.startDateTo !=''">
+                AND cws.START_DATE &lt;= #{wcStatus.startDateTo}
+            </if>
+            <if test="wcStatus.endDateFrom != null and wcStatus.endDateFrom !=''">
+                AND cws.END_DATE &gt;= #{wcStatus.endDateFrom}
+            </if>
+            <if test="wcStatus.endDateTo!= null and wcStatus.endDateTo !=''">
+                AND cws.END_DATE &lt;= #{wcStatus.endDateTo}
+            </if>
+            <if test="wcStatus.isNotice != null and wcStatus.isNotice != ''">
+                AND FIND_IN_SET(cws.IS_NOTICE, #{wcStatus.isNotice})
+            </if>
+            <if test="wcStatus.isFocus != null and wcStatus.isFocus != ''">
+                AND FIND_IN_SET(cws.IS_FOCUS, #{wcStatus.isFocus})
+            </if>
+            <if test="wcStatus.isOpen != null and wcStatus.isOpen != ''">
+                AND FIND_IN_SET(cws.IS_OPEN, #{wcStatus.isOpen})
+            </if>
+            <if test="wcStatus.wcSort != null and wcStatus.wcSort != ''">
+                AND FIND_IN_SET(wc.WC_SORT, #{wcStatus.wcSort})
+            </if>
+        </trim>
+    </sql>
 
 </mapper>

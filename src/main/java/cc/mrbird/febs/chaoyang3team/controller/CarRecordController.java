@@ -37,7 +37,7 @@ public class CarRecordController extends BaseController {
 
     @GetMapping
     @RequiresPermissions("carRecord:view")
-    public Map<String, Object> CarRecordList(QueryRequest request, CarRecord carRecord) {
+    public Map<String, Object> carRecordList(QueryRequest request, CarRecord carRecord) {
         return getDataTable(this.carRecordService.findCarRecordDetail(request, carRecord));
     }
 

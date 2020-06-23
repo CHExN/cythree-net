@@ -84,6 +84,9 @@ public class StoreroomServiceImpl extends ServiceImpl<StoreroomMapper, Storeroom
             storeroom.setTypeApplicationAuthority(String.join(",", typeApplicationAuthorityList));
             Page<StoreroomPutOut> page = new Page<>();
             SortUtil.handlePageSort(request, page, "id", FebsConstant.ORDER_DESC, true);
+            if (!(storeroom.getName() == null || storeroom.getName().isEmpty())) {
+                storeroom.setNames(storeroom.getName().replace("，", ",").split(","));
+            }
             return this.baseMapper.findStoreroomsDetail(page, storeroom);
         } catch (Exception e) {
             log.error("查询库房异常", e);
@@ -130,6 +133,9 @@ public class StoreroomServiceImpl extends ServiceImpl<StoreroomMapper, Storeroom
             storeroom.setTypeApplicationAuthority(String.join(",", typeApplicationAuthorityList));
             Page<StoreroomPutOut> page = new Page<>();
             SortUtil.handlePageSort(request, page, "id", FebsConstant.ORDER_DESC, true);
+            if (!(storeroom.getName() == null || storeroom.getName().isEmpty())) {
+                storeroom.setNames(storeroom.getName().replace("，", ",").split(","));
+            }
             return this.baseMapper.findStoreroomsItemDetails(page, storeroom);
         } catch (Exception e) {
             log.error("查询出入库物品明细异常", e);
@@ -189,6 +195,12 @@ public class StoreroomServiceImpl extends ServiceImpl<StoreroomMapper, Storeroom
             storeroom.setTypeApplicationAuthority(String.join(",", typeApplicationAuthorityList));
             Page<StoreroomPutOut> page = new Page<>();
             SortUtil.handlePageSort(request, page, "id", FebsConstant.ORDER_DESC, true);
+            if (!(storeroom.getName() == null || storeroom.getName().isEmpty())) {
+                storeroom.setNames(storeroom.getName().replace("，", ",").split(","));
+            }
+            if (!(storeroom.getIds() == null || storeroom.getIds().isEmpty())) {
+                storeroom.setIdArr(storeroom.getIds().replace("，", ",").split(","));
+            }
             return this.baseMapper.getStoreroomsDist(page, storeroom);
         } catch (Exception e) {
             log.error("查询物资分配库房异常", e);
@@ -377,6 +389,19 @@ public class StoreroomServiceImpl extends ServiceImpl<StoreroomMapper, Storeroom
     @Override
     public Storeroom getStoreroomById(String storeroomId) {
         return this.baseMapper.selectById(storeroomId);
+    }
+
+    @Override
+    public List<Storeroom> getStoreroomsByName(String storeroomName) {
+        return baseMapper.selectList(
+                new LambdaQueryWrapper<Storeroom>()
+                        .eq(Storeroom::getIsIn, 2) // 出库数据
+                        .eq(Storeroom::getStatus, 0) // 未分配
+                        .in(Storeroom::getTypeApplication, 1, 4) // 1保洁物品 4维修用品
+                        .in(Storeroom::getToDeptId, 26, 27, 28, 29) // 北分队 南分队 维修分队 保洁分队
+                        .eq(Storeroom::getName, storeroomName) // 名称相符
+                        .orderByAsc(Storeroom::getId)
+        );
     }
 
 }

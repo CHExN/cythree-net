@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -32,10 +33,21 @@ public class WcStatusController extends BaseController {
     @Autowired
     private WcStatusService wcStatusService;
 
+    @GetMapping("getStatus")
+    public List<String> getStatus() {
+        return this.wcStatusService.getStatus();
+    }
+
     @GetMapping
     @RequiresPermissions("wcStatus:view")
-    public Map<String, Object> WcStatusList(QueryRequest request, WcStatus wcStatus) {
+    public Map<String, Object> wcStatusDetail(QueryRequest request, WcStatus wcStatus) {
         return getDataTable(this.wcStatusService.findWcStatusDetail(request, wcStatus));
+    }
+
+    @GetMapping("getList")
+    @RequiresPermissions("wcStatus:view")
+    public List<WcStatus> getWcStatusList(WcStatus wcStatus) {
+        return this.wcStatusService.getWcStatusList(wcStatus);
     }
 
     @Log("新增公厕状态")

@@ -52,6 +52,6 @@
     </select>
 
     <select id="getFileIdsByWcEvaluateIds" resultType="java.lang.String">
-        SELECT cwe.VOICE_ID FROM cy_wc_evaluate AS cwe WHERE FIND_IN_SET(cwe.ID, #{ids})
+        SELECT cwe.VOICE_ID FROM cy_wc_evaluate AS cwe WHERE FIND_IN_SET(cwe.ID, #{ids}) AND cwe.VOICE_ID IS NOT NULL
     </select>
 </mapper>

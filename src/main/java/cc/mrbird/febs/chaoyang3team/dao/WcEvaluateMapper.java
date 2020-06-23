@@ -15,6 +15,6 @@ public interface WcEvaluateMapper extends BaseMapper<WcEvaluate> {
 
     IPage<WcEvaluate> findWcEvaluateDetail(Page page, @Param("wcEvaluate") WcEvaluate wcEvaluate);
 
-    List<String> getFileIdsByWcEvaluateIds(String ids);
+    List<String> getFileIdsByWcEvaluateIds(@Param("ids")String ids);
 
 }

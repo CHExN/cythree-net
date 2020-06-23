@@ -49,9 +49,6 @@
         wc.CLEAN_NUM,
         wc.WC_ADDRESS,
         wc.WC_NOW_STATUS AS wcNowStatus,
-        wc.WATER_NUM,
-        wc.ELECTRICITY_NUM,
-        wc.PAYMENT_NUM,
         (SELECT td.VALUEE FROM t_dict td WHERE td.TABLE_NAME='cy_wc' AND td.FIELD_NAME='district' 			AND td.KEYY=wc.DISTRICT 		LIMIT 1) AS DISTRICT_TO_DICT,
         (SELECT td.VALUEE FROM t_dict td WHERE td.TABLE_NAME='cy_wc' AND td.FIELD_NAME='manage_unit' 		AND td.KEYY=wc.MANAGE_UNIT 		LIMIT 1) AS MANAGE_UNIT_TO_DICT,
         (SELECT td.VALUEE FROM t_dict td WHERE td.TABLE_NAME='cy_wc' AND td.FIELD_NAME='wc_kind' 			AND td.KEYY=wc.WC_KIND 			LIMIT 1) AS WC_KIND_TO_DICT,
@@ -116,10 +113,7 @@
         wc.MANAGE_TYPE,
         wc.CLEAN_NUM,
         wc.WC_ADDRESS,
-        wc.WC_NOW_STATUS AS wcNowStatus,
-        wc.WATER_NUM,
-        wc.ELECTRICITY_NUM,
-        wc.PAYMENT_NUM
+        wc.WC_NOW_STATUS AS wcNowStatus
         FROM cy_wc AS wc
         WHERE 1=1
         <if test="wc.wcName != null and wc.wcName != ''">
@@ -140,10 +134,7 @@
         SELECT
         wc.WC_ID AS wcId,
         wc.WC_NAME,
-        wc.WC_NUM AS wcNum,
-        wc.WATER_NUM,
-        wc.ELECTRICITY_NUM,
-        wc.PAYMENT_NUM
+        wc.WC_NUM AS wcNum
         FROM cy_wc AS wc
         WHERE 1=1
         <if test="wc.wcOwn != null and wc.wcOwn != ''">
@@ -154,12 +145,6 @@
         </if>
         <if test="wc.wcNum != null and wc.wcNum != ''">
             AND wc.WC_NUM LIKE CONCAT('%',#{wc.wcNum},'%')
-        </if>
-        <if test="wc.waterNum != null and wc.waterNum != ''">
-            AND wc.WATER_NUM LIKE CONCAT('%',#{wc.waterNum},'%')
-        </if>
-        <if test="wc.electricityNum != null and wc.electricityNum != ''">
-            AND wc.ELECTRICITY_NUM LIKE CONCAT('%',#{wc.electricityNum},'%')
         </if>
     </select>
 
@@ -202,7 +187,19 @@
         (SELECT IF(g>=300,(SELECT GROUP_CONCAT(DISTINCT CONCAT(s.`NAME`,ws.AMOUNT,IFNULL(cuc.UNIT,s.UNIT))) FROM p_wc_storeroom AS ws LEFT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID) LEFT JOIN cy_unit_conversion AS cuc ON(cuc.STOREROOM_ID=ws.STOREROOM_ID) WHERE ws.WC_ID=w.WC_ID AND s.TYPE_APPLICATION='4' AND ws.`YEAR`=#{year} AND ws.`MONTH`='03'),NULL)) AS m,
         (SELECT IF(h>=300,(SELECT GROUP_CONCAT(DISTINCT CONCAT(s.`NAME`,ws.AMOUNT,IFNULL(cuc.UNIT,s.UNIT))) FROM p_wc_storeroom AS ws LEFT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID) LEFT JOIN cy_unit_conversion AS cuc ON(cuc.STOREROOM_ID=ws.STOREROOM_ID) WHERE ws.WC_ID=w.WC_ID AND s.TYPE_APPLICATION='4' AND ws.`YEAR`=#{year} AND ws.`MONTH`='04'),NULL)) AS n,
         (SELECT IF(i>=300,(SELECT GROUP_CONCAT(DISTINCT CONCAT(s.`NAME`,ws.AMOUNT,IFNULL(cuc.UNIT,s.UNIT))) FROM p_wc_storeroom AS ws LEFT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID) LEFT JOIN cy_unit_conversion AS cuc ON(cuc.STOREROOM_ID=ws.STOREROOM_ID) WHERE ws.WC_ID=w.WC_ID AND s.TYPE_APPLICATION='4' AND ws.`YEAR`=#{year} AND ws.`MONTH`='05'),NULL)) AS o,
-        (SELECT IF(j>=300,(SELECT GROUP_CONCAT(DISTINCT CONCAT(s.`NAME`,ws.AMOUNT,IFNULL(cuc.UNIT,s.UNIT))) FROM p_wc_storeroom AS ws LEFT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID) LEFT JOIN cy_unit_conversion AS cuc ON(cuc.STOREROOM_ID=ws.STOREROOM_ID) WHERE ws.WC_ID=w.WC_ID AND s.TYPE_APPLICATION='4' AND ws.`YEAR`=#{year} AND ws.`MONTH`='06'),NULL)) AS p
+        (SELECT IF(j>=300,(SELECT GROUP_CONCAT(DISTINCT CONCAT(s.`NAME`,ws.AMOUNT,IFNULL(cuc.UNIT,s.UNIT))) FROM p_wc_storeroom AS ws LEFT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID) LEFT JOIN cy_unit_conversion AS cuc ON(cuc.STOREROOM_ID=ws.STOREROOM_ID) WHERE ws.WC_ID=w.WC_ID AND s.TYPE_APPLICATION='4' AND ws.`YEAR`=#{year} AND ws.`MONTH`='06'),NULL)) AS p,
+        (SELECT SUM(cw.TOTAL_AMOUNT) FROM cy_water AS cw LEFT JOIN p_wc_water AS pww ON(pww.WATER_ID=cw.WATER_ID) WHERE pww.WC_ID=w.WC_ID AND cw.`YEAR`=#{year} AND cw.`MONTH`='01') AS q,
+		(SELECT SUM(cw.TOTAL_AMOUNT) FROM cy_water AS cw LEFT JOIN p_wc_water AS pww ON(pww.WATER_ID=cw.WATER_ID) WHERE pww.WC_ID=w.WC_ID AND cw.`YEAR`=#{year} AND cw.`MONTH`='02') AS r,
+		(SELECT SUM(cw.TOTAL_AMOUNT) FROM cy_water AS cw LEFT JOIN p_wc_water AS pww ON(pww.WATER_ID=cw.WATER_ID) WHERE pww.WC_ID=w.WC_ID AND cw.`YEAR`=#{year} AND cw.`MONTH`='03') AS s,
+		(SELECT SUM(cw.TOTAL_AMOUNT) FROM cy_water AS cw LEFT JOIN p_wc_water AS pww ON(pww.WATER_ID=cw.WATER_ID) WHERE pww.WC_ID=w.WC_ID AND cw.`YEAR`=#{year} AND cw.`MONTH`='04') AS t,
+		(SELECT SUM(cw.TOTAL_AMOUNT) FROM cy_water AS cw LEFT JOIN p_wc_water AS pww ON(pww.WATER_ID=cw.WATER_ID) WHERE pww.WC_ID=w.WC_ID AND cw.`YEAR`=#{year} AND cw.`MONTH`='05') AS u,
+		(SELECT SUM(cw.TOTAL_AMOUNT) FROM cy_water AS cw LEFT JOIN p_wc_water AS pww ON(pww.WATER_ID=cw.WATER_ID) WHERE pww.WC_ID=w.WC_ID AND cw.`YEAR`=#{year} AND cw.`MONTH`='06') AS v,
+		(SELECT SUM(ce.TOTAL_AMOUNT) FROM cy_electricity AS ce LEFT JOIN p_wc_electricity AS pwe ON(pwe.ELECTRICITY_ID=ce.ELECTRICITY_ID) WHERE pwe.WC_ID=w.WC_ID AND ce.`YEAR`=#{year} AND ce.`MONTH`='01') AS w,
+		(SELECT SUM(ce.TOTAL_AMOUNT) FROM cy_electricity AS ce LEFT JOIN p_wc_electricity AS pwe ON(pwe.ELECTRICITY_ID=ce.ELECTRICITY_ID) WHERE pwe.WC_ID=w.WC_ID AND ce.`YEAR`=#{year} AND ce.`MONTH`='02') AS x,
+		(SELECT SUM(ce.TOTAL_AMOUNT) FROM cy_electricity AS ce LEFT JOIN p_wc_electricity AS pwe ON(pwe.ELECTRICITY_ID=ce.ELECTRICITY_ID) WHERE pwe.WC_ID=w.WC_ID AND ce.`YEAR`=#{year} AND ce.`MONTH`='03') AS y,
+		(SELECT SUM(ce.TOTAL_AMOUNT) FROM cy_electricity AS ce LEFT JOIN p_wc_electricity AS pwe ON(pwe.ELECTRICITY_ID=ce.ELECTRICITY_ID) WHERE pwe.WC_ID=w.WC_ID AND ce.`YEAR`=#{year} AND ce.`MONTH`='04') AS z,
+		(SELECT SUM(ce.TOTAL_AMOUNT) FROM cy_electricity AS ce LEFT JOIN p_wc_electricity AS pwe ON(pwe.ELECTRICITY_ID=ce.ELECTRICITY_ID) WHERE pwe.WC_ID=w.WC_ID AND ce.`YEAR`=#{year} AND ce.`MONTH`='05') AS aa,
+		(SELECT SUM(ce.TOTAL_AMOUNT) FROM cy_electricity AS ce LEFT JOIN p_wc_electricity AS pwe ON(pwe.ELECTRICITY_ID=ce.ELECTRICITY_ID) WHERE pwe.WC_ID=w.WC_ID AND ce.`YEAR`=#{year} AND ce.`MONTH`='06') AS ab
         FROM cy_wc AS w
     </select>
 
@@ -228,34 +225,59 @@
         (SELECT IF(g>=300,(SELECT GROUP_CONCAT(DISTINCT CONCAT(s.`NAME`,ws.AMOUNT,IFNULL(cuc.UNIT,s.UNIT))) FROM p_wc_storeroom AS ws LEFT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID) LEFT JOIN cy_unit_conversion AS cuc ON(cuc.STOREROOM_ID=ws.STOREROOM_ID) WHERE ws.WC_ID=w.WC_ID AND s.TYPE_APPLICATION='4' AND ws.`YEAR`=#{year} AND ws.`MONTH`='09'),NULL)) AS m,
         (SELECT IF(h>=300,(SELECT GROUP_CONCAT(DISTINCT CONCAT(s.`NAME`,ws.AMOUNT,IFNULL(cuc.UNIT,s.UNIT))) FROM p_wc_storeroom AS ws LEFT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID) LEFT JOIN cy_unit_conversion AS cuc ON(cuc.STOREROOM_ID=ws.STOREROOM_ID) WHERE ws.WC_ID=w.WC_ID AND s.TYPE_APPLICATION='4' AND ws.`YEAR`=#{year} AND ws.`MONTH`='10'),NULL)) AS n,
         (SELECT IF(i>=300,(SELECT GROUP_CONCAT(DISTINCT CONCAT(s.`NAME`,ws.AMOUNT,IFNULL(cuc.UNIT,s.UNIT))) FROM p_wc_storeroom AS ws LEFT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID) LEFT JOIN cy_unit_conversion AS cuc ON(cuc.STOREROOM_ID=ws.STOREROOM_ID) WHERE ws.WC_ID=w.WC_ID AND s.TYPE_APPLICATION='4' AND ws.`YEAR`=#{year} AND ws.`MONTH`='11'),NULL)) AS o,
-        (SELECT IF(j>=300,(SELECT GROUP_CONCAT(DISTINCT CONCAT(s.`NAME`,ws.AMOUNT,IFNULL(cuc.UNIT,s.UNIT))) FROM p_wc_storeroom AS ws LEFT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID) LEFT JOIN cy_unit_conversion AS cuc ON(cuc.STOREROOM_ID=ws.STOREROOM_ID) WHERE ws.WC_ID=w.WC_ID AND s.TYPE_APPLICATION='4' AND ws.`YEAR`=#{year} AND ws.`MONTH`='12'),NULL)) AS p
+        (SELECT IF(j>=300,(SELECT GROUP_CONCAT(DISTINCT CONCAT(s.`NAME`,ws.AMOUNT,IFNULL(cuc.UNIT,s.UNIT))) FROM p_wc_storeroom AS ws LEFT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID) LEFT JOIN cy_unit_conversion AS cuc ON(cuc.STOREROOM_ID=ws.STOREROOM_ID) WHERE ws.WC_ID=w.WC_ID AND s.TYPE_APPLICATION='4' AND ws.`YEAR`=#{year} AND ws.`MONTH`='12'),NULL)) AS p,
+        (SELECT SUM(cw.TOTAL_AMOUNT) FROM cy_water AS cw LEFT JOIN p_wc_water AS pww ON(pww.WATER_ID=cw.WATER_ID) WHERE pww.WC_ID=w.WC_ID AND cw.`YEAR`=#{year} AND cw.`MONTH`='07') AS q,
+		(SELECT SUM(cw.TOTAL_AMOUNT) FROM cy_water AS cw LEFT JOIN p_wc_water AS pww ON(pww.WATER_ID=cw.WATER_ID) WHERE pww.WC_ID=w.WC_ID AND cw.`YEAR`=#{year} AND cw.`MONTH`='08') AS r,
+		(SELECT SUM(cw.TOTAL_AMOUNT) FROM cy_water AS cw LEFT JOIN p_wc_water AS pww ON(pww.WATER_ID=cw.WATER_ID) WHERE pww.WC_ID=w.WC_ID AND cw.`YEAR`=#{year} AND cw.`MONTH`='09') AS s,
+		(SELECT SUM(cw.TOTAL_AMOUNT) FROM cy_water AS cw LEFT JOIN p_wc_water AS pww ON(pww.WATER_ID=cw.WATER_ID) WHERE pww.WC_ID=w.WC_ID AND cw.`YEAR`=#{year} AND cw.`MONTH`='10') AS t,
+		(SELECT SUM(cw.TOTAL_AMOUNT) FROM cy_water AS cw LEFT JOIN p_wc_water AS pww ON(pww.WATER_ID=cw.WATER_ID) WHERE pww.WC_ID=w.WC_ID AND cw.`YEAR`=#{year} AND cw.`MONTH`='11') AS u,
+		(SELECT SUM(cw.TOTAL_AMOUNT) FROM cy_water AS cw LEFT JOIN p_wc_water AS pww ON(pww.WATER_ID=cw.WATER_ID) WHERE pww.WC_ID=w.WC_ID AND cw.`YEAR`=#{year} AND cw.`MONTH`='12') AS v,
+		(SELECT SUM(ce.TOTAL_AMOUNT) FROM cy_electricity AS ce LEFT JOIN p_wc_electricity AS pwe ON(pwe.ELECTRICITY_ID=ce.ELECTRICITY_ID) WHERE pwe.WC_ID=w.WC_ID AND ce.`YEAR`=#{year} AND ce.`MONTH`='07') AS w,
+		(SELECT SUM(ce.TOTAL_AMOUNT) FROM cy_electricity AS ce LEFT JOIN p_wc_electricity AS pwe ON(pwe.ELECTRICITY_ID=ce.ELECTRICITY_ID) WHERE pwe.WC_ID=w.WC_ID AND ce.`YEAR`=#{year} AND ce.`MONTH`='08') AS x,
+		(SELECT SUM(ce.TOTAL_AMOUNT) FROM cy_electricity AS ce LEFT JOIN p_wc_electricity AS pwe ON(pwe.ELECTRICITY_ID=ce.ELECTRICITY_ID) WHERE pwe.WC_ID=w.WC_ID AND ce.`YEAR`=#{year} AND ce.`MONTH`='09') AS y,
+		(SELECT SUM(ce.TOTAL_AMOUNT) FROM cy_electricity AS ce LEFT JOIN p_wc_electricity AS pwe ON(pwe.ELECTRICITY_ID=ce.ELECTRICITY_ID) WHERE pwe.WC_ID=w.WC_ID AND ce.`YEAR`=#{year} AND ce.`MONTH`='10') AS z,
+		(SELECT SUM(ce.TOTAL_AMOUNT) FROM cy_electricity AS ce LEFT JOIN p_wc_electricity AS pwe ON(pwe.ELECTRICITY_ID=ce.ELECTRICITY_ID) WHERE pwe.WC_ID=w.WC_ID AND ce.`YEAR`=#{year} AND ce.`MONTH`='11') AS aa,
+		(SELECT SUM(ce.TOTAL_AMOUNT) FROM cy_electricity AS ce LEFT JOIN p_wc_electricity AS pwe ON(pwe.ELECTRICITY_ID=ce.ELECTRICITY_ID) WHERE pwe.WC_ID=w.WC_ID AND ce.`YEAR`=#{year} AND ce.`MONTH`='12') AS ab
         FROM cy_wc AS w
     </select>
 
     <select id="getWcByWcNum" resultType="cc.mrbird.febs.chaoyang3team.domain.Wc">
-        SELECT WC_ID, WC_OWN FROM cy_wc WHERE WC_NUM = #{wcNum} LIMIT 1
+        SELECT WC_ID, WC_OWN, WC_NAME, WC_NUM
+        FROM cy_wc
+        WHERE
+        <if test="isLastFour">
+            RIGHT(WC_NUM, 4)
+        </if>
+        <if test="!isLastFour">
+            WC_NUM
+        </if>
+        LIKE CONCAT('%',#{wcNum},'%')
+        LIMIT 1
     </select>
     <select id="getWcIdByWcNum" resultType="java.lang.Long">
-        SELECT WC_ID FROM cy_wc WHERE WC_NUM = #{wcNum} LIMIT 1
-    </select>
-    <select id="getWcIdByWaterNum" resultType="java.lang.Long">
-        SELECT WC_ID FROM cy_wc WHERE WATER_NUM = #{waterNum} LIMIT 1
-    </select>
-    <select id="getWcIdByElectricityNum" resultType="java.lang.Long">
-        SELECT WC_ID FROM cy_wc WHERE ELECTRICITY_NUM = #{electricityNum} LIMIT 1
+        SELECT WC_ID
+        FROM cy_wc
+        WHERE
+        <if test="isLastFour">
+            RIGHT(WC_NUM, 4) = #{wcNum}
+        </if>
+        <if test="!isLastFour">
+            WC_NUM = #{wcNum}
+        </if>
+        LIMIT 1
     </select>
 
     <select id="findAllMonthWcConsumptionByYear" resultType="java.util.Map">
         SELECT
-        cw.WC_OWN,
+        pws.WC_OWN,
         SUM(cs.MONEY) AS money,
-        CONCAT(right(pws.`YEAR`,2),'-',pws.`MONTH`) AS date
+        CONCAT(right(pws.`YEAR`,2),'-',pws.`MONTH`) AS `date`
         FROM cy_wc AS cw
         LEFT JOIN p_wc_storeroom AS pws ON(pws.WC_ID=cw.WC_ID)
         LEFT JOIN cy_storeroom AS cs ON(cs.ID=pws.STOREROOM_ID)
         WHERE pws.`YEAR`=#{year}
         GROUP BY
-        cw.WC_OWN,pws.`MONTH`
+        pws.WC_OWN,pws.`MONTH`
     </select>
 
     <select id="findAllOwnWcConsumptionByYear" resultType="java.util.Map">

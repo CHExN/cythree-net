@@ -29,7 +29,9 @@ public class StoreroomDistImport implements Serializable {
     @ExcelField(value = "公厕名称")
     private String wcName;
 
-    @ExcelField(value = "物品编号", required = true)
+    // @ExcelField(value = "物品编号", required = true)
+    // 物品编号如果为空，则去判断物品名称
+    @ExcelField(value = "物品编号")
     private String storeroomId;
 
     @ExcelField(value = "物品名称")

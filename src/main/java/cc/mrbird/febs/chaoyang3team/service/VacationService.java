@@ -1,7 +1,6 @@
 package cc.mrbird.febs.chaoyang3team.service;
 
 import cc.mrbird.febs.chaoyang3team.domain.Vacation;
-import cc.mrbird.febs.chaoyang3team.domain.VacationImport;
 import cc.mrbird.febs.common.domain.QueryRequest;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -27,8 +26,8 @@ public interface VacationService extends IService<Vacation> {
      */
     List<String> getType();
 
-    IPage<VacationImport> findInsideAnnualLeave(QueryRequest request, Vacation vacation);
+    IPage<Vacation> findInsideAnnualLeave(QueryRequest request, Vacation vacation);
 
-    IPage<VacationImport> findInsOutVacation(QueryRequest request, Vacation vacation);
+    IPage<Vacation> findInsOutVacation(QueryRequest request, Vacation vacation);
 
 }

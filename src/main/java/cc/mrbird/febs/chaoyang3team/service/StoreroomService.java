@@ -66,4 +66,7 @@ public interface StoreroomService extends IService<Storeroom> {
 
     Storeroom getStoreroomById(String storeroomId);
 
+    List<Storeroom> getStoreroomsByName(String storeroomName);
+
+
 }

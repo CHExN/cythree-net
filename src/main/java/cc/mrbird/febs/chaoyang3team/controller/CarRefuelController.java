@@ -35,7 +35,7 @@ public class CarRefuelController extends BaseController {
 
     @GetMapping
     @RequiresPermissions("carRefuel:view")
-    public Map<String, Object> CarRefuelList(QueryRequest request, CarRefuel carRefuel) {
+    public Map<String, Object> carRefuelList(QueryRequest request, CarRefuel carRefuel) {
         return getDataTable(this.carRefuelService.findCarRefuel(request, carRefuel));
     }
 

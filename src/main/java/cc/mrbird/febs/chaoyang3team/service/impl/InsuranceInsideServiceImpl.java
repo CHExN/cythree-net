@@ -30,7 +30,7 @@ public class InsuranceInsideServiceImpl extends ServiceImpl<InsuranceInsideMappe
     public IPage<InsuranceInside> findInsuranceInsideDetail(QueryRequest request, InsuranceInside insuranceInside) {
         try {
             Page<InsuranceInside> page = new Page<>();
-            SortUtil.handlePageSort(request, page, "sortNum", FebsConstant.ORDER_ASC, false);
+            SortUtil.handlePageSort(request, page, "IS_LEAVE ASC, sortNum", FebsConstant.ORDER_ASC, false);
             return this.baseMapper.findInsuranceInsideDetail(page, insuranceInside);
         } catch (Exception e) {
             log.error("查询编内保险人员详细信息异常", e);
@@ -42,7 +42,7 @@ public class InsuranceInsideServiceImpl extends ServiceImpl<InsuranceInsideMappe
     public IPage<InsuranceInside> findInsuranceInsideSimplify(QueryRequest request, InsuranceInside insuranceInside) {
         try {
             Page<InsuranceInside> page = new Page<>();
-            SortUtil.handlePageSort(request, page, "sortNum", FebsConstant.ORDER_ASC, false);
+            SortUtil.handlePageSort(request, page, "IS_LEAVE ASC, sortNum", FebsConstant.ORDER_ASC, false);
             return this.baseMapper.findInsuranceInsideSimplify(page, insuranceInside);
         } catch (Exception e) {
             log.error("查询编内保险人员简略信息异常", e);

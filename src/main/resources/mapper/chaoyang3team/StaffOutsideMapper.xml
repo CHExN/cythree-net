@@ -108,7 +108,7 @@
             AND cso.LEAVE_DATE &gt;= #{staffOutside.reduceTimeFrom}
             AND cso.LEAVE_DATE &lt;= #{staffOutside.reduceTimeTo}
         </if>
-        ORDER BY SORT_NUM_1 ASC, SORT_NUM_2 ASC
+        ORDER BY IS_LEAVE ASC, SORT_NUM_1 ASC, SORT_NUM_2 ASC
     </select>
 
     <select id="findStaffOutsideSimplify" resultType="cc.mrbird.febs.chaoyang3team.domain.StaffOutside">
@@ -140,7 +140,7 @@
         <if test="staffOutside.technicalType != null and staffOutside.technicalType != ''">
             AND FIND_IN_SET(cso.TECHNICAL_TYPE, #{staffOutside.technicalType})
         </if>
-        ORDER BY SORT_NUM_1 ASC, SORT_NUM_2 ASC
+        ORDER BY IS_LEAVE ASC, SORT_NUM_1 ASC, SORT_NUM_2 ASC
     </select>
 
     <select id="getStaffOutsideByStaffId" resultType="cc.mrbird.febs.chaoyang3team.domain.StaffOutside">
@@ -205,9 +205,8 @@
         cso.IS_LEAVE,
         cso.LEAVE_DATE
         FROM cy_staff_outside AS cso
-        WHERE cso.ID_NUM=#{ID_NUM}
+        WHERE cso.ID_NUM=#{idNum} AND DELETED=0 LIMIT 1
     </select>
-
 
     <select id="getContractOutsideIds" resultType="java.lang.String">
         SELECT cco.ID FROM cy_contract_outside AS cco

@@ -35,7 +35,7 @@ public class SupplierController extends BaseController {
 
     @GetMapping
     @RequiresPermissions("supplier:view")
-    public Map<String, Object> SupplierList(QueryRequest request, Supplier supplier) {
+    public Map<String, Object> supplierList(QueryRequest request, Supplier supplier) {
         return getDataTable(this.supplierService.findSupplier(request, supplier));
     }
 

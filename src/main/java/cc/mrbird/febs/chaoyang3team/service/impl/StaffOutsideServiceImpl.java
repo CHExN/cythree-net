@@ -235,6 +235,7 @@ public class StaffOutsideServiceImpl extends ServiceImpl<StaffOutsideMapper, Sta
             data.put("message", "已排名第一，无法再往上调序");
             return data;
         }
+        // 获取每个类型人员的总数
         Map<String, String> staffOutsideTypeCount = this.baseMapper.getStaffOutsideTypeCount(staffOutside.getIsLeave());
         // 这里不能直接用String类型接收，并且不能toString(),会报类型转换错误java.math.BigDecimal cannot be cast to java.lang.String
         Object count = staffOutsideTypeCount.get(staffOutside.getType());
