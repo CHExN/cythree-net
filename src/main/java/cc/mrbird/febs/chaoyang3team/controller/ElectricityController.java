@@ -118,12 +118,11 @@ public class ElectricityController extends BaseController {
         List<Electricity> list = new ArrayList<>();
         IntStream.range(0, 20).forEach(i -> {
             Electricity electricity = new Electricity();
+            electricity.setRecDate(new Date());
             electricity.setWcNum("公厕编号后四位" + (i + 1));
             electricity.setActualAmount(new BigDecimal(Math.random() * (100 - 20) + 20).setScale(2, BigDecimal.ROUND_DOWN));
             electricity.setUnitPrice(new BigDecimal(Math.random() * (100 - 20) + 20).setScale(2, BigDecimal.ROUND_DOWN));
             electricity.setTotalAmount(new BigDecimal(Math.random() * (100 - 20) + 20).setScale(2, BigDecimal.ROUND_DOWN));
-            electricity.setCreateDate(new Date());
-            electricity.setRecDate(new Date());
             electricity.setType("购电方式" + (i + 1));
             list.add(electricity);
         });
@@ -155,7 +154,8 @@ public class ElectricityController extends BaseController {
                 @Override
                 public void onSuccess(int sheetIndex, int rowIndex, ElectricityImport entity) {
                     // 数据校验成功时，加入集合
-                    String wcNum = entity.getWcNum().trim();
+                    String wcNum = String.format("%04d", Integer.valueOf(entity.getWcNum().trim()));
+                    System.out.println(wcNum);
                     Long wcId = wcService.getWcIdByWcNum(wcNum, true);
                     if (wcId == null) {
                         List<ExcelErrorField> errorFields = new ArrayList<>();
@@ -167,6 +167,7 @@ public class ElectricityController extends BaseController {
                         onError(sheetIndex, rowIndex, errorFields);
                     } else {
                         Electricity electricity = new Electricity();
+                        electricity.setRecDate(entity.getRecDate());
                         electricity.setYear(entity.getYear());
                         electricity.setMonth(entity.getMonth());
                         electricity.setWcId(wcId);
@@ -174,7 +175,6 @@ public class ElectricityController extends BaseController {
                         electricity.setActualAmount(entity.getActualAmount());
                         electricity.setUnitPrice(entity.getUnitPrice());
                         electricity.setTotalAmount(entity.getTotalAmount());
-                        electricity.setRecDate(entity.getRecDate());
                         electricity.setType(entity.getType());
                         electricityService.createElectricity(electricity);
                         data.add(electricity);

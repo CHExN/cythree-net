@@ -54,4 +54,6 @@ public interface WcService extends IService<Wc> {
 
     Wc getWcAndFilesById(Long wcId);
 
+    void test () throws Exception;
+
 }

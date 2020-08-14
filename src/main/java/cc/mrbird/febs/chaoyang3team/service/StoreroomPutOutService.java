@@ -25,7 +25,7 @@ public interface StoreroomPutOutService extends IService<StoreroomPutOut> {
 
     void updateStoreroom(StoreroomPutOut storeroomPutOut);
 
-    Map<String, Object> deleteStoreroomPuts(String[] StoreroomPutIds);
+    Map<String, Object> deleteStoreroomPuts(String[] storeroomPutIds);
 
     void deleteStoreroomOuts(String[] StoreroomOutIds);
 

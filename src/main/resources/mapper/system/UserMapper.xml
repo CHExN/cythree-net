@@ -31,6 +31,7 @@
         d.dept_name deptName,
         u.AVATAR,
         u.DESCRIPTION,
+        u.TYPE,
         u.LAST_LOGIN_TIME lastLoginTime,
         GROUP_CONCAT(r.role_id) roleId,
         GROUP_CONCAT(r.ROLE_NAME) roleName
@@ -58,6 +59,9 @@
         <if test="user.status != null and user.status != ''">
             AND u.status = #{user.status}
         </if>
+        <if test="user.type != null and user.type != '' and user.type != 0">
+            AND FIND_IN_SET(u.TYPE, #{user.type})
+        </if>
         group by u.username
     </select>
 
@@ -68,13 +72,14 @@
         u.password,
         u.email,
         u.mobile,
-        u. STATUS,
+        u.STATUS,
         u.create_time createTime,
         u.ssex,
         d.dept_id deptId,
         d.dept_name deptName,
         u.AVATAR,
         u.DESCRIPTION,
+        u.TYPE,
         u.LAST_LOGIN_TIME lastLoginTime,
         GROUP_CONCAT(r.role_id) roleId,
         GROUP_CONCAT(r.ROLE_NAME) roleName

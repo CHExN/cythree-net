@@ -32,17 +32,37 @@ public class WcStoreroomController extends BaseController {
 
     @GetMapping
     @RequiresPermissions("wcStoreroom:view")
-    public Map<String, Object> WcList(QueryRequest request, WcStoreroom wcStoreroom, ServletRequest servletRequest) {
+    public Map<String, Object> wcStoreroomList(QueryRequest request, WcStoreroom wcStoreroom, ServletRequest servletRequest) {
         return getDataTable(this.wcStoreroomService.findWcStoreroomDetail(request, wcStoreroom, servletRequest));
+    }
+
+    @Log("查询要删除的id数量")
+    @GetMapping("ids")
+    @RequiresPermissions("wcStoreroom:delete")
+    public Integer getDeleteWcStoreroomIds(QueryRequest request, WcStoreroom wcStoreroom, ServletRequest servletRequest) {
+        return this.wcStoreroomService.getDeleteWcStoreroomIds(request, wcStoreroom, servletRequest).size();
     }
 
     @Log("删除分配记录")
     @DeleteMapping("/{wcStoreroomIds}")
-    //@RequiresPermissions("wcStoreroom:delete")
+    @RequiresPermissions("wcStoreroom:delete")
     public void deleteWcStoreroomsByWcIdAndStoreroomId(@NotBlank(message = "{required}") @PathVariable String wcStoreroomIds) throws FebsException {
         try {
             String[] ids = wcStoreroomIds.split(StringPool.COMMA);
             this.wcStoreroomService.deleteWcStorerooms(ids);
+        } catch (Exception e) {
+            String message = "删除分配记录失败";
+            log.error(message, e);
+            throw new FebsException(message);
+        }
+    }
+
+    @Log("删除全部分配记录")
+    @PostMapping("/deleteAll")
+    @RequiresPermissions("wcStoreroom:delete")
+    public void deleteAllWcStoreroomsByWcIdAndStoreroomId(QueryRequest request, WcStoreroom wcStoreroom, ServletRequest servletRequest) throws FebsException {
+        try {
+            this.wcStoreroomService.deleteAllWcStorerooms(request, wcStoreroom, servletRequest);
         } catch (Exception e) {
             String message = "删除分配记录失败";
             log.error(message, e);

@@ -82,13 +82,6 @@ public class StoreroomController extends BaseController {
         return getDataTable(this.storeroomService.getStoreroomsDist(request, storeroom, servletRequest));
     }
 
-    // 这个不用了
-    @GetMapping("officeSuppliesByDate")
-    @RequiresPermissions("officeSupplies:export")
-    public List<Storeroom> getOfficeSuppliesByDate(String date) {
-        return storeroomService.getOfficeSuppliesByDate(date);
-    }
-
     @GetMapping("canteen")
     @RequiresPermissions("canteen:export")
     public List<Storeroom> getCanteenByDate(String date, String dateRangeFrom, String dateRangeTo) {

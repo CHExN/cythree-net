@@ -11,7 +11,7 @@ public interface RoleService extends IService<Role> {
 
     IPage<Role> findRoles(Role role, QueryRequest request);
 
-    List<Role> allRole();
+    List<Role> getRole(String type);
 
     List<Role> findUserRole(String userName);
 

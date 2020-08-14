@@ -32,6 +32,8 @@ public class Role implements Serializable {
     @ExcelField(value = "角色描述")
     private String remark;
 
+    private String type;
+
     @ExcelField(value = "创建时间", writeConverter = TimeConverter.class)
     private Date createTime;
 

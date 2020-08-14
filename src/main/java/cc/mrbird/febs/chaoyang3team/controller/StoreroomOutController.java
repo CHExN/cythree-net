@@ -17,7 +17,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.ServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import java.util.List;
@@ -95,12 +94,6 @@ public class StoreroomOutController extends BaseController {
             log.error(message, e);
             throw new FebsException(message);
         }
-    }
-
-    @PostMapping("export")
-    @RequiresPermissions("storeroomOut:export")
-    public void export(QueryRequest request, StoreroomPutOut storeroomPutOut, HttpServletResponse response) throws FebsException {
-
     }
 
 }

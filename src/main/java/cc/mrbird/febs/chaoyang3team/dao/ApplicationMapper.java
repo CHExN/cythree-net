@@ -12,7 +12,7 @@ import org.apache.ibatis.annotations.Param;
 public interface ApplicationMapper extends BaseMapper<Application1> {
 
     IPage<Application1> findApplicationDetail(Page page, @Param("application") Application1 application,
-                                             @Param("is35") boolean is35,
+                                             @Param("is3") boolean is3,
                                              @Param("isLogistics") boolean isLogistics);
 
 }

@@ -65,7 +65,7 @@ public class WcEvaluateServiceImpl extends ServiceImpl<WcEvaluateMapper, WcEvalu
                 message.toString(),
                 "bot",
                 "系统",
-                "xzhisoft",
+                "captain,vice,business", // 队长，副队长，业务
                 null)
         );
     }

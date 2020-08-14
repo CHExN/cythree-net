@@ -17,8 +17,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -47,19 +47,28 @@ public class ElectricityServiceImpl extends ServiceImpl<ElectricityMapper, Elect
     @Override
     @Transactional
     public void createElectricity(Electricity electricity) {
-        electricity.setCreateDate(new Date());
+        electricity.setCreateTime(LocalDateTime.now());
         if (electricity.getMonth().length() == 1) electricity.setMonth("0" + electricity.getMonth());
-        this.save(electricity);
-        this.wcElectricityService.createWcElectricity(new WcElectricity(electricity.getWcId(), electricity.getElectricityId()));
+        // 根据年月，金额合计和公厕id查询电费信息id，如果有就说明已经有此数据，就做更新操作，没有就新增
+        Long electricityId = this.baseMapper.findElectricityIdByDateAndWcId(
+                electricity.getYear(), electricity.getMonth(), electricity.getWcId(), electricity.getTotalAmount());
+        if (electricityId != null && electricityId > 0) {
+            electricity.setElectricityId(electricityId);
+            this.updateElectricity(electricity);
+        } else {
+            this.save(electricity);
+            this.wcElectricityService.createWcElectricity(new WcElectricity(electricity.getWcId(), electricity.getElectricityId()));
+        }
     }
 
     @Override
     @Transactional
     public void updateElectricity(Electricity electricity) {
+        electricity.setModifyTime(LocalDateTime.now());
         this.baseMapper.updateById(electricity);
         if (electricity.getWcId() != null) {
             // 先删除，后重新添加
-            this.wcElectricityService.deleteByElectricityId(electricity.getElectricityId().toString().split(","));
+            this.wcElectricityService.deleteByElectricityId(new String[]{electricity.getElectricityId().toString()});
             this.wcElectricityService.createWcElectricity(new WcElectricity(electricity.getWcId(), electricity.getElectricityId()));
         }
     }

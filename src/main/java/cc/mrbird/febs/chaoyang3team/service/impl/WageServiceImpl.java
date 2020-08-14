@@ -1,11 +1,12 @@
 package cc.mrbird.febs.chaoyang3team.service.impl;
 
-import cc.mrbird.febs.chaoyang3team.domain.Wage;
 import cc.mrbird.febs.chaoyang3team.dao.WageMapper;
+import cc.mrbird.febs.chaoyang3team.domain.Wage;
 import cc.mrbird.febs.chaoyang3team.service.WageService;
 import cc.mrbird.febs.common.domain.FebsConstant;
 import cc.mrbird.febs.common.domain.QueryRequest;
 import cc.mrbird.febs.common.utils.SortUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -144,5 +145,10 @@ public class WageServiceImpl extends ServiceImpl<WageMapper, Wage> implements Wa
         this.baseMapper.deleteBatchIds(ids);
     }
 
+    @Override
+    @Transactional
+    public void deleteAllWage(String year, String month) {
+        this.baseMapper.delete(new LambdaQueryWrapper<Wage>().eq(Wage::getYear, year).eq(Wage::getMonth, month));
+    }
 
 }

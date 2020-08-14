@@ -13,6 +13,7 @@ import com.baomidou.mybatisplus.core.toolkit.StringPool;
 import com.wuwenze.poi.ExcelKit;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -48,7 +49,7 @@ public class UserController extends BaseController {
     }
 
     @GetMapping
-    @RequiresPermissions("user:view")
+    @RequiresPermissions(value={"user:view", "userCopy:view"}, logical= Logical.OR)
     public Map<String, Object> userList(QueryRequest queryRequest, User user) {
         return getDataTable(this.userService.findUserDetail(user, queryRequest));
     }
@@ -93,6 +94,7 @@ public class UserController extends BaseController {
         }
     }
 
+    @Log("修改个人信息")
     @PutMapping("profile")
     public void updateProfile(@Valid User user) throws FebsException {
         try {
@@ -104,6 +106,7 @@ public class UserController extends BaseController {
         }
     }
 
+    @Log("修改头像")
     @PutMapping("avatar")
     public void updateAvatar(
             @NotBlank(message = "{required}") String username,
@@ -117,6 +120,7 @@ public class UserController extends BaseController {
         }
     }
 
+    @Log("修改个性化配置")
     @PutMapping("userconfig")
     public void updateUserConfig(@Valid UserConfig userConfig) throws FebsException {
         try {
@@ -140,6 +144,7 @@ public class UserController extends BaseController {
             return false;
     }
 
+    @Log("修改密码")
     @PutMapping("password")
     public void updatePassword(
             @NotBlank(message = "{required}") String username,
@@ -166,7 +171,7 @@ public class UserController extends BaseController {
         }
     }
 
-    @GetMapping("/usernames")
+    @GetMapping("username")
     public List<String> getUsername(String deptIds) {
         return this.userService.getUsername(deptIds);
     }

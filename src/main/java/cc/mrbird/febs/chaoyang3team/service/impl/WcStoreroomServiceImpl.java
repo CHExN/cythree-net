@@ -60,6 +60,10 @@ public class WcStoreroomServiceImpl extends ServiceImpl<WcStoreroomMapper, WcSto
                 wcStoreroom.setUsername(username);
             }
 
+            if (!(wcStoreroom.getName() == null || wcStoreroom.getName().isEmpty())) {
+                wcStoreroom.setNames(wcStoreroom.getName().replace("，", ",").split(","));
+            }
+
             Page<WcStoreroom> page = new Page<>();
             SortUtil.handlePageSort(request, page, false);
             return this.baseMapper.findWcStoreroomDetail(page, wcStoreroom);
@@ -73,15 +77,15 @@ public class WcStoreroomServiceImpl extends ServiceImpl<WcStoreroomMapper, WcSto
     @Transactional
     public void deleteWcStorerooms(String[] wcStoreroomIds) {
         List<String> ids = Arrays.asList(wcStoreroomIds);
+        log.info(ids.toString());
         // 把分配记录的物资返还回去
         List<WcStoreroom> wcStorerooms = baseMapper.selectList(new LambdaQueryWrapper<WcStoreroom>().in(WcStoreroom::getId, ids));
-        System.out.println("===================");
         wcStorerooms.forEach(e -> {
 
             // 根据物资id 判断物资是否有单位转换
             UnitConversion unitConversion = this.unitConversionService.findById(e.getStoreroomId().toString());
             if (unitConversion == null) {
-                System.out.println("不是单位转换");
+                log.info("不是单位转换");
                 // 获取当前物资信息
                 Storeroom storeroomNow = storeroomService.getStoreroomById(e.getStoreroomId().toString());
                 // 创建要更新的实体
@@ -98,7 +102,7 @@ public class WcStoreroomServiceImpl extends ServiceImpl<WcStoreroomMapper, WcSto
                 }
                 this.storeroomService.updateStoreroom(storeroom);
             } else {
-                System.out.println("是单位转换");
+                log.info("是单位转换");
                 // 设置物资的剩余数量为 已分配的数量 + 物资原有剩余的数量
                 System.out.println("设置物资的剩余数量为 已分配的数量 + 物资原有剩余的数量");
                 System.out.println(e.getAmount() + " + " + unitConversion.getAmountDist() + " = " + e.getAmount().add(unitConversion.getAmountDist()));
@@ -113,12 +117,21 @@ public class WcStoreroomServiceImpl extends ServiceImpl<WcStoreroomMapper, WcSto
                     System.out.println("设置storeroom的status为0");
                 }
             }
-
         });
-        System.out.println("===================");
 
         // 删除分配的记录
         baseMapper.deleteBatchIds(ids);
+    }
+
+    @Override
+    @Transactional
+    public void deleteAllWcStorerooms(QueryRequest request, WcStoreroom wcStoreroom, ServletRequest servletRequest) {
+        for (; ; ) {
+            List<String> deleteWcStoreroomIds = this.getDeleteWcStoreroomIds(request, wcStoreroom, servletRequest);
+            log.info(deleteWcStoreroomIds.toString());
+            if (deleteWcStoreroomIds.size() == 0) return; // 直到没数据了再跳出
+            this.deleteWcStorerooms(deleteWcStoreroomIds.toArray(new String[0]));
+        }
     }
 
     @Override
@@ -181,6 +194,30 @@ public class WcStoreroomServiceImpl extends ServiceImpl<WcStoreroomMapper, WcSto
     @Transactional
     public void batchInsertWcStoreroom(List<WcStoreroom> wcStoreroomList) {
         this.saveBatch(wcStoreroomList);
+    }
+
+    @Override
+    public List<String> getDeleteWcStoreroomIds(QueryRequest request, WcStoreroom wcStoreroom, ServletRequest servletRequest) {
+        try {
+            HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
+            String username = JWTUtil.getUsername(FebsUtil.decryptToken(httpServletRequest.getHeader("Authentication")));
+            // 通过用户名获取用户权限集合
+            Set<String> userPermissions = this.userManager.getUserPermissions(username);
+
+            // 如果没有wcStoreroom:viewAll权限，就只能看自己的
+            if (!userPermissions.contains("wcStoreroom:viewAll")) {
+                wcStoreroom.setUsername(username);
+            }
+
+            if (!(wcStoreroom.getName() == null || wcStoreroom.getName().isEmpty())) {
+                wcStoreroom.setNames(wcStoreroom.getName().replace("，", ",").split(","));
+            }
+
+            return this.baseMapper.getDeleteWcStoreroomIds(wcStoreroom);
+        } catch (Exception e) {
+            log.error("查询要删除的ids异常", e);
+            return null;
+        }
     }
 
 }

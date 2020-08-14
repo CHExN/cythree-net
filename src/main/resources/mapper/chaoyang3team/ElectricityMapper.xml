@@ -13,9 +13,10 @@
         e.ACTUAL_AMOUNT AS actualAmount,
         e.UNIT_PRICE AS unitPrice,
         e.TOTAL_AMOUNT AS totalAmount,
-        e.CREATE_DATE AS createDate,
         e.REC_DATE AS recDate,
-        e.TYPE
+        e.TYPE,
+        e.CREATE_TIME AS createTime,
+        e.MODIFY_TIME AS modifyTime
         FROM cy_electricity AS e
         LEFT JOIN p_wc_electricity AS we ON(we.ELECTRICITY_ID=e.ELECTRICITY_ID)
         LEFT JOIN cy_wc AS wc ON(wc.WC_ID=we.WC_ID)
@@ -33,10 +34,24 @@
             AND FIND_IN_SET(e.`MONTH`, #{electricity.month})
         </if>
         <if test="electricity.createTimeFrom != null and electricity.createTimeFrom !=''">
-            AND e.CREATE_DATE &gt;= #{electricity.createTimeFrom}
+            AND e.CREATE_TIME &gt;= #{electricity.createTimeFrom}
         </if>
         <if test="electricity.createTimeTo!= null and electricity.createTimeTo !=''">
-            AND e.CREATE_DATE &lt;= #{electricity.createTimeTo}
+            AND e.CREATE_TIME &lt;= #{electricity.createTimeTo}
         </if>
+        <if test="electricity.modifyTimeFrom != null and electricity.modifyTimeFrom !=''">
+            AND e.MODIFY_TIME &gt;= #{electricity.modifyTimeFrom}
+        </if>
+        <if test="electricity.modifyTimeTo!= null and electricity.modifyTimeTo !=''">
+            AND e.MODIFY_TIME &lt;= #{electricity.modifyTimeTo}
+        </if>
+    </select>
+
+    <select id="findElectricityIdByDateAndWcId" resultType="java.lang.Long">
+        SELECT ce.ELECTRICITY_ID, ce.YEAR, ce.MONTH
+        FROM cy_electricity AS ce
+        LEFT JOIN p_wc_electricity AS pwe ON(pwe.ELECTRICITY_ID = ce.ELECTRICITY_ID)
+        WHERE pwe.WC_ID=#{wcId} AND ce.YEAR = #{year} AND ce.MONTH = #{month} AND ce.TOTAL_AMOUNT = #{totalAmount}
+        LIMIT 1
     </select>
 </mapper>

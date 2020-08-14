@@ -10,6 +10,7 @@ import lombok.Data;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 /**
@@ -56,9 +57,6 @@ public class Electricity implements Serializable {
     @ExcelField(value = "金额合计")
     private BigDecimal totalAmount;
 
-    @TableField("CREATE_DATE")
-    private Date createDate;
-
     @TableField("REC_DATE")
     @ExcelField(value = "缴费日期")
     private Date recDate;
@@ -67,7 +65,20 @@ public class Electricity implements Serializable {
     @ExcelField(value = "购电方式")
     private String type;
 
+    /**
+     * 创建时间
+     */
+    @TableField("CREATE_TIME")
+    private LocalDateTime createTime;
     private transient String createTimeFrom;
     private transient String createTimeTo;
+
+    /**
+     * 修改时间
+     */
+    @TableField("MODIFY_TIME")
+    private LocalDateTime modifyTime;
+    private transient String modifyTimeFrom;
+    private transient String modifyTimeTo;
 
 }

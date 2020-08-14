@@ -36,10 +36,10 @@ public class RoleController extends BaseController {
 
     private String message;
 
-    @GetMapping("allRole")
+    @GetMapping("getRole")
     @RequiresPermissions("role:view")
-    public List<Role> allRole() {
-        return roleService.allRole();
+    public List<Role> getRole(String type) {
+        return roleService.getRole(type);
     }
 
     @GetMapping

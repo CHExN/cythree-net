@@ -13,6 +13,9 @@ import java.util.Date;
 @Slf4j
 public class JWTUtil {
 
+    /**
+     * 登陆有效期，单位毫秒
+     */
     private static final long EXPIRE_TIME = 86400 * 1000 / 2;
 
     /**
@@ -53,19 +56,35 @@ public class JWTUtil {
     }
 
     /**
+     * 从 token中获取系统类型
+     *
+     * @return token中包含的系统编号
+     */
+    public static String getSystemType(String token) {
+        try {
+            DecodedJWT jwt = JWT.decode(token);
+            return jwt.getClaim("systemType").asString();
+        } catch (JWTDecodeException e) {
+            log.error("error：{}", e.getMessage());
+            return null;
+        }
+    }
+
+    /**
      * 生成 token
      *
      * @param username 用户名
      * @param secret   用户的密码
      * @return token
      */
-    public static String sign(String username, String secret) {
+    public static String sign(String username, String secret, String type) {
         try {
             username = StringUtils.lowerCase(username);
             Date date = new Date(System.currentTimeMillis() + EXPIRE_TIME);
             Algorithm algorithm = Algorithm.HMAC256(secret);
             return JWT.create()
                     .withClaim("username", username)
+                    .withClaim("systemType", type)
                     .withExpiresAt(date)
                     .sign(algorithm);
         } catch (Exception e) {

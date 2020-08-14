@@ -13,7 +13,7 @@ import java.util.List;
 public interface WcFileMapper extends BaseMapper<WcFile> {
 
     /**
-     * 根据公厕ID查找对应文件ID
+     * 根据公厕IDs查找对应文件IDs
      *
      * @return 文件ID
      */

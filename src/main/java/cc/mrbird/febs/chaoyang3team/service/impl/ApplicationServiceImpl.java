@@ -99,13 +99,13 @@ public class ApplicationServiceImpl extends ServiceImpl<ApplicationMapper, Appli
             }
             application.setTypeApplicationAuthority(String.join(",", typeApplicationAuthorityList));
 
-            boolean is35 = false;
+            boolean is3 = false;
             if (application.getTypeApplication() != null) {
-                is35 = application.getTypeApplication().equals("3") || application.getTypeApplication().equals("5");
+                is3 = application.getTypeApplication().equals("3");
             }
             Page<Application1> page = new Page<>();
             SortUtil.handlePageSort(request, page, "id", FebsConstant.ORDER_DESC, false);
-            return this.baseMapper.findApplicationDetail(page, application, is35, isLogistics || isLbbjkg || isWxclkg || isXzhqbm);
+            return this.baseMapper.findApplicationDetail(page, application, is3, isLogistics || isLbbjkg || isWxclkg || isXzhqbm);
         } catch (Exception e) {
             log.error("查询采购申请单信息异常", e);
             return null;

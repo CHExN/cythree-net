@@ -18,6 +18,8 @@ public interface WcStoreroomService extends IService<WcStoreroom> {
 
     void deleteWcStorerooms(String[] wcStoreroomIds);
 
+    void deleteAllWcStorerooms(QueryRequest request, WcStoreroom wcStoreroom, ServletRequest servletRequest);
+
     /**
      * 根据公厕ids删除所有分配记录
      * 此删除没有进行物资归还操作，慎用
@@ -35,5 +37,7 @@ public interface WcStoreroomService extends IService<WcStoreroom> {
     void createWcStoreroom(String wcStoreroomStr, BigDecimal amountDist, ServletRequest servletRequest);
 
     void batchInsertWcStoreroom(List<WcStoreroom> wcStoreroomList);
+
+    List<String> getDeleteWcStoreroomIds(QueryRequest request, WcStoreroom wcStoreroom, ServletRequest servletRequest);
 
 }

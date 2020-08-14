@@ -2,6 +2,7 @@ package cc.mrbird.febs.system.controller;
 
 import cc.mrbird.febs.chaoyang3team.service.StoreroomPutService;
 import cc.mrbird.febs.chaoyang3team.service.WcService;
+import cc.mrbird.febs.common.annotation.Limit;
 import cc.mrbird.febs.common.authentication.JWTToken;
 import cc.mrbird.febs.common.authentication.JWTUtil;
 import cc.mrbird.febs.common.domain.ActiveUser;
@@ -55,11 +56,12 @@ public class LoginController {
     @Autowired
     private ObjectMapper mapper;
 
-    @PostMapping("/login")
-//    @Limit(key = "login", period = 60, count = 15, name = "登录接口", prefix = "limit")
+    @PostMapping("login")
+    @Limit(key = "login", period = 60, count = 15, name = "登录接口", prefix = "limit")
     public FebsResponse login(
             @NotBlank(message = "{required}") String username,
-            @NotBlank(message = "{required}") String password, HttpServletRequest request) throws Exception {
+            @NotBlank(message = "{required}") String password,
+            @NotBlank(message = "{required}") String type, HttpServletRequest request) throws Exception {
         //不为null则将字符串转换为小写
         username = StringUtils.lowerCase(username);
         password = MD5Util.encrypt(username, password);
@@ -68,6 +70,8 @@ public class LoginController {
 
         if (user == null)
             throw new FebsException(ERROR);
+        if (!(user.getType().equals(User.TYPE_UNIVERSAL) || user.getType().equals(type)))
+            throw new FebsException("账号非本系统，请切换系统！");
         if (!StringUtils.equals(user.getPassword(), password))
             throw new FebsException(ERROR);
         if (User.STATUS_LOCK.equals(user.getStatus()))
@@ -80,7 +84,7 @@ public class LoginController {
         loginLog.setUsername(username);
         this.loginLogService.saveLoginLog(loginLog);
 
-        String token = FebsUtil.encryptToken(JWTUtil.sign(username, password));
+        String token = FebsUtil.encryptToken(JWTUtil.sign(username, password, type));
         LocalDateTime expireTime = LocalDateTime.now().plusSeconds(43200);
         String expireTimeStr = DateUtil.formatFullTime(expireTime);
 
@@ -93,6 +97,7 @@ public class LoginController {
     }
 
     @GetMapping("loadData")
+    @Limit(key = "loadData", period = 60, count = 15, name = "初始登陆加载数据")
     public FebsResponse index(String year, String date) {
         Map<String, Object> data = new HashMap<>();
         // 获取系统访问记录

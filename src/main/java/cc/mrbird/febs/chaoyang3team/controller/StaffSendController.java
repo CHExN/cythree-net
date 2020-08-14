@@ -182,7 +182,7 @@ public class StaffSendController extends BaseController {
     }
 
     @PostMapping("export")
-    @RequiresPermissions("attributionSend:export")
+    @RequiresPermissions("staffSend:export")
     public void allExport(QueryRequest request, StaffSend staffSend, HttpServletResponse response) throws FebsException {
         try {
             List<StaffSend> staffSends = this.staffSendService.findStaffSendDetail(request, staffSend).getRecords();

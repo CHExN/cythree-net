@@ -23,4 +23,7 @@ public interface WageOutsideService extends IService<WageOutside> {
     void updateWageOutside(WageOutside wage);
 
     void deleteWageOutside(String[] wageIds);
+
+    void deleteAllWageOutside(String year, String month);
+
 }

@@ -19,6 +19,7 @@ import com.wuwenze.poi.handler.ExcelReadHandler;
 import com.wuwenze.poi.pojo.ExcelErrorField;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -56,6 +57,15 @@ public class WcController extends BaseController {
     @Autowired
     private WcStoreroomService storeroomService;
 
+    @GetMapping("test")
+    public void test() throws FebsException {
+        try {
+            this.wcService.test();
+        } catch (Exception e) {
+            throw new FebsException(message);
+        }
+    }
+
     @GetMapping("weChat/wcList")
     public List<Wc> findWcListByPosition(String longitude, String latitude, Integer radius, Integer length) {
         return wcService.findWcListByPosition(longitude, latitude, radius, length);
@@ -88,6 +98,7 @@ public class WcController extends BaseController {
         return wcService.findWcCostAccountByYear(year, up);
     }
 
+    @Log("上次公厕图片")
     @PostMapping("uploadWcPhoto")
     public FebsResponse uploadWcPhoto(@RequestParam("file") MultipartFile file, String wcId) throws FebsException {
         try {
@@ -122,13 +133,13 @@ public class WcController extends BaseController {
     }
 
     @GetMapping("selectOne")
-    @RequiresPermissions("wc:view")
+    @RequiresPermissions(value={"wc:view", "wcCopy:view"}, logical= Logical.OR)
     public Wc selectOne(Long wcId) {
         return this.wcService.selectOne(wcId);
     }
 
     @GetMapping
-    @RequiresPermissions("wc:view")
+    @RequiresPermissions(value={"wc:view", "wcCopy:view"}, logical= Logical.OR)
     public Map<String, Object> wcList(QueryRequest request, Wc wc) {
         return getDataTable(this.wcService.findWcDetail(request, wc));
     }

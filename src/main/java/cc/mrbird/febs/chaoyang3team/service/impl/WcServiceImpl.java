@@ -19,6 +19,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,6 +33,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author CHExN
@@ -222,6 +224,85 @@ public class WcServiceImpl extends ServiceImpl<WcMapper, Wc> implements WcServic
     @Override
     public Wc getWcAndFilesById(Long wcId) {
         return baseMapper.getWcAndFilesById(wcId);
+    }
+
+    @Override
+    public void test() throws Exception {
+        java.io.File folder = new java.io.File("G:\\新建文件夹");
+        if (!folder.exists()) {
+            System.out.println("文件不存在!");
+            return;
+        }
+        java.io.File[] folders = folder.listFiles();
+        assert folders != null;
+        if (folders.length == 0) {
+            System.out.println("文件夹是空的!");
+            return;
+        }
+        List<String> wcNumList = Lists.newArrayList();
+        List<String> wcNumErrorList = Lists.newArrayList();
+        List<Wc> wcList = Lists.newArrayList();
+        for (java.io.File file : folders) {
+            for (java.io.File file1 : file.listFiles()) {
+                String wcNum = file1.getName().substring(8, 21);
+                wcNumList.add(wcNum);
+                /*Wc wcByWcNum = getWcByWcNum(wcNum, false);
+                if (wcByWcNum == null) {
+                    wcNumErrorList.add(wcNum);
+                } else {
+                    wcList.add(wcByWcNum);
+                    for (java.io.File file2 : file1.listFiles()) {
+                        FileInputStream fileInputStream = new FileInputStream(file2);
+                        MultipartFile multipartFile = new MockMultipartFile(file2.getName(), file2.getName(),
+                                ContentType.APPLICATION_OCTET_STREAM.toString(), fileInputStream);
+                        log.info("========================={}====={}=========================", wcByWcNum.getWcName(), wcByWcNum.getWcNum());
+                        uploadWcPhoto(multipartFile, wcByWcNum.getWcId().toString());
+                    }
+                }*/
+            }
+            //if (file.isDirectory()) {
+            //    traverseFolder2(file.getAbsolutePath());
+            //} else {
+            //    System.out.println("文件名:" + file.getName() + "文件夹名:" + folder.getName().substring(0, 13));
+            //}
+        }
+        log.info("文件数量: {}", wcNumList.size());
+        List<String> duplicateElements = getDuplicateElements(wcNumList);
+        List<String> notDuplicateElements = getNotDuplicateElements(wcNumList);
+        log.info("重复数据大小: {}", duplicateElements.size());
+//        log.info("重复数据: {}", duplicateElements);
+        log.info("重复数据大小: {}", notDuplicateElements.size());
+        log.info("重复数据: {}", notDuplicateElements);
+//        log.info("错误公厕编号: {}", wcNumErrorList);
+//        log.info("正确公厕编号数量: {}", wcList.size());
+        for (java.io.File file : folders) {
+            for (java.io.File file1 : file.listFiles()) {
+                String wcNum = file1.getName().substring(8, 21);
+                if (notDuplicateElements.contains(wcNum)) {
+                    System.out.println(file1.delete());
+                }
+            }
+        }
+    }
+
+    public static <E> List<E> getDuplicateElements(List<E> list) {
+        return list.stream() // list 对应的 Stream
+                .collect(Collectors.toMap(e -> e, e -> 1, Integer::sum)) // 获得元素出现频率的 Map，键为元素，值为元素出现的次数
+                .entrySet()
+                .stream() // 所有 entry 对应的 Stream
+                .filter(e -> e.getValue() > 1) // 过滤出元素出现次数大于 1 (重复元素）的 esntry
+                .map(Map.Entry::getKey) // 获得 entry 的键（重复元素）对应的 Stream
+                .collect(Collectors.toList()); // 转化为 List
+    }
+
+    public static <E> List<E> getNotDuplicateElements(List<E> list) {
+        return list.stream() // list 对应的 Stream
+                .collect(Collectors.toMap(e -> e, e -> 1, Integer::sum)) // 获得元素出现频率的 Map，键为元素，值为元素出现的次数
+                .entrySet()
+                .stream() // 所有 entry 对应的 Stream
+                .filter(e -> e.getValue() == 1) // 过滤出元素出现次数大于 1 (重复元素）的 esntry
+                .map(Map.Entry::getKey) // 获得 entry 的键（重复元素）对应的 Stream
+                .collect(Collectors.toList()); // 转化为 List
     }
 
 }

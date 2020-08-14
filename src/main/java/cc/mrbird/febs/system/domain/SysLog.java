@@ -48,4 +48,7 @@ public class SysLog implements Serializable {
     @ExcelField(value = "操作地点")
     private String location;
 
+
+    private String type;
+
 }

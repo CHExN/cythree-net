@@ -1,7 +1,7 @@
 package cc.mrbird.febs.chaoyang3team.service.impl;
 
-import cc.mrbird.febs.chaoyang3team.domain.Water;
 import cc.mrbird.febs.chaoyang3team.dao.WaterMapper;
+import cc.mrbird.febs.chaoyang3team.domain.Water;
 import cc.mrbird.febs.chaoyang3team.domain.WcWater;
 import cc.mrbird.febs.chaoyang3team.service.WaterService;
 import cc.mrbird.febs.chaoyang3team.service.WcWaterService;
@@ -17,8 +17,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -47,19 +47,28 @@ public class WaterServiceImpl extends ServiceImpl<WaterMapper, Water> implements
     @Override
     @Transactional
     public void createWater(Water water) {
-        water.setCreateDate(new Date());
+        water.setCreateTime(LocalDateTime.now());
         if (water.getMonth().length() == 1) water.setMonth("0" + water.getMonth());
-        this.save(water);
-        this.wcWaterService.createWcWater(new WcWater(water.getWcId(), water.getWaterId()));
+        // 根据年月和公厕id查询水费信息id，如果有就说明已经有此数据，就做更新操作，没有就新增
+        Long waterId = this.baseMapper.findWaterIdByDateAndWcId(
+                water.getYear(), water.getMonth(), water.getWcId(), water.getTotalAmount());
+        if (waterId != null && waterId > 0) {
+            water.setWaterId(waterId);
+            this.updateWater(water);
+        } else {
+            this.save(water);
+            this.wcWaterService.createWcWater(new WcWater(water.getWcId(), water.getWaterId()));
+        }
     }
 
     @Override
     @Transactional
     public void updateWater(Water water) {
+        water.setModifyTime(LocalDateTime.now());
         this.baseMapper.updateById(water);
         if (water.getWcId() != null) {
             // 先删除，后重新添加
-            this.wcWaterService.deleteByWaterId(water.getWaterId().toString().split(","));
+            this.wcWaterService.deleteByWaterId(new String[]{water.getWaterId().toString()});
             this.wcWaterService.createWcWater(new WcWater(water.getWcId(), water.getWaterId()));
         }
     }

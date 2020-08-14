@@ -4,6 +4,28 @@
 
     <select id="findWcStoreroomDetail" resultType="cc.mrbird.febs.chaoyang3team.domain.WcStoreroom">
         SELECT
+        <include refid="result"/>
+        FROM p_wc_storeroom AS ws
+        LEFT JOIN cy_wc AS w ON(w.WC_ID=ws.WC_ID)
+        LEFT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID)
+        LEFT JOIN cy_unit_conversion AS cuc ON ( cuc.STOREROOM_ID = s.ID )
+        WHERE (ws.`YEAR`=#{wcStoreroom.yearForm} AND FIND_IN_SET(ws.`MONTH`,#{wcStoreroom.monthForm}))
+        <include refid="param"/>
+        GROUP BY ws.STOREROOM_ID,ws.WC_ID,ws.`YEAR`,ws.`MONTH`,ws.`DAY` DESC
+    </select>
+    <select id="getDeleteWcStoreroomIds" resultType="java.lang.String">
+        SELECT
+        ws.ID
+        FROM p_wc_storeroom AS ws
+        LEFT JOIN cy_wc AS w ON(w.WC_ID=ws.WC_ID)
+        LEFT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID)
+        LEFT JOIN cy_unit_conversion AS cuc ON ( cuc.STOREROOM_ID = s.ID )
+        WHERE (ws.`YEAR`=#{wcStoreroom.yearForm} AND FIND_IN_SET(ws.`MONTH`,#{wcStoreroom.monthForm}))
+        <include refid="param"/>
+        GROUP BY ws.STOREROOM_ID,ws.WC_ID,ws.`YEAR`,ws.`MONTH`,ws.`DAY` DESC
+    </select>
+
+    <sql id="result">
         w.WC_NAME,
         w.WC_NUM,
         s.`NAME`,
@@ -20,12 +42,9 @@
         ws.STOREROOM_ID,
         ws.USERNAME,
         ws.WC_OWN,
-        ws.CREATE_TIME
-        FROM p_wc_storeroom AS ws
-        LEFT JOIN cy_wc AS w ON(w.WC_ID=ws.WC_ID)
-        LEFT JOIN cy_storeroom AS s ON(s.ID=ws.STOREROOM_ID)
-        LEFT JOIN cy_unit_conversion AS cuc ON ( cuc.STOREROOM_ID = s.ID )
-        WHERE (ws.`YEAR`=#{wcStoreroom.yearForm} AND FIND_IN_SET(ws.`MONTH`,#{wcStoreroom.monthForm}))
+        ws.CREATE_TIME AS createTime
+	</sql>
+    <sql id="param">
         <if test="wcStoreroom.username != null and wcStoreroom.username != ''">
             AND ws.USERNAME LIKE CONCAT('%',#{wcStoreroom.username},'%')
         </if>
@@ -41,14 +60,16 @@
         <if test="wcStoreroom.typeApplication != null and wcStoreroom.typeApplication != ''">
             AND FIND_IN_SET(s.TYPE_APPLICATION, #{wcStoreroom.typeApplication})
         </if>
-        <if test="wcStoreroom.name != null and wcStoreroom.name != ''">
+        <!--<if test="wcStoreroom.name != null and wcStoreroom.name != ''">
             AND s.NAME LIKE CONCAT('%',#{wcStoreroom.name},'%')
+        </if>-->
+        <if test="wcStoreroom.name != null and wcStoreroom.name != ''">
+            <foreach collection="wcStoreroom.names" index="index" item="item" open="AND (" separator="OR" close=")">
+                s.NAME LIKE CONCAT('%',#{item},'%')
+            </foreach>
         </if>
         <if test="wcStoreroom.createTimeFrom != null and wcStoreroom.createTimeFrom !='' and wcStoreroom.createTimeTo!= null and wcStoreroom.createTimeTo !=''">
             AND ws.CREATE_TIME &gt;= #{wcStoreroom.createTimeFrom} AND ws.CREATE_TIME &lt;= #{wcStoreroom.createTimeTo}
         </if>
-        GROUP BY ws.STOREROOM_ID,ws.WC_ID,ws.`YEAR`,ws.`MONTH`,ws.`DAY` DESC
-    </select>
-
-
+    </sql>
 </mapper>

@@ -29,7 +29,6 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.IntStream;
@@ -120,12 +119,11 @@ public class WaterController extends BaseController {
             Water water = new Water();
             water.setWcNum("公厕编号后四位" + (i + 1));
             water.setActualAmount(new BigDecimal(Math.random() * (100 - 20) + 20).setScale(2, BigDecimal.ROUND_DOWN));
-            water.setUnitPrice(new BigDecimal(Math.random() * (100 - 20) + 20).setScale(2, BigDecimal.ROUND_DOWN));
+            // water.setUnitPrice(new BigDecimal(Math.random() * (100 - 20) + 20).setScale(2, BigDecimal.ROUND_DOWN));
             water.setTapWaterFee(new BigDecimal(Math.random() * (100 - 20) + 20).setScale(2, BigDecimal.ROUND_DOWN));
             water.setWaterResourcesFee(new BigDecimal(Math.random() * (100 - 20) + 20).setScale(2, BigDecimal.ROUND_DOWN));
             water.setSewageFee(new BigDecimal(Math.random() * (100 - 20) + 20).setScale(2, BigDecimal.ROUND_DOWN));
             water.setTotalAmount(new BigDecimal(Math.random() * (100 - 20) + 20).setScale(2, BigDecimal.ROUND_DOWN));
-            water.setCreateDate(new Date());
             list.add(water);
         });
         // 构建模板
@@ -156,7 +154,7 @@ public class WaterController extends BaseController {
                 @Override
                 public void onSuccess(int sheetIndex, int rowIndex, WaterImport entity) {
                     // 数据校验成功时，加入集合
-                    String wcNum = entity.getWcNum().trim();
+                    String wcNum = String.format("%04d", Integer.valueOf(entity.getWcNum().trim()));
                     Long wcId = wcService.getWcIdByWcNum(wcNum, true);
                     if (wcId == null) {
                         List<ExcelErrorField> errorFields = new ArrayList<>();
@@ -173,7 +171,8 @@ public class WaterController extends BaseController {
                         water.setWcId(wcId);
                         water.setWcNum(wcNum);
                         water.setActualAmount(entity.getActualAmount());
-                        water.setUnitPrice(entity.getUnitPrice());
+                        // water.setUnitPrice(entity.getUnitPrice());
+                        water.setUnitPrice(entity.getTotalAmount().divide(entity.getActualAmount() ,4, BigDecimal.ROUND_HALF_UP));
                         water.setTapWaterFee(entity.getTapWaterFee());
                         water.setWaterResourcesFee(entity.getWaterResourcesFee());
                         water.setSewageFee(entity.getSewageFee());

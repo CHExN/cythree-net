@@ -33,6 +33,7 @@ public class ContractInsideServiceImpl extends ServiceImpl<ContractInsideMapper,
 
     @Override
     public IPage<ContractInside> findContractInsideDetail(QueryRequest request, ContractInside contractInside) {
+        System.out.println("2020-08-27");
         try {
             Page<ContractInside> page = new Page<>();
             SortUtil.handlePageSort(request, page, "IS_LEAVE ASC, sortNum", FebsConstant.ORDER_ASC, false);

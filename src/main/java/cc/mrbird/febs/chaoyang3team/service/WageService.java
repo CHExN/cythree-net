@@ -24,4 +24,6 @@ public interface WageService extends IService<Wage> {
 
     void deleteWage(String[] wageIds);
 
+    void deleteAllWage(String year, String month);
+
 }

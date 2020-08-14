@@ -4,6 +4,7 @@ package cc.mrbird.febs.chaoyang3team.controller;
 import cc.mrbird.febs.chaoyang3team.domain.Attendance;
 import cc.mrbird.febs.chaoyang3team.domain.AttendanceImport;
 import cc.mrbird.febs.chaoyang3team.domain.StaffOutside;
+import cc.mrbird.febs.chaoyang3team.service.AttendanceFileService;
 import cc.mrbird.febs.chaoyang3team.service.AttendanceService;
 import cc.mrbird.febs.chaoyang3team.service.StaffOutsideService;
 import cc.mrbird.febs.common.annotation.Log;
@@ -58,11 +59,18 @@ public class AttendanceController extends BaseController {
     private StaffOutsideService staffOutsideService;
     @Autowired
     private UserManager userManager;
+    @Autowired
+    private AttendanceFileService attendanceFileService;
+
+    @GetMapping("attendanceImage")
+    public FebsResponse findFilesByWcId(String year, String month) {
+        return this.attendanceFileService.findFilesByYearMonth(year, month);
+    }
 
     @GetMapping
     @RequiresPermissions("attendance:view")
-    public Map<String, Object> attendanceList(QueryRequest request, Attendance attendance) {
-        return getDataTable(this.attendanceService.findAttendanceDetail(request, attendance));
+    public Map<String, Object> attendanceList(QueryRequest request, Attendance attendance, ServletRequest servletRequest) {
+        return getDataTable(this.attendanceService.findAttendanceDetail(request, attendance, servletRequest));
     }
 
     @Log("新增考勤信息")
@@ -108,8 +116,33 @@ public class AttendanceController extends BaseController {
     @Log("考勤汇总报表")
     @GetMapping("report")
     @RequiresPermissions("attendance:export")
-    public List<Attendance> AttendanceReport(String date) {
+    public List<Attendance> attendanceReport(String date) {
         return this.attendanceService.getAttendanceReport(date);
+    }
+
+    @Log("删除考勤信息文件")
+    @DeleteMapping("/deleteFile/{fileIds}")
+    public void deleteWcFile(@NotBlank(message = "{required}") @PathVariable String fileIds) throws FebsException {
+        try {
+            String[] ids = fileIds.split(StringPool.COMMA);
+            this.attendanceService.deleteAttendanceFile(ids);
+        } catch (Exception e) {
+            message = "删除考勤信息文件失败";
+            log.error(message, e);
+            throw new FebsException(message);
+        }
+    }
+
+    @Log("上次考勤信息图片")
+    @PostMapping("uploadAttendanceImage")
+    public FebsResponse uploadAttendanceImage(@RequestParam("file") MultipartFile file, String year, String month) throws FebsException {
+        try {
+            return this.attendanceService.uploadAttendanceImage(file, year, month);
+        } catch (Exception e) {
+            message = "上传考勤信息图片失败";
+            log.error(message, e);
+            throw new FebsException(message);
+        }
     }
 
     /**
@@ -171,7 +204,40 @@ public class AttendanceController extends BaseController {
             User user = this.userManager.getUser(username);
             final Long deptId = user.getDeptId();
             ExcelKit.$Import(AttendanceImport.class).readXlsx(file.getInputStream(), new ExcelReadHandler<AttendanceImport>() {
+/*
 
+id=1966, isPut=2, num=固定资产2020-14, date=2020-07-21, toDeptId=43, toDeptName=null, money=4500.00, storage=null, handle=null,
+typeApplication=5, typeApplicationAuthority=null, username=xzhqbm, createTime=2020-07-21T09:14:26.581, modifyTime=null, supplier=1,
+{"id":7758,"name":"衣柜","type":"","unit":"组","amount":3,"remark":"","receipt":"","money":1500,"typeApplication":"5","isIn":"0","toDeptName":null,"toDeptIds":null,"supplier":"1","storeroomCount":45,"putNum":"固定资产2020-03","outNum":null,"unitConversion":null}], count=null)"
+
+id=1964, isPut=2, num=固定资产2020-13, date=2020-07-20, toDeptId=40, toDeptName=null, money=7500.00, storage=null, handle=null,
+typeApplication=5, typeApplicationAuthority=null, username=xzhqbm, createTime=2020-07-21T08:32:55.647, modifyTime=null, supplier=1,
+{"id":7758,"name":"衣柜","type":"","unit":"组","amount":5,"remark":"","receipt":"","money":1500,"typeApplication":"5","isIn":"0","toDeptName":null,"toDeptIds":null,"supplier":"1","storeroomCount":50,"putNum":"固定资产2020-03","outNum":null,"unitConversion":null}], count=null)"
+
+id=1963, isPut=2, num=固定资产2020-13, date=2020-07-20, toDeptId=40, toDeptName=null, money=8400.00, storage=null, handle=null,
+typeApplication=5, typeApplicationAuthority=null, username=xzhqbm, createTime=2020-07-21T08:28:29.751, modifyTime=null, supplier=1,
+{"id":7759,"name":"写字台","type":"","unit":"个","amount":8,"remark":"","receipt":"","money":1050,"typeApplication":"5","isIn":"0","toDeptName":null,"toDeptIds":null,"supplier":"1","storeroomCount":39,"putNum":"固定资产2020-03","outNum":null,"unitConversion":null}], count=null)"
+
+id=1978, isPut=2, num=固定资产2020-14, date=2020-07-21, toDeptId=43, toDeptName=null, money=6000.00, storage=null, handle=null,
+typeApplication=5, typeApplicationAuthority=null, username=xzhqbm, createTime=2020-07-22T08:52:00.879, modifyTime=null, supplier=1,
+{"id":7758,"name":"衣柜","type":"","unit":"组","amount":4,"remark":"","receipt":"","money":1500,"typeApplication":"5","isIn":"0","toDeptName":null,"toDeptIds":null,"supplier":"1","storeroomCount":45,"putNum":"固定资产2020-03","outNum":null,"unitConversion":null}], count=null)"
+
+id=1965, isPut=2, num=固定资产2020-14, date=2020-07-21, toDeptId=43, toDeptName=null, money=3150.00, storage=null, handle=null,
+typeApplication=5, typeApplicationAuthority=null, username=xzhqbm, createTime=2020-07-21T09:13:54.101, modifyTime=null, supplier=1,
+{"id":7759,"name":"写字台","type":"","unit":"个","amount":3,"remark":"","receipt":"","money":1050,"typeApplication":"5","isIn":"0","toDeptName":null,"toDeptIds":null,"supplier":"1","storeroomCount":31,"putNum":"固定资产2020-03","outNum":null,"unitConversion":null}], count=null)"
+
+id=1979, isPut=2, num=固定资产2020-12, date=2020-07-07, toDeptId=27, toDeptName=null, money=13650.00, storage=null, handle=null,
+typeApplication=5, typeApplicationAuthority=null, username=xzhqbm, createTime=2020-07-22T09:00:12.766, modifyTime=null, supplier=1,
+{"id":7759,"name":"写字台","type":"","unit":"个","amount":6,"remark":"","receipt":"","money":1050,"typeApplication":"5","isIn":"0","toDeptName":null,"toDeptIds":null,"supplier":"1","storeroomCount":36,"putNum":"固定资产2020-03","outNum":null,"unitConversion":null},
+{"id":7758,"name":"衣柜","type":"","unit":"组","amount":4,"remark":"","receipt":"","money":1500,"typeApplication":"5","isIn":"0","toDeptName":null,"toDeptIds":null,"supplier":"1","storeroomCount":46,"putNum":"固定资产2020-03","outNum":null,"unitConversion":null},
+{"id":7534,"name":"沙发床","type":"","unit":"张","amount":1,"remark":"","receipt":"","money":1350,"typeApplication":"5","isIn":"0","toDeptName":null,"toDeptIds":null,"supplier":"1","storeroomCount":50,"putNum":"固定资产2020-02","outNum":null,"unitConversion":null}], count=null)"
+
+id=1980, isPut=2, num=固定资产2020-14, date=2020-07-17, toDeptId=40, toDeptName=null, money=20400.00, storage=null, handle=null,
+typeApplication=5, typeApplicationAuthority=null, username=xzhqbm, createTime=2020-07-22T09:02:33.199, modifyTime=null, supplier=1,
+{"id":7759,"name":"写字台","type":"","unit":"个","amount":8,"remark":"","receipt":"","money":1050,"typeApplication":"5","isIn":"0","toDeptName":null,"toDeptIds":null,"supplier":"1","storeroomCount":30,"putNum":"固定资产2020-03","outNum":null,"unitConversion":null},
+{"id":7758,"name":"衣柜","type":"","unit":"组","amount":8,"remark":"","receipt":"","money":1500,"typeApplication":"5","isIn":"0","toDeptName":null,"toDeptIds":null,"supplier":"1","storeroomCount":42,"putNum":"固定资产2020-03","outNum":null,"unitConversion":null}], count=null)"
+
+ */
                 @Override
                 public void onSuccess(int sheetIndex, int rowIndex, AttendanceImport entity) {
                     // 数据校验成功时，加入集合

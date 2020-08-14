@@ -1,9 +1,6 @@
 package cc.mrbird.febs.common.service;
 
-import cc.mrbird.febs.system.domain.Menu;
-import cc.mrbird.febs.system.domain.Role;
-import cc.mrbird.febs.system.domain.User;
-import cc.mrbird.febs.system.domain.UserConfig;
+import cc.mrbird.febs.system.domain.*;
 
 import java.util.List;
 

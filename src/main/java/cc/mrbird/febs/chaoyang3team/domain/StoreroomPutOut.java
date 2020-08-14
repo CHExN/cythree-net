@@ -51,13 +51,6 @@ public class StoreroomPutOut implements Serializable {
     private transient String toDeptName;
 
     /**
-     * 对方科目
-     */
-    @TableField("OTHER_SIDE_DEPT_ID")
-    private Long otherSideDeptId;
-    private transient String otherSideDeptName;
-
-    /**
      * 总价
      */
     @TableField("MONEY")

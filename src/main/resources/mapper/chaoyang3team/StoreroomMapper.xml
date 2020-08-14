@@ -124,40 +124,6 @@
         </if>
     </select>
 
-    <select id="getOfficeSuppliesByDate" resultType="cc.mrbird.febs.chaoyang3team.domain.Storeroom">
-        /*SELECT
-        s.`NAME`,
-        s.TYPE,
-        s.AMOUNT,
-        s.UNIT,
-        s.REMARK,
-        s.MONEY,
-        s.RECEIPT,
-        s.DATE,
-        s.TYPE_APPLICATION,
-        s.SUPPLIER,
-        d.DEPT_NAME AS toDeptName
-        FROM cy_storeroom AS s
-        LEFT JOIN p_storeroom_out AS so ON(so.STOREROOM_ID=s.ID)
-        LEFT JOIN cy_storeroom_put_out AS spo ON(spo.ID=so.OUT_ID)
-        LEFT JOIN t_dept AS d ON(d.DEPT_ID=spo.TO_DEPT_ID)
-        WHERE spo.TYPE_APPLICATION=3 AND spo.IS_PUT=2*/
-        SELECT
-        cp.`NAME`,
-        cp.TYPE,
-        cp.AMOUNT,
-        cp.UNIT,
-        cp.REMARK,
-        ca.CREATE_DATE,
-        td.DEPT_NAME AS toDeptName
-        FROM cy_application AS ca
-        LEFT JOIN p_application_plan AS pap ON (pap.APPLICATION_ID = ca.ID)
-        LEFT JOIN cy_plan AS cp ON (cp.ID = pap.PLAN_ID)
-        LEFT JOIN t_dept AS td ON(td.DEPT_ID=ca.DEPT_ID)
-        WHERE ca.TYPE_APPLICATION = 3
-        AND ca.CREATE_DATE LIKE CONCAT(#{date},'%')
-    </select>
-
     <select id="getCanteenByDate" resultType="cc.mrbird.febs.chaoyang3team.domain.Storeroom">
         SELECT
         c.`NAME` AS name,
@@ -230,6 +196,20 @@
         WHERE FIND_IN_SET(s.ID,#{ids}) OR FIND_IN_SET(s.PARENT_ID,#{ids})
     </select>
 
+    <!--cs.ID,
+    cs.`NAME`,
+    cs.TYPE,
+    cs.AMOUNT,
+    cs.UNIT,
+    cs.REMARK,
+    cs.MONEY,
+    cs.RECEIPT,
+    cs.DATE,
+    cs.TYPE_APPLICATION,
+    cs.SUPPLIER,
+    cs.IS_IN,
+    cs.PARENT_ID,
+    cspo.NUM AS putNum-->
     <select id="findStoreroomsItemDetails" resultType="cc.mrbird.febs.chaoyang3team.domain.Storeroom">
         SELECT
         cs.ID,
@@ -237,9 +217,7 @@
         cs.TYPE,
         cs.AMOUNT,
         cs.UNIT,
-        cs.REMARK,
         cs.MONEY,
-        cs.RECEIPT,
         cs.DATE,
         cs.TYPE_APPLICATION,
         cs.SUPPLIER,
@@ -303,12 +281,37 @@
         cs.IS_IN,
         cs.PARENT_ID,
         td.DEPT_NAME AS toDeptName,
-        cspo.NUM AS outNum
+        cso.NUM AS outNum
         FROM cy_storeroom  AS cs
-        LEFT JOIN p_storeroom_out AS pso ON(pso.STOREROOM_ID=cs.ID)
-        LEFT JOIN cy_storeroom_put_out AS cspo ON(cspo.ID=pso.OUT_ID)
-        LEFT JOIN t_dept AS td ON td.DEPT_ID = cspo.TO_DEPT_ID
+        LEFT JOIN p_storeroom_out AS pso ON ( pso.STOREROOM_ID = cs.ID )
+        LEFT JOIN cy_storeroom_put_out AS cso ON ( cso.ID = pso.OUT_ID )
+        LEFT JOIN t_dept AS td ON td.DEPT_ID = cso.TO_DEPT_ID
         WHERE cs.PARENT_ID=#{parentId} AND (cs.ID=#{id})=0
+        ORDER BY cs.DATE
     </select>
-
+    <!--SELECT
+    cs.ID,
+    cs.`NAME`,
+    cs.TYPE,
+    cs.AMOUNT,
+    cs.UNIT,
+    cs.REMARK,
+    cs.MONEY,
+    cs.RECEIPT,
+    cs.DATE,
+    cs.TYPE_APPLICATION,
+    cs.SUPPLIER,
+    cs.IS_IN,
+    cs.PARENT_ID,
+    td.DEPT_NAME AS toDeptName,
+    csp.NUM AS putNum,
+    cso.NUM AS outNum
+    FROM cy_storeroom  AS cs
+    LEFT JOIN p_storeroom_put as psp on (psp.STOREROOM_ID = cs.id)
+    LEFT JOIN cy_storeroom_put_out as csp on (csp.id = psp.PUT_ID)
+    LEFT JOIN p_storeroom_out AS pso ON ( pso.STOREROOM_ID = cs.ID )
+    LEFT JOIN cy_storeroom_put_out AS cso ON ( cso.ID = pso.OUT_ID )
+    LEFT JOIN t_dept AS td ON td.DEPT_ID = cso.TO_DEPT_ID
+    WHERE FIND_IN_SET(cs.IS_IN, '1,2') AND cs.`NAME` = #{name} AND cs.TYPE = #{type}
+    ORDER BY cs.DATE-->
 </mapper>

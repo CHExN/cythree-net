@@ -55,6 +55,6 @@ public interface StoreroomPutOutMapper extends BaseMapper<StoreroomPutOut> {
      * 根据出库单里面的物资ids把物资数量返还到库房里
      * @param storeroomIdsStr 出库单的物资ids
      */
-    void returnStoreroomAmountByOutIds(String storeroomIdsStr);
+    void returnStoreroomAmountByStoreroomIds(String storeroomIdsStr);
 
 }

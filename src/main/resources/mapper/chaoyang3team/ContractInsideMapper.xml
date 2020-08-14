@@ -22,9 +22,11 @@
         WHERE FIND_IN_SET(csi.IS_LEAVE, #{contractInside.isLeave})
         <choose>
             <when test="contractInside.deleted !=null and contractInside.deleted != ''">
+                AND csi.DELETED = #{contractInside.deleted}
                 AND cci.DELETED = #{contractInside.deleted}
             </when>
             <otherwise>
+                AND csi.DELETED=0
                 AND cci.DELETED=0
             </otherwise>
         </choose>

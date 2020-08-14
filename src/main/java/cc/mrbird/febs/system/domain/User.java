@@ -10,7 +10,6 @@ import com.wuwenze.poi.annotation.ExcelField;
 import lombok.Data;
 
 import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
@@ -30,6 +29,9 @@ public class User implements Serializable {
     public static final String STATUS_LOCK = "0";
 
     public static final String DEFAULT_AVATAR = "default.jpg";
+
+    public static final String TYPE_UNIVERSAL = "0";
+
 
     /**
      * 性别
@@ -66,7 +68,7 @@ public class User implements Serializable {
     @ExcelField(value = "手机号")
     private String mobile;
 
-    @NotBlank(message = "{required}")
+//    @NotBlank(message = "{required}")
     @ExcelField(value = "状态", writeConverterExp = "0=锁定,1=有效")
     private String status;
 
@@ -78,7 +80,7 @@ public class User implements Serializable {
     @ExcelField(value = "最后登录时间", writeConverter = TimeConverter.class)
     private Date lastLoginTime;
 
-    @NotBlank(message = "{required}")
+//    @NotBlank(message = "{required}")
     @ExcelField(value = "性别", writeConverterExp = "0=男,1=女,2=保密")
     private String ssex;
 
@@ -88,7 +90,10 @@ public class User implements Serializable {
 
     private String avatar;
 
-    @NotBlank(message = "{required}")
+    @ExcelField(value = "账号类型", writeConverterExp = "0=通用,1=成本核算,2=小程序")
+    private String type;
+
+//    @NotBlank(message = "{required}")
     private transient String roleId;
     @ExcelField(value = "角色")
     private transient String roleName;

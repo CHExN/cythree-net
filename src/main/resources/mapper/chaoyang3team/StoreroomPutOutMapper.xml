@@ -159,11 +159,15 @@
 		WHERE FIND_IN_SET(cspo.ID, #{storeroomPutIdStr})
     </update>
 
-    <update id="returnStoreroomAmountByOutIds">
-        UPDATE cy_storeroom AS cs
+    <update id="returnStoreroomAmountByStoreroomIds">
+        UPDATE (
+            SELECT cs.id,SUM(cs.AMOUNT) AS AMOUNT,cs.PARENT_ID
+            FROM cy_storeroom AS cs
+            WHERE FIND_IN_SET(cs.ID, #{storeroomIdsStr})
+            GROUP BY cs.PARENT_ID
+        ) AS cs
         LEFT JOIN cy_storeroom AS cs2 ON(cs2.ID=cs.PARENT_ID)
         SET cs2.AMOUNT=(cs2.AMOUNT+cs.AMOUNT)
-        WHERE FIND_IN_SET(cs.ID, #{storeroomIdsStr})
     </update>
 
 </mapper>

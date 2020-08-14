@@ -10,7 +10,7 @@ import lombok.Data;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 /**
  * @author CHExN
@@ -49,7 +49,6 @@ public class Water implements Serializable {
     private BigDecimal actualAmount;
 
     @TableField("UNIT_PRICE")
-    @ExcelField(value = "单价(元/吨)")
     private BigDecimal unitPrice;
 
     @TableField("TAP_WATER_FEE")
@@ -68,10 +67,20 @@ public class Water implements Serializable {
     @ExcelField(value = "金额合计")
     private BigDecimal totalAmount;
 
-    @TableField("CREATE_DATE")
-    private Date createDate;
-
+    /**
+     * 创建时间
+     */
+    @TableField("CREATE_TIME")
+    private LocalDateTime createTime;
     private transient String createTimeFrom;
     private transient String createTimeTo;
+
+    /**
+     * 修改时间
+     */
+    @TableField("MODIFY_TIME")
+    private LocalDateTime modifyTime;
+    private transient String modifyTimeFrom;
+    private transient String modifyTimeTo;
 
 }

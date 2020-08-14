@@ -8,6 +8,7 @@ import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 /**
@@ -64,9 +65,16 @@ public class BilateralMeeting implements Serializable {
     /**
      * 上会时间
      */
-    @TableField("MEETING_TIME")
+    /*@TableField("MEETING_TIME")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime meetingTime;
+    private LocalDateTime meetingTime;*/
+
+    /**
+     * 上会时间
+     */
+    @TableField("APPLICATION_DATE")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private LocalDate applicationDate;
 
     /**
      * 处理状态 1算是审核通过 -1是不通过 0是正在审核

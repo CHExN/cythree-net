@@ -53,6 +53,9 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
                         .ge(Role::getCreateTime, role.getCreateTimeFrom())
                         .le(Role::getCreateTime, role.getCreateTimeTo());
             }
+            if (StringUtils.isNotBlank(role.getType())) {
+                queryWrapper.eq(Role::getType, role.getType());
+            }
             Page<Role> page = new Page<>();
             SortUtil.handlePageSort(request, page, true);
             return this.page(page,queryWrapper);
@@ -63,8 +66,12 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
     }
 
     @Override
-    public List<Role> allRole(){
-        return this.baseMapper.selectList(null);
+    public List<Role> getRole(String type){
+        LambdaQueryWrapper<Role> queryWrapper = new LambdaQueryWrapper<>();
+        if (StringUtils.isNotBlank(type) && !type.equals("0")) {
+            queryWrapper.eq(Role::getType, type);
+        }
+        return baseMapper.selectList(queryWrapper);
     }
 
     @Override

@@ -86,6 +86,7 @@ public class WcStoreroom implements Serializable {
     private transient String wcName;
     private transient String wcNum;
     private transient String name;
+    private transient String[] names;
     private transient String typeApplication;
     private transient BigDecimal money;
     private transient String unit;

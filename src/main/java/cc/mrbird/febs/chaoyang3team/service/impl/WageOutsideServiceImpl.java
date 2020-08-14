@@ -5,6 +5,7 @@ import cc.mrbird.febs.chaoyang3team.domain.WageOutside;
 import cc.mrbird.febs.chaoyang3team.service.WageOutsideService;
 import cc.mrbird.febs.common.domain.QueryRequest;
 import cc.mrbird.febs.common.utils.SortUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -127,6 +128,12 @@ public class WageOutsideServiceImpl extends ServiceImpl<WageOutsideMapper, WageO
     public void deleteWageOutside(String[] wageOutsideIds) {
         List<String> ids = Arrays.asList(wageOutsideIds);
         this.baseMapper.deleteBatchIds(ids);
+    }
+
+    @Override
+    @Transactional
+    public void deleteAllWageOutside(String year, String month) {
+        this.baseMapper.delete(new LambdaQueryWrapper<WageOutside>().eq(WageOutside::getYear, year).eq(WageOutside::getMonth, month));
     }
 
 }

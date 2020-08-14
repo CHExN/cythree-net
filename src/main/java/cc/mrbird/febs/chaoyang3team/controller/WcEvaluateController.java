@@ -49,7 +49,6 @@ public class WcEvaluateController extends BaseController {
     @PostMapping("/weChat/add")
     public void addWcEvaluate(@Valid WcEvaluate wcEvaluate) throws FebsException {
         try {
-            System.out.println(wcEvaluate);
             this.wcEvaluateService.createWcEvaluate(wcEvaluate);
         } catch (Exception e) {
             message = "新增公厕评价/投诉失败";

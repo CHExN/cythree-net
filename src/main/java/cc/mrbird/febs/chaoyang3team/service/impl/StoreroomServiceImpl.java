@@ -328,11 +328,6 @@ public class StoreroomServiceImpl extends ServiceImpl<StoreroomMapper, Storeroom
     }
 
     @Override
-    public List<Storeroom> getOfficeSuppliesByDate(String date) {
-        return this.baseMapper.getOfficeSuppliesByDate(date);
-    }
-
-    @Override
     public List<Storeroom> getCanteenByDate(String date, String dateRangeFrom, String dateRangeTo) {
         return this.baseMapper.getCanteenByDate(date, dateRangeFrom, dateRangeTo);
     }

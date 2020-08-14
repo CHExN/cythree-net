@@ -31,14 +31,6 @@ public interface StoreroomMapper extends BaseMapper<Storeroom> {
     List<Storeroom> findStoreroomByIdAndParentId(String ids);
 
     /**
-     * 根据年月查询已出库的办公用品
-     *
-     * @param date 年月
-     * @return 办公用品
-     */
-    List<Storeroom> getOfficeSuppliesByDate(String date);
-
-    /**
      * 根据年月查询已出库的食堂用品
      *
      * @param date 年月

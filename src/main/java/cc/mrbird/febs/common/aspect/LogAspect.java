@@ -59,9 +59,14 @@ public class LogAspect {
             if (StringUtils.isNotBlank(token)) {
                 username = JWTUtil.getUsername(token);
             }
+            String systemType = "";
+            if (StringUtils.isNotBlank(token)) {
+                systemType = JWTUtil.getSystemType(token);
+            }
 
             SysLog log = new SysLog();
             log.setUsername(username);
+            log.setType(systemType);
             log.setIp(ip);
             log.setTime(time);
             logService.saveLog(point, log);

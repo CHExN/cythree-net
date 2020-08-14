@@ -24,8 +24,8 @@ public class WaterImport implements Serializable {
     @ExcelField(value = "实际用量", required = true, validator = NumericValidator.class, comment = "请填写浮点数或者整数")
     private BigDecimal actualAmount;
 
-    @ExcelField(value = "单价(元/吨)", required = true, validator = NumericValidator.class, comment = "请填写浮点数或者整数")
-    private BigDecimal unitPrice;
+    /*@ExcelField(value = "单价(元/吨)", required = true, validator = NumericValidator.class, comment = "请填写浮点数或者整数")
+    private BigDecimal unitPrice;*/
 
     @ExcelField(value = "自来水费", required = true, validator = NumericValidator.class, comment = "请填写浮点数或者整数")
     private BigDecimal tapWaterFee;

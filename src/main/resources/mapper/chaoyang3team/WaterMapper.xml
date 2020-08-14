@@ -16,7 +16,8 @@
         w.WATER_RESOURCES_FEE AS waterResourcesFee,
         w.SEWAGE_FEE AS sewageFee,
         w.TOTAL_AMOUNT AS totalAmount,
-        w.CREATE_DATE AS createDate
+        w.CREATE_TIME AS createTime,
+        w.MODIFY_TIME AS modifyTime
         FROM cy_water AS w
         LEFT JOIN p_wc_water AS ww ON(ww.WATER_ID=w.WATER_ID)
         LEFT JOIN cy_wc AS wc ON(wc.WC_ID=ww.WC_ID)
@@ -34,10 +35,24 @@
             AND FIND_IN_SET(w.`MONTH`, #{water.month})
         </if>
         <if test="water.createTimeFrom != null and water.createTimeFrom !=''">
-            AND w.CREATE_DATE &gt;= #{water.createTimeFrom}
+            AND w.CREATE_TIME &gt;= #{water.createTimeFrom}
         </if>
         <if test="water.createTimeTo!= null and water.createTimeTo !=''">
-            AND w.CREATE_DATE &lt;= #{water.createTimeTo}
+            AND w.CREATE_TIME &lt;= #{water.createTimeTo}
         </if>
+        <if test="water.modifyTimeFrom != null and water.modifyTimeFrom !=''">
+            AND w.MODIFY_TIME &gt;= #{water.modifyTimeFrom}
+        </if>
+        <if test="water.modifyTimeTo!= null and water.modifyTimeTo !=''">
+            AND w.MODIFY_TIME &lt;= #{water.modifyTimeTo}
+        </if>
+    </select>
+
+    <select id="findWaterIdByDateAndWcId" resultType="java.lang.Long">
+        SELECT cw.WATER_ID, cw.YEAR, cw.MONTH
+        FROM cy_water AS cw
+        LEFT JOIN p_wc_water AS pww ON(pww.WATER_ID = cw.WATER_ID)
+        WHERE pww.WC_ID=#{wcId} AND cw.YEAR = #{year} AND cw.MONTH = #{month} AND cw.TOTAL_AMOUNT = #{totalAmount}
+        LIMIT 1
     </select>
 </mapper>

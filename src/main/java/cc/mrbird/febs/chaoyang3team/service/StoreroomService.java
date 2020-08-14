@@ -56,8 +56,6 @@ public interface StoreroomService extends IService<Storeroom> {
 
     void deleteOutStorerooms(String[] storeroomIds);
 
-    List<Storeroom> getOfficeSuppliesByDate(String date);
-
     List<Storeroom> getCanteenByDate(String date, String dateRangeFrom, String dateRangeTo);
 
     Map<String, List<Storeroom>> getCanteenBySupplierClassification(String dateRangeFrom, String dateRangeTo, String day);

@@ -113,7 +113,7 @@ public class BilateralMeetingServiceImpl extends ServiceImpl<BilateralMeetingMap
     @Transactional
     public void updateBilateralMeeting(BilateralMeeting bilateralMeeting) {
         // 判断更新的是否是更新状态的
-        if (bilateralMeeting.getMeetingTime() == null && bilateralMeeting.getBilateralMeeting() == null && bilateralMeeting.getProposedCauseSummary() == null && bilateralMeeting.getProcess() == 1) {
+        if (bilateralMeeting.getBilateralMeeting() == null && bilateralMeeting.getProposedCauseSummary() == null && bilateralMeeting.getProcess() == 1) {
             String message = "您有一条上会议题审核通过";
             messageService.oneToOne(new Message(
                     null,

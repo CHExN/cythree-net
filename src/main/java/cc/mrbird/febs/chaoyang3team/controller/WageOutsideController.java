@@ -104,6 +104,19 @@ public class WageOutsideController extends BaseController {
         }
     }
 
+    @Log("删除本月全部编外工资信息")
+    @DeleteMapping("deleteAll")
+    @RequiresPermissions("wageOutside:delete")
+    public void deleteAllWageOutsides(String year, String month) throws FebsException {
+        try {
+            this.wageOutsideService.deleteAllWageOutside(year, month);
+        } catch (Exception e) {
+            message = "删除本月全部编外工资信息失败";
+            log.error(message, e);
+            throw new FebsException(message);
+        }
+    }
+
     @PostMapping("excel")
     @RequiresPermissions("wageOutside:export")
     public void export(QueryRequest request, WageOutside wageOutside, HttpServletResponse response) throws FebsException {

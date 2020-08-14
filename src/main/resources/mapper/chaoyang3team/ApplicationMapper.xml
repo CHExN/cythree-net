@@ -30,14 +30,16 @@
         cy_application AS a
         LEFT JOIN t_dept d ON (a.DEPT_ID = d.DEPT_ID)
         WHERE 1=1
-        <!--<choose>-->
-            <!--<when test="application.typeApplication == 3 or application.typeApplication == 5 or application.typeApplication == 8">-->
-            <!--</when>-->
-            <!--<otherwise>-->
-            <!--</otherwise>-->
-        <!--</choose>-->
-        <if test="!is35">
-            AND FIND_IN_SET(a.TYPE_APPLICATION, '1,2,4,5,6,7,8,9') AND a.IS_FIXED_ASSETS = '0'
+        <choose>
+            <when test="application.isFixedAssets !=null and application.isFixedAssets != ''">
+                AND a.IS_FIXED_ASSETS = #{application.isFixedAssets}
+            </when>
+            <otherwise>
+                AND a.IS_FIXED_ASSETS = '0'
+            </otherwise>
+        </choose>
+        <if test="!is3">
+            AND FIND_IN_SET(a.TYPE_APPLICATION, '1,2,4,5,6,7,8,9')
         </if>
         <if test="application.typeApplicationAuthority != null and application.typeApplicationAuthority != ''">
             AND FIND_IN_SET(a.TYPE_APPLICATION, #{application.typeApplicationAuthority})
@@ -71,9 +73,6 @@
         </if>
         <if test="application.createTimeTo!= null and application.createTimeTo !=''">
             AND a.CREATE_DATE &lt;= #{application.createTimeTo}
-        </if>
-        <if test="application.isFixedAssets != null and application.isFixedAssets != ''">
-            AND a.IS_FIXED_ASSETS = #{application.isFixedAssets}
         </if>
     </select>
 </mapper>

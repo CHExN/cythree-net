@@ -4,14 +4,8 @@ import cc.mrbird.febs.common.domain.FebsConstant;
 import cc.mrbird.febs.common.service.CacheService;
 import cc.mrbird.febs.common.service.RedisService;
 import cc.mrbird.febs.system.dao.UserMapper;
-import cc.mrbird.febs.system.domain.Menu;
-import cc.mrbird.febs.system.domain.Role;
-import cc.mrbird.febs.system.domain.User;
-import cc.mrbird.febs.system.domain.UserConfig;
-import cc.mrbird.febs.system.service.MenuService;
-import cc.mrbird.febs.system.service.RoleService;
-import cc.mrbird.febs.system.service.UserConfigService;
-import cc.mrbird.febs.system.service.UserService;
+import cc.mrbird.febs.system.domain.*;
+import cc.mrbird.febs.system.service.*;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
@@ -25,22 +19,16 @@ public class CacheServiceImpl implements CacheService {
 
     @Autowired
     private RedisService redisService;
-
     @Autowired
     private RoleService roleService;
-
     @Autowired
     private MenuService menuService;
-
     @Autowired
     private UserService userService;
-
     @Autowired
     private UserConfigService userConfigService;
-
     @Autowired
     private UserMapper userMapper;
-
     @Autowired
     private ObjectMapper mapper;
 
@@ -111,7 +99,6 @@ public class CacheServiceImpl implements CacheService {
             this.deleteRoles(username);
             redisService.set(FebsConstant.USER_ROLE_CACHE_PREFIX + username, mapper.writeValueAsString(roleList));
         }
-
     }
 
     @Override

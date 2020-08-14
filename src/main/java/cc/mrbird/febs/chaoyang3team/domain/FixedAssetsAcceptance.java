@@ -46,7 +46,7 @@ public class FixedAssetsAcceptance implements Serializable {
      * 合同金额
      */
     @TableField("MONEY")
-    private BigDecimal money;
+    private String money;
 
     /**
      * 实际金额

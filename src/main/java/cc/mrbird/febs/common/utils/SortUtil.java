@@ -21,8 +21,10 @@ public class SortUtil {
      * @param camelToUnderscore 是否开启驼峰转下划线
      */
     public static void handlePageSort(QueryRequest request, Page page, String defaultSort, String defaultOrder, boolean camelToUnderscore) {
+        // 设置分页页数与页码
         page.setCurrent(request.getPageNum());
         page.setSize(request.getPageSize());
+        // 排序字段
         String sortField = request.getSortField();
         if (camelToUnderscore) {
             sortField = FebsUtil.camelToUnderscore(sortField);

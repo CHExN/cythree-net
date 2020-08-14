@@ -19,6 +19,9 @@ public class ElectricityImport implements Serializable {
 
     private static final long serialVersionUID = -8561474513219102032L;
 
+    @ExcelField(value = "缴费日期", required = true, dateFormat = "yyyy/MM/dd", comment = "请以yyyy/MM/dd的格式填写缴费日期")
+    private Date recDate;
+
     @ExcelField(value = "公厕编号后四位", required = true, comment = "请填写正确的公厕编号后四位，否则必定导入失败")
     private String wcNum;
 
@@ -33,9 +36,6 @@ public class ElectricityImport implements Serializable {
 
     /*@ExcelField(value = "登记日期", required = true, dateFormat = "yyyy/MM/dd", comment = "请以yyyy/MM/dd的格式填写登记日期")
     private Date createDate;*/
-
-    @ExcelField(value = "缴费日期", required = true, dateFormat = "yyyy/MM/dd", comment = "请以yyyy/MM/dd的格式填写缴费日期")
-    private Date recDate;
 
     @ExcelField(value = "购电方式")
     private String type;

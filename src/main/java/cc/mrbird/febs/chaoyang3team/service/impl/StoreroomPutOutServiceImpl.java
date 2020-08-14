@@ -377,7 +377,7 @@ public class StoreroomPutOutServiceImpl extends ServiceImpl<StoreroomPutOutMappe
         String[] storeroomIds = storeroomIdList.toArray(new String[0]);
         if (!storeroomIdList.isEmpty()) {
             // 返还物资数量到库房里
-            this.baseMapper.returnStoreroomAmountByOutIds(StringUtils.join(storeroomIds, ","));
+            this.baseMapper.returnStoreroomAmountByStoreroomIds(StringUtils.join(storeroomIds, ","));
             // 删除出库单物资和关系
             this.storeroomService.deleteOutStorerooms(storeroomIds);
             // 删除出库物资与公厕绑定的关系

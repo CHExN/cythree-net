@@ -9,6 +9,7 @@ import cc.mrbird.febs.system.service.LogService;
 import com.baomidou.mybatisplus.core.toolkit.StringPool;
 import com.wuwenze.poi.ExcelKit;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -31,7 +32,7 @@ public class LogController extends BaseController {
     private LogService logService;
 
     @GetMapping
-    @RequiresPermissions("log:view")
+    @RequiresPermissions(value={"log:view", "logCopy:view"}, logical= Logical.OR)
     public Map<String, Object> logList(QueryRequest request, SysLog sysLog) {
         return getDataTable(logService.findLogs(request, sysLog));
     }

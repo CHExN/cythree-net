@@ -49,13 +49,18 @@
         wc.CLEAN_NUM,
         wc.WC_ADDRESS,
         wc.WC_NOW_STATUS AS wcNowStatus,
+        wc.WATER_NUM,
+        wc.ELECTRICITY_NUM,
+        wc.PAYMENT_NUM,
+        wc.WRITE_OFF,
         (SELECT td.VALUEE FROM t_dict td WHERE td.TABLE_NAME='cy_wc' AND td.FIELD_NAME='district' 			AND td.KEYY=wc.DISTRICT 		LIMIT 1) AS DISTRICT_TO_DICT,
         (SELECT td.VALUEE FROM t_dict td WHERE td.TABLE_NAME='cy_wc' AND td.FIELD_NAME='manage_unit' 		AND td.KEYY=wc.MANAGE_UNIT 		LIMIT 1) AS MANAGE_UNIT_TO_DICT,
         (SELECT td.VALUEE FROM t_dict td WHERE td.TABLE_NAME='cy_wc' AND td.FIELD_NAME='wc_kind' 			AND td.KEYY=wc.WC_KIND 			LIMIT 1) AS WC_KIND_TO_DICT,
         (SELECT td.VALUEE FROM t_dict td WHERE td.TABLE_NAME='cy_wc' AND td.FIELD_NAME='building_method' 	AND td.KEYY=wc.BUILDING_METHOD 	LIMIT 1) AS BUILDING_METHOD_TO_DICT,
         (SELECT td.VALUEE FROM t_dict td WHERE td.TABLE_NAME='cy_wc' AND td.FIELD_NAME='building_type' 		AND td.KEYY=wc.BUILDING_TYPE 	LIMIT 1) AS BUILDING_TYPE_TO_DICT,
         (SELECT td.VALUEE FROM t_dict td WHERE td.TABLE_NAME='cy_wc' AND td.FIELD_NAME='wc_sort' 			AND td.KEYY=wc.WC_SORT 			LIMIT 1) AS WC_SORT_TO_DICT,
-        (SELECT td.VALUEE FROM t_dict td WHERE td.TABLE_NAME='cy_wc' AND td.FIELD_NAME='manage_type' 		AND td.KEYY=wc.MANAGE_TYPE 		LIMIT 1) AS MANAGE_TYPE_TO_DICT
+        (SELECT td.VALUEE FROM t_dict td WHERE td.TABLE_NAME='cy_wc' AND td.FIELD_NAME='manage_type' 		AND td.KEYY=wc.MANAGE_TYPE 		LIMIT 1) AS MANAGE_TYPE_TO_DICT,
+        (SELECT td.VALUEE FROM t_dict td WHERE td.TABLE_NAME='cy_wc' AND td.FIELD_NAME='write_off' 		    AND td.KEYY=wc.WRITE_OFF 		LIMIT 1) AS WRITE_OFF_TO_DICT
         FROM cy_wc AS wc
         WHERE 1=1
         <if test="wc.wcName != null and wc.wcName != ''">
@@ -69,6 +74,18 @@
         </if>
         <if test="wc.wcSort != null and wc.wcSort != ''">
             AND FIND_IN_SET(wc.WC_SORT, #{wc.wcSort})
+        </if>
+        <if test="wc.buildingType != null and wc.buildingType != ''">
+            AND FIND_IN_SET(wc.BUILDING_TYPE, #{wc.buildingType})
+        </if>
+        <if test="wc.manageType != null and wc.manageType != ''">
+            AND FIND_IN_SET(wc.MANAGE_TYPE, #{wc.manageType})
+        </if>
+        <if test="wc.streetTown != null and wc.streetTown != ''">
+            AND wc.STREET_TOWN LIKE CONCAT('%',#{wc.streetTown},'%')
+        </if>
+        <if test="wc.writeOff != null and wc.writeOff != ''">
+            AND FIND_IN_SET(wc.WRITE_OFF, #{wc.writeOff})
         </if>
     </select>
     <select id="findWcDetail" resultType="cc.mrbird.febs.chaoyang3team.domain.Wc"
@@ -113,7 +130,11 @@
         wc.MANAGE_TYPE,
         wc.CLEAN_NUM,
         wc.WC_ADDRESS,
-        wc.WC_NOW_STATUS AS wcNowStatus
+        wc.WC_NOW_STATUS AS wcNowStatus,
+        wc.WATER_NUM,
+        wc.ELECTRICITY_NUM,
+        wc.PAYMENT_NUM,
+        wc.WRITE_OFF
         FROM cy_wc AS wc
         WHERE 1=1
         <if test="wc.wcName != null and wc.wcName != ''">
@@ -127,6 +148,18 @@
         </if>
         <if test="wc.wcSort != null and wc.wcSort != ''">
             AND FIND_IN_SET(wc.WC_SORT, #{wc.wcSort})
+        </if>
+        <if test="wc.buildingType != null and wc.buildingType != ''">
+            AND FIND_IN_SET(wc.BUILDING_TYPE, #{wc.buildingType})
+        </if>
+        <if test="wc.manageType != null and wc.manageType != ''">
+            AND FIND_IN_SET(wc.MANAGE_TYPE, #{wc.manageType})
+        </if>
+        <if test="wc.streetTown != null and wc.streetTown != ''">
+            AND wc.STREET_TOWN LIKE CONCAT('%',#{wc.streetTown},'%')
+        </if>
+        <if test="wc.writeOff != null and wc.writeOff != ''">
+            AND FIND_IN_SET(wc.WRITE_OFF, #{wc.writeOff})
         </if>
     </select>
 
@@ -291,11 +324,13 @@
             wc.WC_ID,
             wc.WC_NAME,
             wc.OPEN_HOUR,
+            wc.PIT_MALE,
+            wc.PIT_FEMALE,
             '朝环三队' AS manageUnitToDict,
             wc.WC_ADDRESS,
-            ROUND(GETDISTANCE (#{longitude}, #{latitude}, wc.LONGITUDE, wc.LATITUDE)) AS distance,
-            ROUND( wc.LONGITUDE, 6 ) AS longitude,
-            ROUND( wc.LATITUDE, 6 ) AS latitude,
+            wc.LONGITUDE,
+            wc.LATITUDE,
+            ROUND(GETDISTANCE(#{longitude}, #{latitude}, wc.LONGITUDE, wc.LATITUDE)) AS distance,
             (
                 SELECT cws.STATUS
                 FROM cy_wc_status AS cws
@@ -303,14 +338,12 @@
                 AND (ISNULL(cws.END_DATE) OR cws.END_DATE>=DATE_FORMAT(NOW(),'%y-%m-%d'))
                 ORDER BY cws.END_DATE
                 DESC LIMIT 1
-            ) AS status,
-            wc.PIT_MALE,
-            wc.PIT_FEMALE
+            ) AS `status`
             FROM
             cy_wc AS wc
             WHERE
             LENGTH(wc.LONGITUDE+0)=LENGTH(wc.LONGITUDE) AND LENGTH(wc.LATITUDE+0)=LENGTH(wc.LATITUDE)
-            AND GETDISTANCE (#{longitude}, #{latitude}, wc.LONGITUDE, wc.LATITUDE) &lt;= #{radius}
+            AND ROUND(GETDISTANCE(#{longitude}, #{latitude}, wc.LONGITUDE, wc.LATITUDE)) &lt;= #{radius}
             ORDER BY
             distance
         ) AS a,(SELECT @i := #{length} - 1) AS b
@@ -366,6 +399,10 @@
         wc.CLEAN_NUM,
         wc.WC_ADDRESS,
         wc.WC_NOW_STATUS AS wcNowStatus,
+        wc.WATER_NUM,
+        wc.ELECTRICITY_NUM,
+        wc.PAYMENT_NUM,
+        wc.WRITE_OFF,
 	    group_concat(tf.ADDRESS separator '|') AS filesAddress,
 	    (
 	        SELECT ROUND(AVG(cwe.WHOLE_STAR))

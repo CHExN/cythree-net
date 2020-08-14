@@ -49,8 +49,8 @@ public class RedisServiceImpl implements RedisService {
                     return client.getBulkReply();
                 }
         );
-        List<RedisInfo> infoList = new ArrayList<>();
         String[] strs = Objects.requireNonNull(info).split(separator);
+        List<RedisInfo> infoList = new ArrayList<>(strs.length);
         RedisInfo redisInfo;
         if (strs.length > 0) {
             for (String str1 : strs) {
