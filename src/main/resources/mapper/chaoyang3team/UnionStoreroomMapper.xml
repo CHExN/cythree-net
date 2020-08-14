@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.mrbird.febs.chaoyang3team.dao.UnionStoreroomMapper">
+
+    <select id="findStoreroomsDetail" resultType="cc.mrbird.febs.chaoyang3team.domain.UnionStoreroom">
+        SELECT
+        s.ID,
+        s.`NAME`,
+        s.TYPE,
+        s.AMOUNT,
+        s.UNIT,
+        s.REMARK,
+        s.MONEY,
+        s.RECEIPT,
+        s.DATE,
+        s.TYPE_APPLICATION,
+        s.SUPPLIER,
+        s.IS_IN,
+        spo.NUM AS putNum,
+        #{storeroom.names} as names,
+        #{storeroom.names} as unitOriginal
+        FROM cy_union_storeroom AS s
+        LEFT JOIN cy_union_storeroom AS s1 ON(s.ID=s1.PARENT_ID)
+        LEFT JOIN p_union_storeroom_put AS sp ON(sp.STOREROOM_ID=s1.ID)
+        LEFT JOIN cy_union_storeroom_put_out AS spo ON(spo.ID=sp.PUT_ID)
+        WHERE s.IS_IN=0 AND s1.TO_DEPT_ID=0 AND (s.AMOUNT=0)=0
+        <!--<if test="storeroom.name != null and storeroom.name != ''">
+            AND s.NAME LIKE CONCAT('%',#{storeroom.name},'%')
+        </if>-->
+        <if test="storeroom.name != null and storeroom.name != ''">
+            <foreach collection="storeroom.names" index="index" item="item" open="AND (" separator="OR" close=")">
+                s.NAME LIKE CONCAT('%',#{item},'%')
+            </foreach>
+        </if>
+        <if test="storeroom.putNum != null and storeroom.putNum != ''">
+            AND spo.NUM LIKE CONCAT('%',#{storeroom.putNum},'%')
+        </if>
+        <if test="storeroom.receipt != null and storeroom.receipt != ''">
+            AND s.RECEIPT LIKE CONCAT('%',#{storeroom.receipt},'%')
+        </if>
+        <if test="storeroom.typeApplication != null and storeroom.typeApplication != ''">
+            AND FIND_IN_SET(s.TYPE_APPLICATION, #{storeroom.typeApplication})
+        </if>
+        <if test="storeroom.supplier != null and storeroom.supplier != ''">
+            AND FIND_IN_SET(s.SUPPLIER, #{storeroom.supplier})
+        </if>
+        <if test="storeroom.createTimeFrom != null and storeroom.createTimeFrom !=''">
+            AND s.DATE &gt;= #{storeroom.createTimeFrom}
+        </if>
+        <if test="storeroom.createTimeTo!= null and storeroom.createTimeTo !=''">
+            AND s.DATE &lt;= #{storeroom.createTimeTo}
+        </if>
+        <if test="storeroom.remark != null and storeroom.remark != ''">
+            AND s.REMARK LIKE CONCAT('%',#{storeroom.remark},'%')
+        </if>
+        <if test="storeroom.type != null and storeroom.type != ''">
+            AND cs.TYPE LIKE CONCAT('%',#{storeroom.type},'%')
+        </if>
+    </select>
+    <select id="findStoreroomsItemDetails" resultType="cc.mrbird.febs.chaoyang3team.domain.UnionStoreroom">
+        SELECT
+        cs.ID,
+        cs.`NAME`,
+        cs.TYPE,
+        cs.AMOUNT,
+        cs.UNIT,
+        cs.REMARK,
+        cs.MONEY,
+        cs.RECEIPT,
+        cs.DATE,
+        cs.TYPE_APPLICATION,
+        cs.SUPPLIER,
+        cs.IS_IN,
+        cs.PARENT_ID,
+        cspo.NUM AS putNum
+        FROM cy_union_storeroom AS cs
+        LEFT JOIN p_union_storeroom_put AS psp ON psp.STOREROOM_ID=cs.ID
+        LEFT JOIN cy_union_storeroom_put_out AS cspo ON cspo.ID=psp.PUT_ID
+        WHERE cspo.IS_PUT='1'
+        <!--<if test="storeroom.name != null and storeroom.name != ''">
+            AND cs.NAME LIKE CONCAT('%',#{storeroom.name},'%')
+        </if>-->
+        <if test="storeroom.name != null and storeroom.name != ''">
+            <foreach collection="storeroom.names" index="index" item="item" open="AND (" separator="OR" close=")">
+                cs.NAME LIKE CONCAT('%',#{item},'%')
+            </foreach>
+        </if>
+        <if test="storeroom.putNum != null and storeroom.putNum != ''">
+            AND cspo.NUM LIKE CONCAT('%',#{storeroom.putNum},'%')
+        </if>
+        <if test="storeroom.receipt != null and storeroom.receipt != ''">
+            AND cs.RECEIPT LIKE CONCAT('%',#{storeroom.receipt},'%')
+        </if>
+        <if test="storeroom.typeApplication != null and storeroom.typeApplication != ''">
+            AND FIND_IN_SET(cs.TYPE_APPLICATION, #{storeroom.typeApplication})
+        </if>
+        <if test="storeroom.supplier != null and storeroom.supplier != ''">
+            AND FIND_IN_SET(cs.SUPPLIER, #{storeroom.supplier})
+        </if>
+        <if test="storeroom.createTimeFrom != null and storeroom.createTimeFrom !=''">
+            AND cs.DATE &gt;= #{storeroom.createTimeFrom}
+        </if>
+        <if test="storeroom.createTimeTo!= null and storeroom.createTimeTo !=''">
+            AND cs.DATE &lt;= #{storeroom.createTimeTo}
+        </if>
+        <if test="storeroom.remark != null and storeroom.remark != ''">
+            AND cs.REMARK LIKE CONCAT('%',#{storeroom.remark},'%')
+        </if>
+        <if test="storeroom.type != null and storeroom.type != ''">
+            AND cs.TYPE LIKE CONCAT('%',#{storeroom.type},'%')
+        </if>
+    </select>
+    <select id="getParentIdByIds" resultType="java.lang.String">
+        SELECT PARENT_ID FROM cy_union_storeroom WHERE FIND_IN_SET(ID, #{storeroomIds})
+    </select>
+    <select id="findStoreroomByIdAndParentId" resultType="cc.mrbird.febs.chaoyang3team.domain.UnionStoreroom">
+        SELECT
+        s.ID,
+        s.`NAME`,
+        s.TYPE,
+        s.AMOUNT,
+        s.UNIT,
+        s.REMARK,
+        s.MONEY,
+        s.RECEIPT,
+        s.TYPE_APPLICATION,
+        s.SUPPLIER,
+        s.IS_IN,
+        s.TO_DEPT_ID,
+        s.PARENT_ID,
+        s.STATUS,
+        s.AMOUNT_DIST
+        FROM cy_union_storeroom AS s
+        WHERE FIND_IN_SET(s.ID,#{ids}) OR FIND_IN_SET(s.PARENT_ID,#{ids})
+    </select>
+    <select id="getStoreroomOutItemByParentIdAndId"
+            resultType="cc.mrbird.febs.chaoyang3team.domain.UnionStoreroom">
+        SELECT
+        cs.ID,
+        cs.`NAME`,
+        cs.TYPE,
+        cs.AMOUNT,
+        cs.UNIT,
+        cs.REMARK,
+        cs.MONEY,
+        cs.RECEIPT,
+        cs.DATE,
+        cs.TYPE_APPLICATION,
+        cs.SUPPLIER,
+        cs.IS_IN,
+        cs.PARENT_ID,
+        td.DEPT_NAME AS toDeptName,
+        cspo.NUM AS outNum
+        FROM cy_union_storeroom  AS cs
+        LEFT JOIN p_union_storeroom_out AS pso ON(pso.STOREROOM_ID=cs.ID)
+        LEFT JOIN cy_union_storeroom_put_out AS cspo ON(cspo.ID=pso.OUT_ID)
+        LEFT JOIN t_dept AS td ON td.DEPT_ID = cspo.TO_DEPT_ID
+        WHERE cs.PARENT_ID=#{parentId} AND (cs.ID=#{id})=0
+        ORDER BY cs.DATE
+    </select>
+</mapper>

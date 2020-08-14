@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.mrbird.febs.chaoyang3team.dao.ComparedMapper">
+
+    <select id="compared" resultType="java.util.Map">
+        SELECT
+        a.${c1.idName} AS id,
+        a.`NAME` AS name,
+        a.ID_NUM AS idNum,
+        a.GENDER AS gender,
+        a.ADD_DATE AS addDate,
+        a.LEAVE_DATE AS leaveDate,
+        a.CAUSE AS cause
+        FROM ${c1.tableName} AS a
+        WHERE 1=1
+        <if test="c1.deleted == 1">
+            AND a.DELETED = 0
+        </if>
+        <if test="c1.basis == 1">
+            AND a.IS_LEAVE = 0
+        </if>
+        AND NOT EXISTS(
+            SELECT 1 FROM ${c2.tableName} AS b
+            WHERE 1=1
+            <if test="c2.deleted == 1">
+                AND b.DELETED = 0
+            </if>
+            <!--<if test="c2.basis == 1">
+                AND b.IS_LEAVE = 0
+            </if>-->
+            <if test="c2.input == 1 ">
+                AND b.INSIDE_OR_OUTSIDE = #{c2.inputValue}
+            </if>
+            <if test="c2.dateValue != null and c2.dateValue != ''">
+                AND CONCAT(b.YEAR, '-', b.MONTH) = #{c2.dateValue}
+            </if>
+            <if test="c2.idNum == 0">
+                AND a.${c1.idName} = b.${c2.idName}
+            </if>
+            <if test="c2.idNum == 1">
+                AND a.ID_NUM=b.ID_NUM
+            </if>
+        )
+    </select>
+</mapper>

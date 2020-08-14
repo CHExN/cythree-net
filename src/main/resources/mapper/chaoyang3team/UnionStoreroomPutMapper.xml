@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.mrbird.febs.chaoyang3team.dao.UnionStoreroomPutMapper">
+
+    <!--根据入库记录ID查找对应库房ID-->
+    <select id="getStoreroomIdsByStoreroomPutIds" resultType="java.lang.String">
+        SELECT STOREROOM_ID FROM p_union_storeroom_put WHERE FIND_IN_SET(PUT_ID, #{StoreroomPutIds})
+    </select>
+
+    <!--根据入库记录ID查找对应库房详情-->
+    <select id="getStoreroomsByStoreroomPutId" resultType="cc.mrbird.febs.chaoyang3team.domain.UnionStoreroom">
+        SELECT
+        s.*,
+        s2.AMOUNT AS storeroomCount
+        FROM
+        cy_union_storeroom AS s
+        LEFT JOIN p_union_storeroom_put AS sp ON (s.ID = sp.STOREROOM_ID)
+        LEFT JOIN cy_union_storeroom AS s2 ON (s.PARENT_ID = s2.ID)
+        WHERE sp.PUT_ID = #{StoreroomPutId}
+    </select>
+</mapper>
