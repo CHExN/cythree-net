@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.mrbird.febs.chaoyang3team.dao.OpenidModifyRecordMapper">
+
+    <select id="findOpenidModifyRecordDetail"
+            resultType="cc.mrbird.febs.chaoyang3team.domain.OpenidModifyRecord">
+        SELECT
+        <include refid="result"/>
+        FROM cy_openid_modify_record AS cpmr
+        WHERE cpmr.DELETED = #{omr.deleted}
+        <include refid="param"/>
+        GROUP BY cpmr.ID
+    </select>
+
+    <select id="getModifyCountByUsername" resultType="java.lang.Integer">
+        SELECT COUNT(1)
+        FROM cy_openid_modify_record AS cpmr
+        WHERE cpmr.USERNAME = #{username} AND to_days(cpmr.CREATE_TIME) = to_days(#{createTimeFrom})
+    </select>
+
+    <sql id="result">
+        cpmr.ID,
+        cpmr.USERNAME,
+        cpmr.OPEN_ID_LOW,
+        cpmr.OPEN_ID_NEW,
+        cpmr.CREATE_TIME
+	</sql>
+
+    <sql id="param">
+        <if test="omr.username != null and omr.username != ''">
+            AND cpmr.USERNAME LIKE CONCAT('%',LOWER(#{omr.username}),'%')
+        </if>
+        <if test="omr.openId != null and omr.openId != ''">
+            AND cpmr.OPEN_ID_LOW LIKE CONCAT('%',#{omr.openId},'%') OR cpmr.OPEN_ID_NEW LIKE CONCAT('%',#{omr.openId},'%')
+        </if>
+        <if test="omr.createTimeFrom != null and omr.createTimeFrom !=''">
+            AND cpmr.CREATE_TIME &gt;= #{omr.createTimeFrom}
+        </if>
+        <if test="omr.createTimeTo!= null and omr.createTimeTo !=''">
+            AND cpmr.CREATE_TIME &lt;= #{omr.createTimeTo}
+        </if>
+    </sql>
+
+</mapper>

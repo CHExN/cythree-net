@@ -1,7 +1,7 @@
 package cc.mrbird.febs.common.exception;
 
 /**
- * FEBS 系统内部异常
+ * 系统内部异常
  */
 public class FebsException extends Exception {
 

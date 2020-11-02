@@ -2,40 +2,52 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cc.mrbird.febs.chaoyang3team.dao.WcEvaluateMapper">
 
-    <select id="findWcEvaluateDetail" resultType="cc.mrbird.febs.chaoyang3team.domain.WcEvaluate">
-        SELECT
+    <sql id="result">
         cwe.ID,
         cwe.VOICE_ID,
-        cwe.ENVIRONMENT_STAR AS environmentStar,
-        cwe.CLEAN_STAR AS cleanStar,
-        cwe.INSTALLATION_STAR AS installationStar,
+        cwe.PHOTO_ID,
         cwe.WHOLE_STAR AS wholeStar,
         cwe.WC_ID,
         cwe.CONTENT,
         cwe.IS_COMPLAINT,
         cwe.CREATE_TIME AS createTime,
+        cwe.MODIFY_TIME,
         cwe.PHONE,
+        cwe.PROCESS,
+        cwe.PROCESS_TIME,
+        cwe.REMARK,
+        cwe.NIKCNAME AS nickName,
+        cwe.GENDER,
+        cwe.AVATAR_ID,
+        cwe.LONGITUDE,
+        cwe.LATITUDE,
         wc.WC_NAME AS wcName,
         wc.WC_NUM AS wcNum,
-        tf.ADDRESS AS voiceAddress
-        FROM cy_wc_evaluate AS cwe
-        LEFT JOIN cy_wc AS wc ON(wc.WC_ID = cwe.WC_ID)
-        LEFT JOIN t_file AS tf ON(tf.FILE_ID = cwe.VOICE_ID)
-        WHERE cwe.IS_COMPLAINT = #{wcEvaluate.isComplaint}
+        wc.STREET_TOWN AS streetTown,
+        wc.WC_OWN AS wcOwn,
+        wc.WC_SORT AS wcSort,
+        tf.ADDRESS AS voiceAddress,
+        tf2.ADDRESS AS photoAddress,
+        tf3.ADDRESS AS avatarUrl
+	</sql>
+    <sql id="param">
         <if test="wcEvaluate.wcName != null and wcEvaluate.wcName != ''">
             AND wc.WC_NAME LIKE CONCAT('%',#{wcEvaluate.wcName},'%')
         </if>
         <if test="wcEvaluate.wcNum != null and wcEvaluate.wcNum != ''">
             AND wc.WC_NUM LIKE CONCAT('%',#{wcEvaluate.wcNum},'%')
         </if>
-        <if test="wcEvaluate.environmentStar != null and wcEvaluate.environmentStar != ''">
-            AND cwe.ENVIRONMENT_STAR = #{wcEvaluate.environmentStar}
+        <if test="wcEvaluate.wcOwn != null and wcEvaluate.wcOwn != ''">
+            AND FIND_IN_SET(wc.WC_OWN, #{wcEvaluate.wcOwn})
         </if>
-        <if test="wcEvaluate.cleanStar != null and wcEvaluate.cleanStar != ''">
-            AND cwe.CLEAN_STAR = #{wcEvaluate.cleanStar}
+        <if test="wcEvaluate.wcSort != null and wcEvaluate.wcSort != ''">
+            AND FIND_IN_SET(wc.WC_SORT, #{wcEvaluate.wcSort})
         </if>
-        <if test="wcEvaluate.installationStar != null and wcEvaluate.installationStar != ''">
-            AND cwe.INSTALLATION_STAR = #{wcEvaluate.installationStar}
+        <if test="wcEvaluate.streetTown != null and wcEvaluate.streetTown != ''">
+            AND wc.STREET_TOWN LIKE CONCAT('%',#{wcEvaluate.streetTown},'%')
+        </if>
+        <if test="wcEvaluate.process != null and wcEvaluate.process != ''">
+            AND cwe.PROCESS = #{wcEvaluate.process}
         </if>
         <if test="wcEvaluate.wholeStar != null and wcEvaluate.wholeStar != ''">
             AND cwe.WHOLE_STAR = #{wcEvaluate.wholeStar}
@@ -43,15 +55,77 @@
         <if test="wcEvaluate.content != null and wcEvaluate.content != ''">
             AND cwe.CONTENT LIKE CONCAT('%',#{wcEvaluate.content},'%')
         </if>
-        <if test="wcEvaluate.createTimeFrom != null and wcEvaluate.createTimeFrom !=''">
-            AND cwe.CREATE_TIME &gt;= #{wcEvaluate.createTimeFrom}
+        <if test="wcEvaluate.createTimeFrom != null and wcEvaluate.createTimeFrom !='' and wcEvaluate.createTimeTo!= null and wcEvaluate.createTimeTo !=''">
+            AND cwe.CREATE_TIME &gt;= #{wcEvaluate.createTimeFrom} AND cwe.CREATE_TIME &lt;= #{wcEvaluate.createTimeTo}
         </if>
-        <if test="wcEvaluate.createTimeTo!= null and wcEvaluate.createTimeTo !=''">
-            AND cwe.CREATE_TIME &lt;= #{wcEvaluate.createTimeTo}
+        <if test="wcEvaluate.processTimeFrom != null and wcEvaluate.processTimeFrom !='' and wcEvaluate.processTimeTo!= null and wcEvaluate.processTimeTo !=''">
+            AND cwe.PROCESS_TIME &gt;= #{wcEvaluate.processTimeFrom} AND cwe.PROCESS_TIME &lt;= #{wcEvaluate.processTimeTo}
         </if>
+        <if test="wcEvaluate.remark != null and wcEvaluate.remark != ''">
+            AND cwe.REMARK LIKE CONCAT('%',#{wcEvaluate.remark},'%')
+        </if>
+    </sql>
+
+    <select id="findWcEvaluateDetail" resultType="cc.mrbird.febs.chaoyang3team.domain.WcEvaluate">
+        SELECT
+        <include refid="result"/>
+        FROM cy_wc_evaluate AS cwe
+        LEFT JOIN cy_wc AS wc ON(wc.WC_ID = cwe.WC_ID)
+        LEFT JOIN t_file AS tf ON(tf.FILE_ID = cwe.VOICE_ID)
+        LEFT JOIN t_file AS tf2 ON(tf2.FILE_ID = cwe.PHOTO_ID)
+        LEFT JOIN t_file AS tf3 ON(tf3.FILE_ID = cwe.AVATAR_ID)
+        WHERE cwe.IS_COMPLAINT = #{wcEvaluate.isComplaint}
+        <include refid="param"/>
     </select>
 
     <select id="getFileIdsByWcEvaluateIds" resultType="java.lang.String">
-        SELECT cwe.VOICE_ID FROM cy_wc_evaluate AS cwe WHERE FIND_IN_SET(cwe.ID, #{ids}) AND cwe.VOICE_ID IS NOT NULL
+        SELECT cwe.VOICE_ID AS file FROM cy_wc_evaluate AS cwe WHERE FIND_IN_SET(cwe.ID, #{ids}) AND cwe.VOICE_ID IS NOT NULL
+        UNION
+        SELECT cwe.PHOTO_ID AS file FROM cy_wc_evaluate AS cwe WHERE FIND_IN_SET(cwe.ID, #{ids}) AND cwe.PHOTO_ID IS NOT NULL
+        UNION
+        SELECT cwe.AVATAR_ID AS file FROM cy_wc_evaluate AS cwe WHERE FIND_IN_SET(cwe.ID, #{ids}) AND cwe.AVATAR_ID IS NOT NULL
+    </select>
+
+    <select id="findWcEvaluateExcel" resultType="cc.mrbird.febs.chaoyang3team.domain.WcEvaluateImport">
+        SELECT
+        cwe.ID,
+        cwe.CONTENT AS tag,
+        cwe.WHOLE_STAR AS wholeStar,
+        cwe.CREATE_TIME AS createTime,
+        cwe.NIKCNAME AS nickName,
+        cwe.GENDER,
+        wc.WC_NAME AS wcName,
+        wc.WC_NUM AS wcNum,
+        wc.STREET_TOWN AS streetTown,
+        wc.WC_OWN AS wcOwn,
+        (SELECT td.VALUEE FROM t_dict td WHERE td.TABLE_NAME='cy_wc' AND td.FIELD_NAME='wc_sort' AND td.KEYY=wc.WC_SORT LIMIT 1) AS wcSortToDict
+        FROM cy_wc_evaluate AS cwe
+        LEFT JOIN cy_wc AS wc ON(wc.WC_ID = cwe.WC_ID)
+        WHERE cwe.IS_COMPLAINT = #{wcEvaluate.isComplaint}
+        <include refid="param"/>
+        ORDER BY cwe.ID DESC
+    </select>
+
+    <select id="findWcComplaintExcel" resultType="cc.mrbird.febs.chaoyang3team.domain.WcComplaintImport">
+        SELECT
+        cwe.ID,
+        cwe.CONTENT,
+        cwe.PHONE,
+        cwe.PROCESS,
+        cwe.REMARK,
+        cwe.NIKCNAME AS nickName,
+        cwe.GENDER,
+        cwe.WHOLE_STAR AS wholeStar,
+        cwe.CREATE_TIME AS createTime,
+        wc.WC_NAME AS wcName,
+        wc.WC_NUM AS wcNum,
+        wc.STREET_TOWN AS streetTown,
+        wc.WC_OWN AS wcOwn,
+        (SELECT td.VALUEE FROM t_dict td WHERE td.TABLE_NAME='cy_wc' AND td.FIELD_NAME='wc_sort' AND td.KEYY=wc.WC_SORT LIMIT 1) AS wcSortToDict
+        FROM cy_wc_evaluate AS cwe
+        LEFT JOIN cy_wc AS wc ON(wc.WC_ID = cwe.WC_ID)
+        WHERE cwe.IS_COMPLAINT = #{wcEvaluate.isComplaint}
+        <include refid="param"/>
+        ORDER BY cwe.ID DESC
     </select>
 </mapper>

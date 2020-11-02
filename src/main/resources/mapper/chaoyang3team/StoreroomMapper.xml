@@ -16,6 +16,7 @@
         s.TYPE_APPLICATION,
         s.SUPPLIER,
         s.IS_IN,
+        s.AMOUNT * s.MONEY AS totalPrice,
         spo.NUM AS putNum,
         #{storeroom.names} as names,
         #{storeroom.names} as unitOriginal
@@ -23,42 +24,24 @@
         LEFT JOIN cy_storeroom AS s1 ON(s.ID=s1.PARENT_ID)
         LEFT JOIN p_storeroom_put AS sp ON(sp.STOREROOM_ID=s1.ID)
         LEFT JOIN cy_storeroom_put_out AS spo ON(spo.ID=sp.PUT_ID)
-        WHERE s.IS_IN=0 AND s1.TO_DEPT_ID=0 AND (s.AMOUNT=0)=0
-        <!--<if test="storeroom.name != null and storeroom.name != ''">
-            AND s.NAME LIKE CONCAT('%',#{storeroom.name},'%')
-        </if>-->
-        <if test="storeroom.name != null and storeroom.name != ''">
-            <foreach collection="storeroom.names" index="index" item="item" open="AND (" separator="OR" close=")">
-                s.NAME LIKE CONCAT('%',#{item},'%')
-            </foreach>
-        </if>
-        <if test="storeroom.putNum != null and storeroom.putNum != ''">
-            AND spo.NUM LIKE CONCAT('%',#{storeroom.putNum},'%')
-        </if>
-        <if test="storeroom.receipt != null and storeroom.receipt != ''">
-            AND s.RECEIPT LIKE CONCAT('%',#{storeroom.receipt},'%')
-        </if>
-        <if test="storeroom.typeApplicationAuthority != null and storeroom.typeApplicationAuthority != ''">
-            AND FIND_IN_SET(s.TYPE_APPLICATION, #{storeroom.typeApplicationAuthority})
-        </if>
-        <if test="storeroom.typeApplication != null and storeroom.typeApplication != ''">
-            AND FIND_IN_SET(s.TYPE_APPLICATION, #{storeroom.typeApplication})
-        </if>
-        <if test="storeroom.supplier != null and storeroom.supplier != ''">
-            AND FIND_IN_SET(s.SUPPLIER, #{storeroom.supplier})
-        </if>
-        <if test="storeroom.createTimeFrom != null and storeroom.createTimeFrom !=''">
-            AND s.DATE &gt;= #{storeroom.createTimeFrom}
-        </if>
-        <if test="storeroom.createTimeTo!= null and storeroom.createTimeTo !=''">
-            AND s.DATE &lt;= #{storeroom.createTimeTo}
-        </if>
-        <if test="storeroom.remark != null and storeroom.remark != ''">
-            AND s.REMARK LIKE CONCAT('%',#{storeroom.remark},'%')
-        </if>
-        <if test="storeroom.type != null and storeroom.type != ''">
-            AND cs.TYPE LIKE CONCAT('%',#{storeroom.type},'%')
-        </if>
+        WHERE 1=1
+        <include refid="param"/>
+    </select>
+
+    <select id="findStoreroomsTotalPrice" resultType="java.math.BigDecimal">
+        SELECT SUM(s.AMOUNT * s.MONEY)
+        FROM cy_storeroom AS s
+        LEFT JOIN cy_storeroom AS s1 ON(s.ID=s1.PARENT_ID)
+        LEFT JOIN p_storeroom_put AS sp ON(sp.STOREROOM_ID=s1.ID)
+        LEFT JOIN cy_storeroom_put_out AS spo ON(spo.ID=sp.PUT_ID)
+        WHERE 1=1
+        <include refid="param"/>
+    </select>
+
+    <select id="findStoreroomsSelectedTotalPrice" resultType="java.math.BigDecimal">
+        SELECT SUM(AMOUNT * MONEY)
+        FROM cy_storeroom
+        WHERE FIND_IN_SET(ID, #{ids})
     </select>
 
     <select id="getParentIdByIds" resultType="java.lang.String">
@@ -289,6 +272,46 @@
         WHERE cs.PARENT_ID=#{parentId} AND (cs.ID=#{id})=0
         ORDER BY cs.DATE
     </select>
+
+    <sql id="param">
+        AND s.IS_IN=0 AND s1.TO_DEPT_ID=0 AND (s.AMOUNT=0)=0
+        <!--<if test="storeroom.name != null and storeroom.name != ''">
+            AND s.NAME LIKE CONCAT('%',#{storeroom.name},'%')
+        </if>-->
+        <if test="storeroom.name != null and storeroom.name != ''">
+            <foreach collection="storeroom.names" index="index" item="item" open="AND (" separator="OR" close=")">
+                s.NAME LIKE CONCAT('%',#{item},'%')
+            </foreach>
+        </if>
+        <if test="storeroom.putNum != null and storeroom.putNum != ''">
+            AND spo.NUM LIKE CONCAT('%',#{storeroom.putNum},'%')
+        </if>
+        <if test="storeroom.receipt != null and storeroom.receipt != ''">
+            AND s.RECEIPT LIKE CONCAT('%',#{storeroom.receipt},'%')
+        </if>
+        <if test="storeroom.typeApplicationAuthority != null and storeroom.typeApplicationAuthority != ''">
+            AND FIND_IN_SET(s.TYPE_APPLICATION, #{storeroom.typeApplicationAuthority})
+        </if>
+        <if test="storeroom.typeApplication != null and storeroom.typeApplication != ''">
+            AND FIND_IN_SET(s.TYPE_APPLICATION, #{storeroom.typeApplication})
+        </if>
+        <if test="storeroom.supplier != null and storeroom.supplier != ''">
+            AND FIND_IN_SET(s.SUPPLIER, #{storeroom.supplier})
+        </if>
+        <if test="storeroom.createTimeFrom != null and storeroom.createTimeFrom !=''">
+            AND s.DATE &gt;= #{storeroom.createTimeFrom}
+        </if>
+        <if test="storeroom.createTimeTo!= null and storeroom.createTimeTo !=''">
+            AND s.DATE &lt;= #{storeroom.createTimeTo}
+        </if>
+        <if test="storeroom.remark != null and storeroom.remark != ''">
+            AND s.REMARK LIKE CONCAT('%',#{storeroom.remark},'%')
+        </if>
+        <if test="storeroom.type != null and storeroom.type != ''">
+            AND cs.TYPE LIKE CONCAT('%',#{storeroom.type},'%')
+        </if>
+    </sql>
+
     <!--SELECT
     cs.ID,
     cs.`NAME`,

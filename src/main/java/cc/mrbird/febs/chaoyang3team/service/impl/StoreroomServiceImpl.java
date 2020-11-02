@@ -46,7 +46,7 @@ public class StoreroomServiceImpl extends ServiceImpl<StoreroomMapper, Storeroom
     private UserManager userManager;
 
     @Override
-    public IPage<Storeroom> findStoreroomsDetail(QueryRequest request, Storeroom storeroom, ServletRequest servletRequest) {
+    public Map<String, Object> findStoreroomsDetail(QueryRequest request, Storeroom storeroom, ServletRequest servletRequest) {
         try {
             HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
             String username = JWTUtil.getUsername(FebsUtil.decryptToken(httpServletRequest.getHeader("Authentication")));
@@ -87,11 +87,22 @@ public class StoreroomServiceImpl extends ServiceImpl<StoreroomMapper, Storeroom
             if (!(storeroom.getName() == null || storeroom.getName().isEmpty())) {
                 storeroom.setNames(storeroom.getName().replace("，", ",").split(","));
             }
-            return this.baseMapper.findStoreroomsDetail(page, storeroom);
+            // 这里加上根据条件判断选择的物资总价格
+            Map<String, Object> data = new HashMap<>();
+            BigDecimal storeroomsTotalPrice = this.baseMapper.findStoreroomsTotalPrice(storeroom);
+            IPage<Storeroom> storeroomsDetail = this.baseMapper.findStoreroomsDetail(page, storeroom);
+            data.put("storeroomsDetail", storeroomsDetail);
+            data.put("storeroomsTotalPrice", storeroomsTotalPrice);
+            return data;
         } catch (Exception e) {
             log.error("查询库房异常", e);
             return null;
         }
+    }
+
+    @Override
+    public BigDecimal findStoreroomsSelectedTotalPrice(String[] storeroomIds) {
+        return baseMapper.findStoreroomsSelectedTotalPrice(StringUtils.join(storeroomIds, ","));
     }
 
     @Override

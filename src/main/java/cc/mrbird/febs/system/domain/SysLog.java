@@ -51,4 +51,6 @@ public class SysLog implements Serializable {
 
     private String type;
 
+    private String openId;
+
 }

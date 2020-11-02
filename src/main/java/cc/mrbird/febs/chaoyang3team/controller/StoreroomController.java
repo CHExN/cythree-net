@@ -13,6 +13,7 @@ import cc.mrbird.febs.common.domain.FebsResponse;
 import cc.mrbird.febs.common.domain.QueryRequest;
 import cc.mrbird.febs.common.exception.FebsException;
 import cc.mrbird.febs.common.utils.FebsUtil;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.wuwenze.poi.ExcelKit;
@@ -61,7 +62,14 @@ public class StoreroomController extends BaseController {
     @GetMapping
     @RequiresPermissions("storeroom:view")
     public Map<String, Object> storeroomList(QueryRequest request, Storeroom storeroom, ServletRequest servletRequest) {
-        return getDataTable(this.storeroomService.findStoreroomsDetail(request, storeroom, servletRequest));
+        return this.storeroomService.findStoreroomsDetail(request, storeroom, servletRequest);
+    }
+
+    @GetMapping("selectedTotalPrice")
+    @RequiresPermissions("storeroom:view")
+    public BigDecimal findStoreroomsSelectedTotalPrice(String[] ids) {
+        if (ids.length == 0) return BigDecimal.ZERO;
+        return this.storeroomService.findStoreroomsSelectedTotalPrice(ids);
     }
 
     @GetMapping("itemDetails")
@@ -94,6 +102,26 @@ public class StoreroomController extends BaseController {
         return storeroomService.getCanteenBySupplierClassification(dateRangeFrom, dateRangeTo, day);
     }
 
+    @PostMapping("excel")
+    @RequiresPermissions("storeroom:export")
+    public void export(QueryRequest request, Storeroom storeroom, ServletRequest servletRequest, HttpServletResponse response) throws FebsException {
+        try {
+            Map<String, Object> storeroomsDetail = this.storeroomService.findStoreroomsDetail(request, storeroom, servletRequest);
+            IPage<Storeroom> storeroomsIPage = (IPage<Storeroom>)storeroomsDetail.get("storeroomsDetail");
+            BigDecimal storeroomsTotalPrice = (BigDecimal)storeroomsDetail.get("storeroomsTotalPrice");
+            List<Storeroom> records = storeroomsIPage.getRecords();
+            Storeroom storeroomTotal = new Storeroom();
+            storeroomTotal.setName("总价格");
+            storeroomTotal.setMoney(storeroomsTotalPrice);
+            records.add(storeroomTotal);
+            ExcelKit.$Export(Storeroom.class, response).downXlsx(records, false);
+        } catch (Exception e) {
+            message = "导出库房管理物资Excel失败";
+            log.error(message, e);
+            throw new FebsException(message);
+        }
+    }
+
     @PostMapping("distExcel")
     @RequiresPermissions("wcStoreroom:view")
     public void export(QueryRequest request, Storeroom storeroom, HttpServletResponse response, ServletRequest servletRequest) throws FebsException {
@@ -111,12 +139,13 @@ public class StoreroomController extends BaseController {
      * 导出 distWc
      */
     @PostMapping("distWc")
+    @RequiresPermissions("wc:wcName")
     public void exportDistWc(QueryRequest request, Wc wc, HttpServletResponse response) throws FebsException {
         try {
             List<Wc> wcs = this.wcService.findWcDetailExcel(request, wc).getRecords();
             ExcelKit.$Export(DistWc.class, response).downXlsx(wcs, false);
         } catch (Exception e) {
-            message = "导出公厕Excel失败";
+            message = "导出分配物资公厕Excel失败";
             log.error(message, e);
             throw new FebsException(message);
         }
@@ -148,7 +177,7 @@ public class StoreroomController extends BaseController {
     /**
      * 导入Excel数据，并批量插入
      */
-    @Log("导入公厕信息Excel数据，并批量插入")
+    @Log("导入物资分配数据，并批量插入")
     @PostMapping("import")
     @RequiresPermissions("wcStoreroom:add")
     public FebsResponse importExcels(@RequestParam("file") MultipartFile file, ServletRequest servletRequest) throws FebsException {

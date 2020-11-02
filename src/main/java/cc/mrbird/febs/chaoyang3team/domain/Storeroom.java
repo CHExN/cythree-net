@@ -80,6 +80,11 @@ public class Storeroom implements Serializable {
     private transient BigDecimal moneyOriginal;
 
     /**
+     * 物品总价格
+     */
+    private transient BigDecimal totalPrice;
+
+    /**
      * 物资类别 1保洁物品 2劳保物品 3办公室用品 4维修用品 5固定资产 6工会用品 7技安用品 8食堂用品 9其他
      */
     @TableField("TYPE_APPLICATION")

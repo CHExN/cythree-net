@@ -197,24 +197,24 @@ public class TaxOutsideController extends BaseController {
                         taxOutside.setStaffName(staffOutside.getName());
                         taxOutside.setIdCardType(entity.getIdCardType());
                         taxOutside.setStaffIdCard(entity.getStaffIdCard().trim());
-                        taxOutside.setCurrentIncome(entity.getCurrentIncome().equals("$EMPTY_CELL$") ? zero : new BigDecimal(entity.getCurrentIncome()));
-                        taxOutside.setCurrentTaxFreeIncome(entity.getCurrentTaxFreeIncome().equals("$EMPTY_CELL$") ? zero : new BigDecimal(entity.getCurrentTaxFreeIncome()));
-                        taxOutside.setBasicPensionIp(entity.getBasicPensionIp().equals("$EMPTY_CELL$") ? zero : new BigDecimal(entity.getBasicPensionIp()));
-                        taxOutside.setBasicMedicalIp(entity.getBasicMedicalIp().equals("$EMPTY_CELL$") ? zero : new BigDecimal(entity.getBasicMedicalIp()));
-                        taxOutside.setUnemploymentIp(entity.getUnemploymentIp().equals("$EMPTY_CELL$") ? zero : new BigDecimal(entity.getUnemploymentIp()));
-                        taxOutside.setHousingFund(entity.getHousingFund().equals("$EMPTY_CELL$") ? zero : new BigDecimal(entity.getHousingFund()));
-                        taxOutside.setCumulativeChildE(entity.getCumulativeChildE().equals("$EMPTY_CELL$") ? zero : new BigDecimal(entity.getCumulativeChildE()));
-                        taxOutside.setCumulativeContinuingE(entity.getCumulativeContinuingE().equals("$EMPTY_CELL$") ? zero : new BigDecimal(entity.getCumulativeContinuingE()));
-                        taxOutside.setCumulativeHomeLoanInterest(entity.getCumulativeHomeLoanInterest().equals("$EMPTY_CELL$") ? zero : new BigDecimal(entity.getCumulativeHomeLoanInterest()));
-                        taxOutside.setCumulativeHousingRent(entity.getCumulativeHousingRent().equals("$EMPTY_CELL$") ? zero : new BigDecimal(entity.getCumulativeHousingRent()));
-                        taxOutside.setCumulativeElderlySupport(entity.getCumulativeElderlySupport().equals("$EMPTY_CELL$") ? zero : new BigDecimal(entity.getCumulativeElderlySupport()));
-                        taxOutside.setCorporateAnnuity(entity.getCorporateAnnuity().equals("$EMPTY_CELL$") ? zero : new BigDecimal(entity.getCorporateAnnuity()));
-                        taxOutside.setCommercialHealthInsurance(entity.getCommercialHealthInsurance().equals("$EMPTY_CELL$") ? zero : new BigDecimal(entity.getCommercialHealthInsurance()));
-                        taxOutside.setTaxExtensionPensionInsurance(entity.getTaxExtensionPensionInsurance().equals("$EMPTY_CELL$") ? zero : new BigDecimal(entity.getTaxExtensionPensionInsurance()));
-                        taxOutside.setOther(entity.getOther().equals("$EMPTY_CELL$") ? zero : new BigDecimal(entity.getOther()));
-                        taxOutside.setAllowanceForDeduction(entity.getAllowanceForDeduction().equals("$EMPTY_CELL$") ? zero : new BigDecimal(entity.getAllowanceForDeduction()));
-                        taxOutside.setTaxDeduction(entity.getTaxDeduction().equals("$EMPTY_CELL$") ? zero : new BigDecimal(entity.getTaxDeduction()));
-                        taxOutside.setRemark(entity.getRemark().equals("$EMPTY_CELL$") ? "" : entity.getRemark());
+                        taxOutside.setCurrentIncome(StringUtils.isBlank(entity.getCurrentIncome()) || entity.getCurrentIncome().equals("$EMPTY_CELL$") ? zero : new BigDecimal(entity.getCurrentIncome()));
+                        taxOutside.setCurrentTaxFreeIncome(StringUtils.isBlank(entity.getCurrentTaxFreeIncome()) || entity.getCurrentTaxFreeIncome().equals("$EMPTY_CELL$") ? zero : new BigDecimal(entity.getCurrentTaxFreeIncome()));
+                        taxOutside.setBasicPensionIp(StringUtils.isBlank(entity.getBasicPensionIp()) || entity.getBasicPensionIp().equals("$EMPTY_CELL$") ? zero : new BigDecimal(entity.getBasicPensionIp()));
+                        taxOutside.setBasicMedicalIp(StringUtils.isBlank(entity.getBasicMedicalIp()) || entity.getBasicMedicalIp().equals("$EMPTY_CELL$") ? zero : new BigDecimal(entity.getBasicMedicalIp()));
+                        taxOutside.setUnemploymentIp(StringUtils.isBlank(entity.getUnemploymentIp()) || entity.getUnemploymentIp().equals("$EMPTY_CELL$") ? zero : new BigDecimal(entity.getUnemploymentIp()));
+                        taxOutside.setHousingFund(StringUtils.isBlank(entity.getHousingFund()) || entity.getHousingFund().equals("$EMPTY_CELL$") ? zero : new BigDecimal(entity.getHousingFund()));
+                        taxOutside.setCumulativeChildE(StringUtils.isBlank(entity.getCumulativeChildE()) || entity.getCumulativeChildE().equals("$EMPTY_CELL$") ? zero : new BigDecimal(entity.getCumulativeChildE()));
+                        taxOutside.setCumulativeContinuingE(StringUtils.isBlank(entity.getCumulativeContinuingE()) || entity.getCumulativeContinuingE().equals("$EMPTY_CELL$") ? zero : new BigDecimal(entity.getCumulativeContinuingE()));
+                        taxOutside.setCumulativeHomeLoanInterest(StringUtils.isBlank(entity.getCumulativeHomeLoanInterest()) || entity.getCumulativeHomeLoanInterest().equals("$EMPTY_CELL$") ? zero : new BigDecimal(entity.getCumulativeHomeLoanInterest()));
+                        taxOutside.setCumulativeHousingRent(StringUtils.isBlank(entity.getCumulativeHousingRent()) || entity.getCumulativeHousingRent().equals("$EMPTY_CELL$") ? zero : new BigDecimal(entity.getCumulativeHousingRent()));
+                        taxOutside.setCumulativeElderlySupport(StringUtils.isBlank(entity.getCumulativeElderlySupport()) || entity.getCumulativeElderlySupport().equals("$EMPTY_CELL$") ? zero : new BigDecimal(entity.getCumulativeElderlySupport()));
+                        taxOutside.setCorporateAnnuity(StringUtils.isBlank(entity.getCorporateAnnuity()) || entity.getCorporateAnnuity().equals("$EMPTY_CELL$") ? zero : new BigDecimal(entity.getCorporateAnnuity()));
+                        taxOutside.setCommercialHealthInsurance(StringUtils.isBlank(entity.getCommercialHealthInsurance()) || entity.getCommercialHealthInsurance().equals("$EMPTY_CELL$") ? zero : new BigDecimal(entity.getCommercialHealthInsurance()));
+                        taxOutside.setTaxExtensionPensionInsurance(StringUtils.isBlank(entity.getTaxExtensionPensionInsurance()) || entity.getTaxExtensionPensionInsurance().equals("$EMPTY_CELL$") ? zero : new BigDecimal(entity.getTaxExtensionPensionInsurance()));
+                        taxOutside.setOther(StringUtils.isBlank(entity.getOther()) || entity.getOther().equals("$EMPTY_CELL$") ? zero : new BigDecimal(entity.getOther()));
+                        taxOutside.setAllowanceForDeduction(StringUtils.isBlank(entity.getAllowanceForDeduction()) || entity.getAllowanceForDeduction().equals("$EMPTY_CELL$") ? zero : new BigDecimal(entity.getAllowanceForDeduction()));
+                        taxOutside.setTaxDeduction(StringUtils.isBlank(entity.getTaxDeduction()) || entity.getTaxDeduction().equals("$EMPTY_CELL$") ? zero : new BigDecimal(entity.getTaxDeduction()));
+                        taxOutside.setRemark(StringUtils.isBlank(entity.getRemark()) || entity.getRemark().equals("$EMPTY_CELL$") ? "" : entity.getRemark());
                         taxOutside.setCreateTime(now);
                         taxOutside.setYear(dateArr[0]);
                         taxOutside.setMonth(dateArr[1]);
@@ -248,7 +248,7 @@ public class TaxOutsideController extends BaseController {
                 }
             });
             if (!data.isEmpty()) {
-                // 将合法的记录批量入库
+                // 将合法的记录批量插入
                 this.taxOutsideService.batchInsertTaxOutside(data);
             }
             long time = ((System.currentTimeMillis() - beginTimeMillis));

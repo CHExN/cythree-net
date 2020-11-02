@@ -289,7 +289,7 @@ typeApplication=5, typeApplicationAuthority=null, username=xzhqbm, createTime=20
                 }
             });
             if (!data.isEmpty()) {
-                // 将合法的记录批量入库
+                // 将合法的记录批量插入
                 this.attendanceService.batchInsertAttendance(data);
             }
             long time = ((System.currentTimeMillis() - beginTimeMillis));

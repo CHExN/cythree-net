@@ -219,18 +219,18 @@ public class WageOutsideController extends BaseController {
                         wageOutside.setStaffName(staffOutside.getName());
                         wageOutside.setStaffIdCard(entity.getStaffIdCard().trim());
 
-                        wageOutside.setCurrentIncome(entity.getCurrentIncome().equals("$EMPTY_CELL$") || entity.getCurrentIncome().equals("") ? zero : new BigDecimal(entity.getCurrentIncome()));
-                        wageOutside.setPostAllowance(entity.getPostAllowance().equals("$EMPTY_CELL$") || entity.getPostAllowance().equals("") ? zero : new BigDecimal(entity.getPostAllowance()));
-                        wageOutside.setSanitationAllowance(entity.getSanitationAllowance().equals("$EMPTY_CELL$") || entity.getSanitationAllowance().equals("") ? zero : new BigDecimal(entity.getSanitationAllowance()));
-                        wageOutside.setDangerousSubsidy(entity.getDangerousSubsidy().equals("$EMPTY_CELL$") || entity.getDangerousSubsidy().equals("") ? zero : new BigDecimal(entity.getDangerousSubsidy()));
-                        wageOutside.setPerformanceBonus(entity.getPerformanceBonus().equals("$EMPTY_CELL$") || entity.getPerformanceBonus().equals("") ? zero : new BigDecimal(entity.getPerformanceBonus()));
-                        wageOutside.setOvertimePay(entity.getOvertimePay().equals("$EMPTY_CELL$") || entity.getOvertimePay().equals("") ? zero : new BigDecimal(entity.getOvertimePay()));
-                        wageOutside.setHolidayCosts(entity.getHolidayCosts().equals("$EMPTY_CELL$") || entity.getHolidayCosts().equals("") ? zero : new BigDecimal(entity.getHolidayCosts()));
-                        wageOutside.setEmptyColumn01(entity.getEmptyColumn01().equals("$EMPTY_CELL$") || entity.getEmptyColumn01().equals("") ? zero : new BigDecimal(entity.getEmptyColumn01()));
-                        wageOutside.setEmptyColumn02(entity.getEmptyColumn02().equals("$EMPTY_CELL$") || entity.getEmptyColumn02().equals("") ? zero : new BigDecimal(entity.getEmptyColumn02()));
-                        wageOutside.setEmptyColumn03(entity.getEmptyColumn03().equals("$EMPTY_CELL$") || entity.getEmptyColumn03().equals("") ? zero : new BigDecimal(entity.getEmptyColumn03()));
-                        wageOutside.setEmptyColumn04(entity.getEmptyColumn04().equals("$EMPTY_CELL$") || entity.getEmptyColumn04().equals("") ? zero : new BigDecimal(entity.getEmptyColumn04()));
-                        wageOutside.setEmptyColumn05(entity.getEmptyColumn05().equals("$EMPTY_CELL$") || entity.getEmptyColumn05().equals("") ? zero : new BigDecimal(entity.getEmptyColumn05()));
+                        wageOutside.setCurrentIncome(StringUtils.isBlank(entity.getCurrentIncome()) || entity.getCurrentIncome().equals("$EMPTY_CELL$") || entity.getCurrentIncome().equals("") ? zero : new BigDecimal(entity.getCurrentIncome()));
+                        wageOutside.setPostAllowance(StringUtils.isBlank(entity.getPostAllowance()) || entity.getPostAllowance().equals("$EMPTY_CELL$") || entity.getPostAllowance().equals("") ? zero : new BigDecimal(entity.getPostAllowance()));
+                        wageOutside.setSanitationAllowance(StringUtils.isBlank(entity.getSanitationAllowance()) || entity.getSanitationAllowance().equals("$EMPTY_CELL$") || entity.getSanitationAllowance().equals("") ? zero : new BigDecimal(entity.getSanitationAllowance()));
+                        wageOutside.setDangerousSubsidy(StringUtils.isBlank(entity.getDangerousSubsidy()) || entity.getDangerousSubsidy().equals("$EMPTY_CELL$") || entity.getDangerousSubsidy().equals("") ? zero : new BigDecimal(entity.getDangerousSubsidy()));
+                        wageOutside.setPerformanceBonus(StringUtils.isBlank(entity.getPerformanceBonus()) || entity.getPerformanceBonus().equals("$EMPTY_CELL$") || entity.getPerformanceBonus().equals("") ? zero : new BigDecimal(entity.getPerformanceBonus()));
+                        wageOutside.setOvertimePay(StringUtils.isBlank(entity.getOvertimePay()) || entity.getOvertimePay().equals("$EMPTY_CELL$") || entity.getOvertimePay().equals("") ? zero : new BigDecimal(entity.getOvertimePay()));
+                        wageOutside.setHolidayCosts(StringUtils.isBlank(entity.getHolidayCosts()) || entity.getHolidayCosts().equals("$EMPTY_CELL$") || entity.getHolidayCosts().equals("") ? zero : new BigDecimal(entity.getHolidayCosts()));
+                        wageOutside.setEmptyColumn01(StringUtils.isBlank(entity.getEmptyColumn01()) || entity.getEmptyColumn01().equals("$EMPTY_CELL$") || entity.getEmptyColumn01().equals("") ? zero : new BigDecimal(entity.getEmptyColumn01()));
+                        wageOutside.setEmptyColumn02(StringUtils.isBlank(entity.getEmptyColumn02()) || entity.getEmptyColumn02().equals("$EMPTY_CELL$") || entity.getEmptyColumn02().equals("") ? zero : new BigDecimal(entity.getEmptyColumn02()));
+                        wageOutside.setEmptyColumn03(StringUtils.isBlank(entity.getEmptyColumn03()) || entity.getEmptyColumn03().equals("$EMPTY_CELL$") || entity.getEmptyColumn03().equals("") ? zero : new BigDecimal(entity.getEmptyColumn03()));
+                        wageOutside.setEmptyColumn04(StringUtils.isBlank(entity.getEmptyColumn04()) || entity.getEmptyColumn04().equals("$EMPTY_CELL$") || entity.getEmptyColumn04().equals("") ? zero : new BigDecimal(entity.getEmptyColumn04()));
+                        wageOutside.setEmptyColumn05(StringUtils.isBlank(entity.getEmptyColumn05()) || entity.getEmptyColumn05().equals("$EMPTY_CELL$") || entity.getEmptyColumn05().equals("") ? zero : new BigDecimal(entity.getEmptyColumn05()));
                         // 应发工资
                         wageOutside.setPayable(wageOutside.getCurrentIncome()
                                 .add(wageOutside.getPostAllowance())
@@ -248,18 +248,18 @@ public class WageOutsideController extends BaseController {
                         System.out.println("应发工资");
                         System.out.println(wageOutside.getPayable());
 
-                        wageOutside.setBasicPensionIp(entity.getBasicPensionIp().equals("$EMPTY_CELL$") || entity.getBasicPensionIp().equals("") ? zero : new BigDecimal(entity.getBasicPensionIp()));
-                        wageOutside.setUnemploymentIp(entity.getUnemploymentIp().equals("$EMPTY_CELL$") || entity.getUnemploymentIp().equals("") ? zero : new BigDecimal(entity.getUnemploymentIp()));
-                        wageOutside.setBasicMedicalIp(entity.getBasicMedicalIp().equals("$EMPTY_CELL$") || entity.getBasicMedicalIp().equals("") ? zero : new BigDecimal(entity.getBasicMedicalIp()));
-                        wageOutside.setTaxDeduction(entity.getTaxDeduction().equals("$EMPTY_CELL$") || entity.getTaxDeduction().equals("") ? zero : new BigDecimal(entity.getTaxDeduction()));
-                        wageOutside.setMembership(entity.getMembership().equals("$EMPTY_CELL$") || entity.getMembership().equals("") ? zero : new BigDecimal(entity.getMembership()));
-                        wageOutside.setHousingFund(entity.getHousingFund().equals("$EMPTY_CELL$") || entity.getHousingFund().equals("") ? zero : new BigDecimal(entity.getHousingFund()));
-                        wageOutside.setSickLeave(entity.getSickLeave().equals("$EMPTY_CELL$") || entity.getSickLeave().equals("") ? zero : new BigDecimal(entity.getSickLeave()));
-                        wageOutside.setEmptyColumn06(entity.getEmptyColumn06().equals("$EMPTY_CELL$") || entity.getEmptyColumn06().equals("") ? zero : new BigDecimal(entity.getEmptyColumn06()));
-                        wageOutside.setEmptyColumn07(entity.getEmptyColumn07().equals("$EMPTY_CELL$") || entity.getEmptyColumn07().equals("") ? zero : new BigDecimal(entity.getEmptyColumn07()));
-                        wageOutside.setEmptyColumn08(entity.getEmptyColumn08().equals("$EMPTY_CELL$") || entity.getEmptyColumn08().equals("") ? zero : new BigDecimal(entity.getEmptyColumn08()));
-                        wageOutside.setEmptyColumn09(entity.getEmptyColumn09().equals("$EMPTY_CELL$") || entity.getEmptyColumn09().equals("") ? zero : new BigDecimal(entity.getEmptyColumn09()));
-                        wageOutside.setEmptyColumn10(entity.getEmptyColumn10().equals("$EMPTY_CELL$") || entity.getEmptyColumn10().equals("") ? zero : new BigDecimal(entity.getEmptyColumn10()));
+                        wageOutside.setBasicPensionIp(StringUtils.isBlank(entity.getBasicPensionIp()) || entity.getBasicPensionIp().equals("$EMPTY_CELL$") || entity.getBasicPensionIp().equals("") ? zero : new BigDecimal(entity.getBasicPensionIp()));
+                        wageOutside.setUnemploymentIp(StringUtils.isBlank(entity.getUnemploymentIp()) || entity.getUnemploymentIp().equals("$EMPTY_CELL$") || entity.getUnemploymentIp().equals("") ? zero : new BigDecimal(entity.getUnemploymentIp()));
+                        wageOutside.setBasicMedicalIp(StringUtils.isBlank(entity.getBasicMedicalIp()) || entity.getBasicMedicalIp().equals("$EMPTY_CELL$") || entity.getBasicMedicalIp().equals("") ? zero : new BigDecimal(entity.getBasicMedicalIp()));
+                        wageOutside.setTaxDeduction(StringUtils.isBlank(entity.getTaxDeduction()) || entity.getTaxDeduction().equals("$EMPTY_CELL$") || entity.getTaxDeduction().equals("") ? zero : new BigDecimal(entity.getTaxDeduction()));
+                        wageOutside.setMembership(StringUtils.isBlank(entity.getMembership()) || entity.getMembership().equals("$EMPTY_CELL$") || entity.getMembership().equals("") ? zero : new BigDecimal(entity.getMembership()));
+                        wageOutside.setHousingFund(StringUtils.isBlank(entity.getHousingFund()) || entity.getHousingFund().equals("$EMPTY_CELL$") || entity.getHousingFund().equals("") ? zero : new BigDecimal(entity.getHousingFund()));
+                        wageOutside.setSickLeave(StringUtils.isBlank(entity.getSickLeave()) || entity.getSickLeave().equals("$EMPTY_CELL$") || entity.getSickLeave().equals("") ? zero : new BigDecimal(entity.getSickLeave()));
+                        wageOutside.setEmptyColumn06(StringUtils.isBlank(entity.getEmptyColumn06()) || entity.getEmptyColumn06().equals("$EMPTY_CELL$") || entity.getEmptyColumn06().equals("") ? zero : new BigDecimal(entity.getEmptyColumn06()));
+                        wageOutside.setEmptyColumn07(StringUtils.isBlank(entity.getEmptyColumn07()) || entity.getEmptyColumn07().equals("$EMPTY_CELL$") || entity.getEmptyColumn07().equals("") ? zero : new BigDecimal(entity.getEmptyColumn07()));
+                        wageOutside.setEmptyColumn08(StringUtils.isBlank(entity.getEmptyColumn08()) || entity.getEmptyColumn08().equals("$EMPTY_CELL$") || entity.getEmptyColumn08().equals("") ? zero : new BigDecimal(entity.getEmptyColumn08()));
+                        wageOutside.setEmptyColumn09(StringUtils.isBlank(entity.getEmptyColumn09()) || entity.getEmptyColumn09().equals("$EMPTY_CELL$") || entity.getEmptyColumn09().equals("") ? zero : new BigDecimal(entity.getEmptyColumn09()));
+                        wageOutside.setEmptyColumn10(StringUtils.isBlank(entity.getEmptyColumn10()) || entity.getEmptyColumn10().equals("$EMPTY_CELL$") || entity.getEmptyColumn10().equals("") ? zero : new BigDecimal(entity.getEmptyColumn10()));
                         // 实发工资
                         wageOutside.setRealWage(wageOutside.getPayable()
                                 .subtract(wageOutside.getBasicPensionIp())
@@ -293,7 +293,7 @@ public class WageOutsideController extends BaseController {
                 }
             });
             if (!data.isEmpty()) {
-                // 将合法的记录批量入库
+                // 将合法的记录批量插入
                 this.wageOutsideService.batchInsertWageOutside(data);
             }
             long time = ((System.currentTimeMillis() - beginTimeMillis));

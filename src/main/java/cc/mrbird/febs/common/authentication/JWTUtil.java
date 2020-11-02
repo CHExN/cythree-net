@@ -35,7 +35,7 @@ public class JWTUtil {
             log.info("token is valid");
             return true;
         } catch (Exception e) {
-            log.info("token is invalid{}", e.getMessage());
+            log.info("token is invalid {}", e.getMessage());
             return false;
         }
     }
@@ -71,6 +71,21 @@ public class JWTUtil {
     }
 
     /**
+     * 从 token中获取openid
+     *
+     * @return token中包含的openid
+     */
+    public static String getOpenId(String token) {
+        try {
+            DecodedJWT jwt = JWT.decode(token);
+            return jwt.getClaim("openId").asString();
+        } catch (JWTDecodeException e) {
+            log.error("error：{}", e.getMessage());
+            return null;
+        }
+    }
+
+    /**
      * 生成 token
      *
      * @param username 用户名
@@ -85,6 +100,32 @@ public class JWTUtil {
             return JWT.create()
                     .withClaim("username", username)
                     .withClaim("systemType", type)
+                    .withExpiresAt(date)
+                    .sign(algorithm);
+        } catch (Exception e) {
+            log.error("error：{}", e);
+            return null;
+        }
+    }
+
+    /**
+     * 生成 token
+     *
+     * @param username 用户名
+     * @param secret   用户的密码
+     * @param type     用户类型
+     * @param openId   openId
+     * @return token
+     */
+    public static String sign(String username, String secret, String type, String openId) {
+        try {
+            username = StringUtils.lowerCase(username);
+            Date date = new Date(System.currentTimeMillis() + EXPIRE_TIME);
+            Algorithm algorithm = Algorithm.HMAC256(secret);
+            return JWT.create()
+                    .withClaim("username", username)
+                    .withClaim("systemType", type)
+                    .withClaim("openId", openId)
                     .withExpiresAt(date)
                     .sign(algorithm);
         } catch (Exception e) {

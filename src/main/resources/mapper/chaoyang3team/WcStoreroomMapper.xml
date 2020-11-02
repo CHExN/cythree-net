@@ -54,6 +54,9 @@
         <if test="wcStoreroom.wcName != null and wcStoreroom.wcName != ''">
             AND w.WC_NAME LIKE CONCAT('%',#{wcStoreroom.wcName},'%')
         </if>
+        <if test="wcStoreroom.wcOwn != null and wcStoreroom.wcOwn != ''">
+            AND ws.WC_OWN LIKE CONCAT('%',#{wcStoreroom.wcOwn},'%')
+        </if>
         <if test="wcStoreroom.wcNum != null and wcStoreroom.wcNum != ''">
             AND w.WC_NUM LIKE CONCAT('%',#{wcStoreroom.wcNum},'%')
         </if>
@@ -66,6 +69,11 @@
         <if test="wcStoreroom.name != null and wcStoreroom.name != ''">
             <foreach collection="wcStoreroom.names" index="index" item="item" open="AND (" separator="OR" close=")">
                 s.NAME LIKE CONCAT('%',#{item},'%')
+            </foreach>
+        </if>
+        <if test="wcStoreroom.storeroomIds != null and wcStoreroom.storeroomIds != ''">
+            <foreach collection="wcStoreroom.storeroomIdArr" index="index" item="item" open="AND (" separator="OR" close=")">
+                ws.STOREROOM_ID LIKE CONCAT('%',#{item},'%')
             </foreach>
         </if>
         <if test="wcStoreroom.createTimeFrom != null and wcStoreroom.createTimeFrom !='' and wcStoreroom.createTimeTo!= null and wcStoreroom.createTimeTo !=''">

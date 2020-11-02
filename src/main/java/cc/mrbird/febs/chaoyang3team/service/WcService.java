@@ -30,6 +30,8 @@ public interface WcService extends IService<Wc> {
 
     void updateWc(Wc wc);
 
+    void updateWcLocation(Wc wc);
+
     void deleteWc(String[] wcIds);
 
     void deleteWcFile(String[] fileIds);

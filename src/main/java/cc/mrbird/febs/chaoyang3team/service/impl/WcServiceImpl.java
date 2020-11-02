@@ -16,6 +16,7 @@ import cc.mrbird.febs.system.domain.User;
 import cc.mrbird.febs.system.manager.UserManager;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.ImmutableMap;
@@ -132,6 +133,19 @@ public class WcServiceImpl extends ServiceImpl<WcMapper, Wc> implements WcServic
     @Transactional
     public void updateWc(Wc wc) {
         this.baseMapper.updateById(wc);
+    }
+
+    @Override
+    @Transactional
+    public void updateWcLocation(Wc wc) {
+//        this.baseMapper.updateById(wc);
+        this.baseMapper.update(
+                null,
+                Wrappers.<Wc>lambdaUpdate()
+                        .set(Wc::getLongitude, wc.getLongitude())
+                        .set(Wc::getLatitude, wc.getLatitude())
+                        .eq(Wc::getWcId, wc.getWcId())
+        );
     }
 
     @Override

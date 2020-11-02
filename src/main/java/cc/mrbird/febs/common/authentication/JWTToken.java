@@ -18,15 +18,15 @@ public class JWTToken implements AuthenticationToken {
     /**
      * token过期时间
      */
-    private String exipreAt;
+    private String expireAt;
 
     public JWTToken(String token) {
         this.token = token;
     }
 
-    public JWTToken(String token, String exipreAt) {
+    public JWTToken(String token, String expireAt) {
         this.token = token;
-        this.exipreAt = exipreAt;
+        this.expireAt = expireAt;
     }
 
     @Override

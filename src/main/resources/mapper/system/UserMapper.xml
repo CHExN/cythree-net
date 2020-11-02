@@ -32,6 +32,9 @@
         u.AVATAR,
         u.DESCRIPTION,
         u.TYPE,
+        u.OPEN_ID,
+        u.WE_CHAT_AVATAR,
+        u.WE_CHAT_NAME,
         u.LAST_LOGIN_TIME lastLoginTime,
         GROUP_CONCAT(r.role_id) roleId,
         GROUP_CONCAT(r.ROLE_NAME) roleName
@@ -62,6 +65,12 @@
         <if test="user.type != null and user.type != '' and user.type != 0">
             AND FIND_IN_SET(u.TYPE, #{user.type})
         </if>
+        <if test="user.openId != null and user.openId != ''">
+            AND u.OPEN_ID LIKE CONCAT('%',#{user.openId},'%')
+        </if>
+        <if test="user.weChatName != null and user.weChatName != ''">
+            AND u.WE_CHAT_NAME LIKE CONCAT('%',#{user.weChatName},'%')
+        </if>
         group by u.username
     </select>
 
@@ -80,6 +89,7 @@
         u.AVATAR,
         u.DESCRIPTION,
         u.TYPE,
+        u.OPEN_ID,
         u.LAST_LOGIN_TIME lastLoginTime,
         GROUP_CONCAT(r.role_id) roleId,
         GROUP_CONCAT(r.ROLE_NAME) roleName

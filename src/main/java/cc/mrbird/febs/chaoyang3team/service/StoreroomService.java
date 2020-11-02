@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import javax.servlet.ServletRequest;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -21,7 +22,9 @@ public interface StoreroomService extends IService<Storeroom> {
      * @param storeroom 查询条件
      * @return 库存详情数据
      */
-    IPage<Storeroom> findStoreroomsDetail(QueryRequest request, Storeroom storeroom, ServletRequest servletRequest);
+    Map<String, Object> findStoreroomsDetail(QueryRequest request, Storeroom storeroom, ServletRequest servletRequest);
+
+    BigDecimal findStoreroomsSelectedTotalPrice(String[] storeroomIds);
 
     /**
      * 出入库物品明细

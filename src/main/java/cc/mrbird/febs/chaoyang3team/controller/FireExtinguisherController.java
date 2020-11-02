@@ -184,7 +184,7 @@ public class FireExtinguisherController extends BaseController {
                 }
             });
             if (!data.isEmpty()) {
-                // 将合法的记录批量入库
+                // 将合法的记录批量插入
                 this.fireExtinguisherService.batchInsertFireExtinguisher(data);
             }
             long time = ((System.currentTimeMillis() - beginTimeMillis));

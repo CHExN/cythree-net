@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.mrbird.febs.chaoyang3team.dao.WcInspectionMapper">
+
+    <select id="findWcInspectionDetail" resultType="cc.mrbird.febs.chaoyang3team.domain.WcInspection">
+        SELECT
+        <include refid="result"/>
+        FROM cy_wc_inspection AS cwi
+        LEFT JOIN t_dept AS td ON (td.DEPT_ID = cwi.DEPT_ID)
+        LEFT JOIN cy_wc AS cw ON (cw.WC_ID = cwi.WC_ID)
+        WHERE cwi.DELETED = #{wcInspection.deleted}
+        <include refid="param"/>
+    </select>
+
+    <select id="getWcInspectionUsername" resultType="java.util.Map">
+        SELECT
+        cwi.USERNAME AS username,
+        cwi.DEPT_ID,
+        td.DEPT_NAME
+        FROM cy_wc_inspection AS cwi
+        LEFT JOIN t_dept AS td ON (td.DEPT_ID = cwi.DEPT_ID)
+        WHERE cwi.DELETED = #{deleted}
+        <if test="deptId != null and deptId != ''">
+            AND cwi.DEPT_ID = #{deptId}
+        </if>
+        GROUP BY cwi.USERNAME
+        ORDER BY cwi.DEPT_ID ASC
+    </select>
+
+    <sql id="result">
+        cwi.ID,
+        cwi.USERNAME AS username,
+        cwi.DEPT_ID,
+        td.DEPT_NAME,
+        cwi.CREATE_TIME,
+        cwi.MODIFY_TIME,
+        cwi.INSPECTION_DATE AS inspectionDate,
+        cwi.WC_ID,
+        cw.WC_NAME,
+        cw.WC_NUM AS wcNum,
+        cw.STREET_TOWN AS streetTown,
+        cw.WC_SORT AS wcSort
+	</sql>
+
+    <sql id="param">
+        <if test="wcInspection.username != null and wcInspection.username != ''">
+            AND cwi.USERNAME = #{wcInspection.username}
+        </if>
+        <if test="wcInspection.wcName != null and wcInspection.wcName != ''">
+            AND cw.WC_NAME LIKE CONCAT('%',#{wcInspection.wcName},'%')
+        </if>
+        <if test="wcInspection.wcNum != null and wcInspection.wcNum != ''">
+            AND cw.WC_NUM LIKE CONCAT('%',#{wcInspection.wcNum},'%')
+        </if>
+        <if test="wcInspection.wcSort != null and wcInspection.wcSort != ''">
+            AND FIND_IN_SET(cw.WC_SORT, #{wcInspection.wcSort})
+        </if>
+        <if test="wcInspection.deptId != null and wcInspection.deptId != ''">
+            AND cwi.DEPT_ID = #{wcInspection.deptId}
+        </if>
+        <if test="wcInspection.inspectionDateString != null and wcInspection.inspectionDateString != ''">
+            AND to_days(cwi.INSPECTION_DATE) = to_days(#{wcInspection.inspectionDateString})
+        </if>
+    </sql>
+</mapper>

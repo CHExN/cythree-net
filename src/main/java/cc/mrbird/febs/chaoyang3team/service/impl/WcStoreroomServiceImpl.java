@@ -64,6 +64,10 @@ public class WcStoreroomServiceImpl extends ServiceImpl<WcStoreroomMapper, WcSto
                 wcStoreroom.setNames(wcStoreroom.getName().replace("，", ",").split(","));
             }
 
+            if (!(wcStoreroom.getStoreroomIds() == null || wcStoreroom.getStoreroomIds().isEmpty())) {
+                wcStoreroom.setStoreroomIdArr(wcStoreroom.getStoreroomIds().replace("，", ",").split(","));
+            }
+
             Page<WcStoreroom> page = new Page<>();
             SortUtil.handlePageSort(request, page, false);
             return this.baseMapper.findWcStoreroomDetail(page, wcStoreroom);
@@ -211,6 +215,10 @@ public class WcStoreroomServiceImpl extends ServiceImpl<WcStoreroomMapper, WcSto
 
             if (!(wcStoreroom.getName() == null || wcStoreroom.getName().isEmpty())) {
                 wcStoreroom.setNames(wcStoreroom.getName().replace("，", ",").split(","));
+            }
+
+            if (!(wcStoreroom.getStoreroomIds() == null || wcStoreroom.getStoreroomIds().isEmpty())) {
+                wcStoreroom.setStoreroomIdArr(wcStoreroom.getStoreroomIds().replace("，", ",").split(","));
             }
 
             return this.baseMapper.getDeleteWcStoreroomIds(wcStoreroom);

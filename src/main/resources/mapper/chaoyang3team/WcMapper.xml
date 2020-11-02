@@ -323,6 +323,7 @@
             SELECT
             wc.WC_ID,
             wc.WC_NAME,
+            wc.WC_NUM,
             wc.OPEN_HOUR,
             wc.PIT_MALE,
             wc.PIT_FEMALE,
@@ -330,6 +331,8 @@
             wc.WC_ADDRESS,
             wc.LONGITUDE,
             wc.LATITUDE,
+            wc.STREET_TOWN,
+            wc.WC_SORT,
             ROUND(GETDISTANCE(#{longitude}, #{latitude}, wc.LONGITUDE, wc.LATITUDE)) AS distance,
             (
                 SELECT cws.STATUS
@@ -341,7 +344,7 @@
             ) AS `status`
             FROM
             cy_wc AS wc
-            WHERE
+            WHERE wc.WRITE_OFF=0 AND
             LENGTH(wc.LONGITUDE+0)=LENGTH(wc.LONGITUDE) AND LENGTH(wc.LATITUDE+0)=LENGTH(wc.LATITUDE)
             AND ROUND(GETDISTANCE(#{longitude}, #{latitude}, wc.LONGITUDE, wc.LATITUDE)) &lt;= #{radius}
             ORDER BY

@@ -93,6 +93,13 @@ public class User implements Serializable {
     @ExcelField(value = "账号类型", writeConverterExp = "0=通用,1=成本核算,2=小程序")
     private String type;
 
+    // 微信头像文件id
+    private String weChatAvatar;
+    // 微信昵称
+    private String weChatName;
+
+    private String openId;
+
 //    @NotBlank(message = "{required}")
     private transient String roleId;
     @ExcelField(value = "角色")

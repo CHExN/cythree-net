@@ -285,7 +285,7 @@ public class InsuranceController extends BaseController {
                 }
             });
             if (!data.isEmpty()) {
-                // 将合法的记录批量入库
+                // 将合法的记录批量插入
                 this.insuranceService.batchInsertInsurance(data);
             }
             long time = ((System.currentTimeMillis() - beginTimeMillis));

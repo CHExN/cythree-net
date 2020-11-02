@@ -21,6 +21,10 @@ public class ActiveUser implements Serializable {
     private String id = RandomStringUtils.randomAlphanumeric(20);
     // 用户名
     private String username;
+    // 账号类型
+    private String type;
+    // 登陆类型 1为pc登陆，2为微信登陆
+    private Integer loginType;
     // ip地址
     private String ip;
     // token(加密后)

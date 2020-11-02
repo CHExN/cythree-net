@@ -58,7 +58,7 @@ public class WcStoreroomController extends BaseController {
     }
 
     @Log("删除全部分配记录")
-    @PostMapping("/deleteAll")
+    @PostMapping("deleteAll")
     @RequiresPermissions("wcStoreroom:delete")
     public void deleteAllWcStoreroomsByWcIdAndStoreroomId(QueryRequest request, WcStoreroom wcStoreroom, ServletRequest servletRequest) throws FebsException {
         try {

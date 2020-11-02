@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cc.mrbird.febs.chaoyang3team.dao.WcTemplateMapper">
+
+    <select id="findWcTemplateDetail" resultType="cc.mrbird.febs.chaoyang3team.domain.WcTemplate">
+        SELECT
+        <include refid="result"/>,
+        GROUP_CONCAT(cw.WC_NAME) AS wcNames,
+        GROUP_CONCAT(cw.WC_NUM) AS wcNums
+        FROM cy_wc_template AS cwt
+        LEFT JOIN cy_wc AS cw ON(FIND_IN_SET(cw.WC_ID, cwt.WC_IDS))
+        WHERE cwt.DELETED = #{wcTemplate.deleted}
+        <include refid="param"/>
+        GROUP BY cwt.ID
+    </select>
+
+    <select id="getAllWcTemplate" resultType="java.util.Map">
+        SELECT
+        cwt.ID,
+        cwt.NAME AS `name`,
+        cwt.REMARK
+        FROM cy_wc_template AS cwt
+        WHERE cwt.DELETED = #{deleted}
+    </select>
+
+    <select id="getTemplateWcList" resultType="cc.mrbird.febs.chaoyang3team.domain.Wc">
+        SELECT WC_ID, WC_NAME, WC_NUM, WC_SORT
+        FROM cy_wc AS cw
+        LEFT JOIN cy_wc_template AS cwt ON(FIND_IN_SET(cw.WC_ID, cwt.WC_IDS))
+        WHERE cwt.ID = #{id}
+    </select>
+
+    <sql id="result">
+        cwt.ID,
+        cwt.NAME AS `name`,
+        cwt.REMARK,
+        cwt.WC_IDS,
+        cwt.CREATE_TIME,
+        cwt.MODIFY_TIME
+	</sql>
+
+    <sql id="param">
+        <if test="wcTemplate.name != null and wcTemplate.name != ''">
+            AND cwt.NAME LIKE CONCAT('%',#{wcTemplate.name},'%')
+        </if>
+    </sql>
+</mapper>

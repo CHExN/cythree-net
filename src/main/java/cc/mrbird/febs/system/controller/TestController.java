@@ -93,7 +93,7 @@ public class TestController extends BaseController {
                 }
             });
             if (!data.isEmpty()) {
-                // 将合法的记录批量入库
+                // 将合法的记录批量插入
                 this.testService.batchInsert(data);
             }
             long time = ((System.currentTimeMillis() - beginTimeMillis));

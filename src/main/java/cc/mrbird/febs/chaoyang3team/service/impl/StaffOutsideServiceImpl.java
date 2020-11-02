@@ -163,11 +163,11 @@ public class StaffOutsideServiceImpl extends ServiceImpl<StaffOutsideMapper, Sta
                 Wrappers.<StaffOutside>lambdaUpdate() // 这里set是因为如果用默认的update，null值是不会更新的，set的话，不管你是什么都会更新
                         .set(StaffOutside::getLeaveDate, staffOutside.getLeaveDate())
                         .eq(StaffOutside::getStaffId, staffOutside.getStaffId()));
-        if (staffOutside.getSortNum2() != null || staffOutside.getLeaveDate() != null || staffOutside.getLeaveDate() != leaveDate) {
+        //if (staffOutside.getSortNum2() != null || staffOutside.getLeaveDate() != null || staffOutside.getLeaveDate() != leaveDate) {
             // 更新序号
             this.updateStaffOutsideSortNum(null);
             this.updateStaffOutsideLeaveSortNum();
-        }
+        //}
     }
 
     @Override

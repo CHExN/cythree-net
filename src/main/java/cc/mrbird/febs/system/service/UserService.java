@@ -42,6 +42,14 @@ public interface UserService extends IService<User> {
     void updateLoginTime(String username) throws Exception;
 
     /**
+     * 更新用户openId
+     *
+     * @param username 用户名
+     * @param openId openId
+     */
+    void updateOpenId(String username, String openId) throws Exception;
+
+    /**
      * 新增用户
      *
      * @param user user

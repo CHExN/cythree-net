@@ -1,10 +1,11 @@
 package cc.mrbird.febs.system.service.impl;
 
+import cc.mrbird.febs.chaoyang3team.service.FileService;
 import cc.mrbird.febs.common.domain.FebsConstant;
 import cc.mrbird.febs.common.domain.QueryRequest;
 import cc.mrbird.febs.common.service.CacheService;
-import cc.mrbird.febs.common.utils.SortUtil;
 import cc.mrbird.febs.common.utils.MD5Util;
+import cc.mrbird.febs.common.utils.SortUtil;
 import cc.mrbird.febs.system.dao.UserMapper;
 import cc.mrbird.febs.system.dao.UserRoleMapper;
 import cc.mrbird.febs.system.domain.User;
@@ -43,6 +44,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     private UserRoleService userRoleService;
     @Autowired
     private UserManager userManager;
+    @Autowired
+    private FileService fileService;
 
 
     @Override
@@ -73,6 +76,18 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     public void updateLoginTime(String username) throws Exception {
         User user = new User();
         user.setLastLoginTime(new Date());
+
+        this.baseMapper.update(user, new LambdaQueryWrapper<User>().eq(User::getUsername, username));
+
+        // 重新将用户信息加载到 redis中
+        cacheService.saveUser(username);
+    }
+
+    @Override
+    @Transactional
+    public void updateOpenId(String username, String openId) throws Exception {
+        User user = new User();
+        user.setOpenId(openId);
 
         this.baseMapper.update(user, new LambdaQueryWrapper<User>().eq(User::getUsername, username));
 

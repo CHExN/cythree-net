@@ -56,17 +56,18 @@ public class LogAspect {
             // 保存日志
             String token = (String) SecurityUtils.getSubject().getPrincipal();
             String username = "";
+            String systemType = "";
+            String openId = "";
             if (StringUtils.isNotBlank(token)) {
                 username = JWTUtil.getUsername(token);
-            }
-            String systemType = "";
-            if (StringUtils.isNotBlank(token)) {
                 systemType = JWTUtil.getSystemType(token);
+                openId = JWTUtil.getOpenId(token);
             }
 
             SysLog log = new SysLog();
             log.setUsername(username);
             log.setType(systemType);
+            log.setOpenId(openId);
             log.setIp(ip);
             log.setTime(time);
             logService.saveLog(point, log);

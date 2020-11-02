@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Param;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -14,6 +15,10 @@ import java.util.List;
 public interface StoreroomMapper extends BaseMapper<Storeroom> {
 
     IPage<Storeroom> findStoreroomsDetail(Page page, @Param("storeroom") Storeroom storeroom);
+
+    BigDecimal findStoreroomsTotalPrice(@Param("storeroom") Storeroom storeroom);
+
+    BigDecimal findStoreroomsSelectedTotalPrice(String ids);
 
     IPage<Storeroom> findStoreroomsItemDetails(Page page, @Param("storeroom") Storeroom storeroom);
 

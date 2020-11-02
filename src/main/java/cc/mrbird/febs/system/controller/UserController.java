@@ -106,6 +106,17 @@ public class UserController extends BaseController {
         }
     }
 
+    @PutMapping("wcChat")
+    public void updateWeChatInfo(@Valid User user) throws FebsException {
+        try {
+            this.userService.updateProfile(user);
+        } catch (Exception e) {
+            message = "更新微信头像昵称失败";
+            log.error(message, e);
+            throw new FebsException(message);
+        }
+    }
+
     @Log("修改头像")
     @PutMapping("avatar")
     public void updateAvatar(

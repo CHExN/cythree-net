@@ -62,7 +62,7 @@ public class LoginController {
             @NotBlank(message = "{required}") String username,
             @NotBlank(message = "{required}") String password,
             @NotBlank(message = "{required}") String type, HttpServletRequest request) throws Exception {
-        //不为null则将字符串转换为小写
+        // 不为null则将字符串转换为小写
         username = StringUtils.lowerCase(username);
         password = MD5Util.encrypt(username, password);
         final String ERROR = "用户名或密码错误";
@@ -71,11 +71,11 @@ public class LoginController {
         if (user == null)
             throw new FebsException(ERROR);
         if (!(user.getType().equals(User.TYPE_UNIVERSAL) || user.getType().equals(type)))
-            throw new FebsException("账号非本系统，请切换系统！");
+            throw new FebsException("账号非本系统，请切换系统");
         if (!StringUtils.equals(user.getPassword(), password))
             throw new FebsException(ERROR);
         if (User.STATUS_LOCK.equals(user.getStatus()))
-            throw new FebsException("账号已被锁定,请联系管理员！");
+            throw new FebsException("账号已被锁定,请联系管理员");
 
         // 更新用户登录时间
         this.userService.updateLoginTime(username);
@@ -193,15 +193,16 @@ public class LoginController {
         // 构建在线用户
         ActiveUser activeUser = new ActiveUser();
         activeUser.setUsername(user.getUsername());
+        activeUser.setType(user.getType());
+        activeUser.setLoginType(1);
         activeUser.setIp(ip);
         activeUser.setToken(token.getToken());
         activeUser.setLoginAddress(AddressUtil.getCityInfo(ip));
 
         // zset 存储登录用户，score 为过期时间戳
-        this.redisService.zadd(FebsConstant.ACTIVE_USERS_ZSET_PREFIX, Double.valueOf(token.getExipreAt()), mapper.writeValueAsString(activeUser));
+        this.redisService.zadd(FebsConstant.ACTIVE_USERS_ZSET_PREFIX, Double.valueOf(token.getExpireAt()), mapper.writeValueAsString(activeUser));
         // redis 中存储这个加密 token，key = 前缀 + 加密 token + .ip
         this.redisService.set(FebsConstant.TOKEN_CACHE_PREFIX + token.getToken() + StringPool.DOT + ip, token.getToken(), properties.getShiro().getJwtTimeOut() * 1000);
-
         return activeUser.getId();
     }
 
@@ -221,7 +222,7 @@ public class LoginController {
         String username = user.getUsername();
         Map<String, Object> userInfo = new HashMap<>();
         userInfo.put("token", token.getToken());
-        userInfo.put("exipreTime", token.getExipreAt());
+        userInfo.put("expireTime", token.getExpireAt());
 
         Set<String> roles = this.userManager.getUserRoles(username);
         userInfo.put("roles", roles);

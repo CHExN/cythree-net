@@ -32,22 +32,11 @@ public class WcEvaluate implements Serializable {
     private transient String voiceAddress;
 
     /**
-     * 环境评分
+     * 照片文件主键
      */
-    @TableField("ENVIRONMENT_STAR")
-    private Integer environmentStar;
-
-    /**
-     * 保洁评分
-     */
-    @TableField("CLEAN_STAR")
-    private Integer cleanStar;
-
-    /**
-     * 设施评分
-     */
-    @TableField("INSTALLATION_STAR")
-    private Integer installationStar;
+    @TableField("PHOTO_ID")
+    private Long photoId;
+    private transient String photoAddress;
 
     /**
      * 总体评分
@@ -62,9 +51,12 @@ public class WcEvaluate implements Serializable {
     private Long wcId;
     private transient String wcName;
     private transient String wcNum;
+    private transient String streetTown;
+    private transient String wcOwn;
+    private transient String wcSort;
 
     /**
-     * 评价/投诉 内容
+     * 评价内容集/投诉内容
      */
     @TableField("CONTENT")
     private String content;
@@ -84,9 +76,72 @@ public class WcEvaluate implements Serializable {
     private transient String createTimeTo;
 
     /**
+     * 修改时间
+     */
+    @TableField("MODIFY_TIME")
+    private LocalDateTime modifyTime;
+
+
+    /**
      * 电话
      */
     @TableField("PHONE")
     private String phone;
+    private transient String encryptedData;
+    private transient String iv;
+    private transient String sessionKey;
+
+
+    /**
+     * 处理状态 1已解决 2未解决 0待解决
+     */
+    @TableField("PROCESS")
+    private String process;
+    private transient String processBefore;
+
+    /**
+     * 解决时间
+     */
+    @TableField("PROCESS_TIME")
+    private LocalDateTime processTime;
+    private transient String processTimeFrom;
+    private transient String processTimeTo;
+
+    /**
+     * 备注
+     */
+    @TableField("REMARK")
+    private String remark;
+
+    /**
+     * 微信昵称
+     */
+    @TableField("NIKCNAME")
+    private String nickName;
+
+    /**
+     * 微信性别 0未知 1男性 2女性
+     */
+    @TableField("GENDER")
+    private String gender;
+
+    /**
+     * 微信头像url
+     */
+    private transient String avatarUrl;
+    @TableField("AVATAR_ID")
+    private Long avatarId;
+
+    /**
+     * 经度
+     */
+    @TableField("LONGITUDE")
+    private String longitude;
+
+    /**
+     * 纬度
+     */
+    @TableField("LATITUDE")
+    private String latitude;
 
 }

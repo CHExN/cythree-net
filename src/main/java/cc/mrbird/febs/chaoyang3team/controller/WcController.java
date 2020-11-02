@@ -57,11 +57,25 @@ public class WcController extends BaseController {
     @Autowired
     private WcStoreroomService storeroomService;
 
-    @GetMapping("test")
+    /*@GetMapping("test")
     public void test() throws FebsException {
         try {
             this.wcService.test();
         } catch (Exception e) {
+            throw new FebsException(message);
+        }
+    }*/
+
+//
+    @Log("修改公厕定位")
+    @PutMapping("location")
+    @RequiresPermissions("wcLocation:update")
+    public void updateWcLocation(Wc wc) throws FebsException {
+        try {
+            this.wcService.updateWcLocation(wc);
+        } catch (Exception e) {
+            message = "修改公厕定位失败";
+            log.error(message, e);
             throw new FebsException(message);
         }
     }
@@ -69,6 +83,11 @@ public class WcController extends BaseController {
     @GetMapping("weChat/wcList")
     public List<Wc> findWcListByPosition(String longitude, String latitude, Integer radius, Integer length) {
         return wcService.findWcListByPosition(longitude, latitude, radius, length);
+    }
+
+    @GetMapping("weChat")
+    public Map<String, Object> getWcList(QueryRequest request, Wc wc) {
+        return getDataTable(this.wcService.findWcDetail(request, wc));
     }
 
     @GetMapping("weChat/wcInfo")
@@ -323,7 +342,7 @@ public class WcController extends BaseController {
                 }
             });
             if (!data.isEmpty()) {
-                // 将合法的记录批量入库
+                // 将合法的记录批量插入
                 this.wcService.batchInsertWc(data);
             }
             long time = ((System.currentTimeMillis() - beginTimeMillis));

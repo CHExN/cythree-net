@@ -34,6 +34,8 @@ public class WcStoreroom implements Serializable {
     @TableField("STOREROOM_ID")
     private Long storeroomId;
     private transient String storeroomName;
+    private transient String storeroomIds;
+    private transient String[] storeroomIdArr;
 
     /**
      * 分配数量

@@ -35,7 +35,7 @@ public class FileController extends BaseController {
         try {
             return this.fileService.uploadFile(file);
         } catch (Exception e) {
-            message = "删除文件信息失败";
+            message = "上传文件信息失败";
             log.error(message, e);
             throw new FebsException(message);
         }
