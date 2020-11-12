@@ -5,6 +5,7 @@ import cc.mrbird.febs.chaoyang3team.domain.Vacation;
 import cc.mrbird.febs.chaoyang3team.service.VacationService;
 import cc.mrbird.febs.common.domain.FebsConstant;
 import cc.mrbird.febs.common.domain.QueryRequest;
+import cc.mrbird.febs.common.utils.JavaReflectionUtil;
 import cc.mrbird.febs.common.utils.SortUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -18,8 +19,9 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.TemporalAdjusters;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
-import java.util.stream.IntStream;
+import java.util.Map;
 
 /**
  * @author CHExN
@@ -139,82 +141,101 @@ public class VacationServiceImpl extends ServiceImpl<VacationMapper, Vacation> i
         }
     }
 
-    private List<Vacation> setDecember(List<Vacation> vacationList, boolean isYear) {
+    private static List<Vacation> setDecember(List<Vacation> vacationList, boolean isYear) {
         vacationList.forEach(vacation -> {
             if (vacation.getDate() == null) return;
-            List<String> dateList = Arrays.asList(vacation.getDate().split(","));
-            final int[] days = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+            // 下面三个的长度都是一样的
+            String[] dateList = vacation.getDate().split(";"); // 休假日期（范围）
+            String[] remarkList = vacation.getRemark().split("@"); // 备注
+            String[] typeList = vacation.getType().split(","); // 休假类型
+            Map<Integer, Map<String, Integer>> days = new HashMap<>();
             final String[] remarks = {"", "", "", "", "", "", "", "", "", "", "", ""};
-            dateList.forEach(date -> { // 计算是否有当月的月份
-                String dateString = date.substring(0, 10);
-                LocalDate startDate = LocalDate.parse(dateString);
-                LocalDate endDate = LocalDate.parse(date.substring(11));
-                remarks[startDate.getMonthValue() - 1] = remarks[startDate.getMonthValue() - 1].equals("") ? "" : remarks[startDate.getMonthValue() - 1] + ",";
-                if (startDate.equals(endDate)) { // 这里主要应对如"2020-01-01~2020-01-01"这种头尾都相等的特殊情况
-                    remarks[startDate.getMonthValue() - 1] = remarks[startDate.getMonthValue() - 1] + dateString + "~" + dateString;
-                    days[startDate.getMonthValue() - 1]++;
-                    return;
+            for (int i = 0; i < dateList.length; i++) {
+                // 给每月备注加上
+                final int month = LocalDate.parse(dateList[i].substring(0, 10)).getMonthValue() - 1;
+                remarks[month] = remarks[month].equals("") ? remarkList[i] : remarks[month] + "," + remarkList[i];
+                // 检测日期分割
+                String[] dateSplit = dateList[i].split(",");
+                if (dateSplit.length > 1) {
+                    for (String date : dateSplit)
+                        addSet(date, typeList[i], days, remarks);
+                } else {
+                    addSet(dateList[i], typeList[i], days, remarks);
                 }
-                // 这是包头又包尾的写法
-                days[startDate.getMonthValue() - 1]++;
-                do {
-                    // 如果是本月的最后一天
-                    if (startDate.equals(startDate.with(TemporalAdjusters.lastDayOfMonth()))) {
-                        remarks[startDate.getMonthValue() - 1] = remarks[startDate.getMonthValue() - 1] + dateString + "~" + startDate.toString();
-                    }
-                    startDate = startDate.plusDays(1);
-                    days[startDate.getMonthValue() - 1]++;
-                    // 如果是本月的第一天
-                    if (startDate.equals(LocalDate.of(startDate.getYear(),startDate.getMonth(),1))) {
-                        dateString = startDate.toString();
-                    }
-                } while (!startDate.equals(endDate));
-                remarks[startDate.getMonthValue() - 1] = remarks[startDate.getMonthValue() - 1] + dateString + "~" + endDate.toString();
-            });
-            System.out.println(Arrays.toString(days));
-            System.out.println(Arrays.toString(remarks));
-            if (isYear) {
-                vacation.setAlreadyDays(IntStream.of(days).sum()); //days数组总和
-                vacation.setMonth1(days[0] == 0 ? null : days[0] + "");
-                vacation.setMonth2(days[1] == 0 ? null : days[1] + "");
-                vacation.setMonth3(days[2] == 0 ? null : days[2] + "");
-                vacation.setMonth4(days[3] == 0 ? null : days[3] + "");
-                vacation.setMonth5(days[4] == 0 ? null : days[4] + "");
-                vacation.setMonth6(days[5] == 0 ? null : days[5] + "");
-                vacation.setMonth7(days[6] == 0 ? null : days[6] + "");
-                vacation.setMonth8(days[7] == 0 ? null : days[7] + "");
-                vacation.setMonth9(days[8] == 0 ? null : days[8] + "");
-                vacation.setMonth10(days[9] == 0 ? null : days[9] + "");
-                vacation.setMonth11(days[10] == 0 ? null : days[10] + "");
-                vacation.setMonth12(days[11] == 0 ? null : days[11] + "");
-            } else {
-                vacation.setMonth1(days[0] == 0 ? null : vacation.getType() + days[0] + "天");
-                vacation.setMonth2(days[1] == 0 ? null : vacation.getType() + days[1] + "天");
-                vacation.setMonth3(days[2] == 0 ? null : vacation.getType() + days[2] + "天");
-                vacation.setMonth4(days[3] == 0 ? null : vacation.getType() + days[3] + "天");
-                vacation.setMonth5(days[4] == 0 ? null : vacation.getType() + days[4] + "天");
-                vacation.setMonth6(days[5] == 0 ? null : vacation.getType() + days[5] + "天");
-                vacation.setMonth7(days[6] == 0 ? null : vacation.getType() + days[6] + "天");
-                vacation.setMonth8(days[7] == 0 ? null : vacation.getType() + days[7] + "天");
-                vacation.setMonth9(days[8] == 0 ? null : vacation.getType() + days[8] + "天");
-                vacation.setMonth10(days[9] == 0 ? null : vacation.getType() + days[9] + "天");
-                vacation.setMonth11(days[10] == 0 ? null : vacation.getType() + days[10] + "天");
-                vacation.setMonth12(days[11] == 0 ? null : vacation.getType() + days[11] + "天");
             }
-
-            vacation.setMonth1Remark(remarks[0].equals("") ? null : remarks[0]);
-            vacation.setMonth2Remark(remarks[1].equals("") ? null : remarks[1]);
-            vacation.setMonth3Remark(remarks[2].equals("") ? null : remarks[2]);
-            vacation.setMonth4Remark(remarks[3].equals("") ? null : remarks[3]);
-            vacation.setMonth5Remark(remarks[4].equals("") ? null : remarks[4]);
-            vacation.setMonth6Remark(remarks[5].equals("") ? null : remarks[5]);
-            vacation.setMonth7Remark(remarks[6].equals("") ? null : remarks[6]);
-            vacation.setMonth8Remark(remarks[7].equals("") ? null : remarks[7]);
-            vacation.setMonth9Remark(remarks[8].equals("") ? null : remarks[8]);
-            vacation.setMonth10Remark(remarks[9].equals("") ? null : remarks[9]);
-            vacation.setMonth11Remark(remarks[10].equals("") ? null : remarks[10]);
-            vacation.setMonth12Remark(remarks[11].equals("") ? null : remarks[11]);
+            if (isYear) {
+                int alreadyDays = 0;
+                int nowMonthDays;
+                for (int i = 0; i < 12; i++) {
+                    Map<String, Integer> typeDays = days.get(i);
+                    if (typeDays == null) continue;
+                    nowMonthDays = days.get(i).values().stream().mapToInt(e -> e).sum();
+                    JavaReflectionUtil.invokeSet(vacation, "month" + (i + 1), nowMonthDays + "");
+                    alreadyDays = alreadyDays + nowMonthDays;
+                }
+                vacation.setAlreadyDays(alreadyDays);
+            } else {
+                for (int i = 0; i < 12; i++) {
+                    Map<String, Integer> typeDays = days.get(i);
+                    if (typeDays == null) continue;
+                    for (String key : typeDays.keySet()) {
+                        String fieldName = "month" + (i + 1);
+                        String value = (String) JavaReflectionUtil.invokeGet(vacation, fieldName);
+                        value = value == null ? key + typeDays.get(key) + "天" : value + "\n" + key + typeDays.get(key) + "天";
+                        JavaReflectionUtil.invokeSet(vacation, fieldName, value);
+                    }
+                }
+            }
+            for (int i = 0; i < 12; i++) {
+                if (remarks[i].equals("")) continue;
+                String fieldName = "month" + (i + 1) + "Remark";
+                JavaReflectionUtil.invokeSet(vacation, fieldName, remarks[i]);
+            }
         });
         return vacationList;
+    }
+
+    private static void addSet(String data, String type, Map<Integer, Map<String, Integer>> days, String[] remarks) {
+        String dateString = data.substring(0, 10);
+        LocalDate startDate = LocalDate.parse(dateString);
+        LocalDate endDate = LocalDate.parse(data.substring(11));
+        remarks[startDate.getMonthValue() - 1] = remarks[startDate.getMonthValue() - 1] + ",";
+        // 这里主要应对如"2020-01-01~2020-01-01"这种头尾都相等的特殊情况
+        if (startDate.equals(endDate)) {
+            remarks[startDate.getMonthValue() - 1] = remarks[startDate.getMonthValue() - 1] + dateString + "~" + dateString;
+            addTypeDaysMap(days, startDate.getMonthValue() - 1, type);
+            return;
+        }
+        // 这是包头又包尾的写法
+        addTypeDaysMap(days, startDate.getMonthValue() - 1, type);
+        do {
+            // 如果是本月的最后一天
+            if (startDate.equals(startDate.with(TemporalAdjusters.lastDayOfMonth()))) {
+                remarks[startDate.getMonthValue() - 1] = remarks[startDate.getMonthValue() - 1] + dateString + "~" + startDate.toString();
+            }
+            startDate = startDate.plusDays(1);
+            days.get(startDate.getMonthValue() - 1);
+            addTypeDaysMap(days, startDate.getMonthValue() - 1, type);
+            // 如果是本月的第一天
+            if (startDate.equals(LocalDate.of(startDate.getYear(), startDate.getMonth(), 1))) {
+                dateString = startDate.toString();
+            }
+        } while (!startDate.equals(endDate));
+        remarks[startDate.getMonthValue() - 1] = remarks[startDate.getMonthValue() - 1] + dateString + "~" + endDate.toString();
+    }
+
+    private static void addTypeDaysMap(Map<Integer, Map<String, Integer>> days, int month, String type) {
+        Map<String, Integer> typeDays = days.get(month);
+        if (typeDays == null || typeDays.get(type) == null) {
+            if (typeDays == null) {
+                typeDays = new HashMap<>();
+                typeDays.put(type, 1);
+                days.put(month, typeDays);
+            } else {
+                typeDays.put(type, 1);
+            }
+        } else {
+            typeDays.put(type, days.get(month).get(type) + 1);
+        }
     }
 }

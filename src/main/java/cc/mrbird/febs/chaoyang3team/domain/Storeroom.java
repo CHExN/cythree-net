@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.wuwenze.poi.annotation.Excel;
+import com.wuwenze.poi.annotation.ExcelField;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -15,6 +17,7 @@ import java.math.BigDecimal;
  */
 @Data
 @TableName("cy_storeroom")
+@Excel("库存物资信息表")
 public class Storeroom implements Serializable {
 
     private static final long serialVersionUID = -407562502955655527L;
@@ -27,23 +30,17 @@ public class Storeroom implements Serializable {
     private transient String ids;
     private transient String[] idArr;
 
-    /**
-     * 入库物品名称
-     */
     @TableField("NAME")
+    @ExcelField(value = "物品名称")
     private String name;
     private transient String[] names;
 
-    /**
-     * 型号
-     */
     @TableField("TYPE")
+    @ExcelField(value = "型号")
     private String type;
 
-    /**
-     * 物品单位
-     */
     @TableField("UNIT")
+    @ExcelField(value = "UNIT")
     private String unit;
     private transient String unitOriginal;
 
@@ -51,14 +48,9 @@ public class Storeroom implements Serializable {
      * 物品入/出库数量
      */
     @TableField("AMOUNT")
+    @ExcelField(value = "库存")
     private BigDecimal amount;
     private transient BigDecimal amountOriginal;
-
-    /**
-     * 备注
-     */
-    @TableField("REMARK")
-    private String remark;
 
     /**
      * 收据
@@ -67,30 +59,44 @@ public class Storeroom implements Serializable {
     private String receipt;
 
     /**
-     * 出/入库日期
-     */
-    @TableField("DATE")
-    private String date;
-
-    /**
      * 物品入库时价格
      */
     @TableField("MONEY")
+    @ExcelField(value = "单价")
     private BigDecimal money;
     private transient BigDecimal moneyOriginal;
 
     /**
      * 物品总价格
      */
+    @ExcelField(value = "总价")
     private transient BigDecimal totalPrice;
+
 
     /**
      * 物资类别 1保洁物品 2劳保物品 3办公室用品 4维修用品 5固定资产 6工会用品 7技安用品 8食堂用品 9其他
      */
     @TableField("TYPE_APPLICATION")
+    @ExcelField(value = "物资类别", writeConverterExp = "1=保洁物品,2=劳保物品,3=办公室用品,4=维修用品,5=固定资产,6=工会用品,7=技安用品,8=食堂用品,9=其他")
     private String typeApplication;
     private transient String typeApplicationToDict;
     private transient String typeApplicationAuthority;
+
+    @TableField("SUPPLIER")
+    private String supplier;
+    @ExcelField(value = "供应商")
+    private transient String supplierToDict;
+
+    /**
+     * 出/入库日期
+     */
+    @TableField("DATE")
+    @ExcelField(value = "入库日期")
+    private String date;
+
+    @TableField("REMARK")
+    @ExcelField(value = "备注")
+    private String remark;
 
     /**
      * 是否是库房数据 0库房数据 1入库数据 2出库数据
@@ -123,12 +129,6 @@ public class Storeroom implements Serializable {
      */
     @TableField("AMOUNT_DIST")
     private BigDecimal amountDist;
-
-    /**
-     * 供应商
-     */
-    @TableField("SUPPLIER")
-    private String supplier;
 
     private transient String createTimeFrom;
     private transient String createTimeTo;

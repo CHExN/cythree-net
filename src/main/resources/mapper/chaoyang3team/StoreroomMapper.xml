@@ -15,6 +15,7 @@
         s.DATE,
         s.TYPE_APPLICATION,
         s.SUPPLIER,
+        cs.NAME AS supplierToDict,
         s.IS_IN,
         s.AMOUNT * s.MONEY AS totalPrice,
         spo.NUM AS putNum,
@@ -24,6 +25,7 @@
         LEFT JOIN cy_storeroom AS s1 ON(s.ID=s1.PARENT_ID)
         LEFT JOIN p_storeroom_put AS sp ON(sp.STOREROOM_ID=s1.ID)
         LEFT JOIN cy_storeroom_put_out AS spo ON(spo.ID=sp.PUT_ID)
+        LEFT JOIN cy_supplier AS cs ON(cs.ID=s.SUPPLIER)
         WHERE 1=1
         <include refid="param"/>
     </select>

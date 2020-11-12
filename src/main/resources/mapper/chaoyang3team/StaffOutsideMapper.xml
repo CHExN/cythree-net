@@ -175,6 +175,7 @@
         FROM cy_staff_outside AS cso
         WHERE cso.STAFF_ID=#{staffId}
     </select>
+
     <select id="getStaffOutsideByIdNum" resultType="cc.mrbird.febs.chaoyang3team.domain.StaffOutside">
         SELECT
         cso.STAFF_ID,
@@ -205,7 +206,7 @@
         cso.IS_LEAVE,
         cso.LEAVE_DATE
         FROM cy_staff_outside AS cso
-        WHERE cso.ID_NUM=#{idNum} AND DELETED=0 LIMIT 1
+        WHERE cso.ID_NUM=#{idNum} AND cso.DELETED=0 LIMIT 1
     </select>
 
     <select id="getContractOutsideIds" resultType="java.lang.String">

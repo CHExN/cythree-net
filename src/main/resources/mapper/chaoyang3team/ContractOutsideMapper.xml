@@ -104,7 +104,7 @@
         cci.REMARK_RENEW,
         cci.REMARK
         FROM cy_contract_outside AS cci
-        WHERE cci.ID_NUM=#{idNum}
+        WHERE cci.ID_NUM=#{idNum} AND cci.DELETED LIMIT 1
     </select>
 
     <select id="getStaffOutsideIds" resultType="java.lang.String">

@@ -60,11 +60,12 @@ public class WcEvaluateServiceImpl extends ServiceImpl<WcEvaluateMapper, WcEvalu
                 && StringUtils.isNotBlank(wcEvaluate.getIv()) && StringUtils.isNotBlank(wcEvaluate.getSessionKey())) {
             // 解密微信手机号
             String decrypt = WxCryptUtils.decrypt(wcEvaluate.getEncryptedData(), wcEvaluate.getIv(), wcEvaluate.getSessionKey());
+//            System.out.println(decrypt);
             if(StringUtils.isNotBlank(decrypt)) {
                 JSONObject resultObject = JSONObject.fromObject(decrypt);
                 Map<String, String> signInData = (Map<String, String>) JSONObject.toBean(resultObject, Map.class);
                 String phoneNumber = signInData.get("phoneNumber");
-                System.out.println(phoneNumber);
+//                System.out.println(phoneNumber);
                 wcEvaluate.setPhone(phoneNumber);
             }
         }
@@ -80,7 +81,7 @@ public class WcEvaluateServiceImpl extends ServiceImpl<WcEvaluateMapper, WcEvalu
                     message.toString(),
                     "bot",
                     "系统",
-                    "captain,vice,business,test,xzhisoft", // 队长，副队长，业务，测试账号，管理员账号
+                    "duizhang,fuduizhang,yewu", // 队长，副队长，业务，测试账号
                     null)
             );
         }

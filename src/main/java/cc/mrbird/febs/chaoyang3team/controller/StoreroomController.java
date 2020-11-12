@@ -112,7 +112,7 @@ public class StoreroomController extends BaseController {
             List<Storeroom> records = storeroomsIPage.getRecords();
             Storeroom storeroomTotal = new Storeroom();
             storeroomTotal.setName("总价格");
-            storeroomTotal.setMoney(storeroomsTotalPrice);
+            storeroomTotal.setTotalPrice(storeroomsTotalPrice);
             records.add(storeroomTotal);
             ExcelKit.$Export(Storeroom.class, response).downXlsx(records, false);
         } catch (Exception e) {

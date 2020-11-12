@@ -203,7 +203,7 @@
         td.DEPT_NAME
         FROM cy_staff_inside AS csi
         LEFT JOIN t_dept td ON (csi.DEPT_ID = td.DEPT_ID)
-        WHERE csi.ID_NUM=#{idNum}
+        WHERE csi.ID_NUM=#{idNum} AND csi.DELETED=0 LIMIT 1
     </select>
 
 

@@ -114,7 +114,7 @@
 --         cci.FILE_NUM
 --         cci.BAD_NUM
         FROM cy_contract_inside AS cci
-        WHERE cci.ID_NUM=#{idNum}
+        WHERE cci.ID_NUM=#{idNum} AND cci.DELETED LIMIT 1
     </select>
 
     <select id="getStaffInsideIds" resultType="java.lang.String">
